@@ -125,7 +125,9 @@ function gotHands(results) {
 
 function setup() {
     // Create the drawing surface (640px wide, 480px tall)
-    createCanvas(640, 480);
+    // and place it inside the player-frame container
+    let cnv = createCanvas(640, 480);
+    cnv.parent('player-frame');
 
     // Turn on the webcam. createCapture(VIDEO) returns a p5
     // video element that streams from your camera.

@@ -4,12 +4,74 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Numi - Math Hand Tracking</title>
+    <meta name="description" content="Numi — A warm, intuitive math learning experience for children with dyscalculia. Show your fingers to the camera and learn to count!" />
+    <title>Numi — Digital Math Experience</title>
+    <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-    <h1>ML5 HandPose Test</h1>
+    <div class="page-wrapper">
 
+        <!-- ── NAVBAR ─────────────────────────────────────── -->
+        <nav class="navbar" id="navbar">
+            <div class="navbar__brand">
+                <span class="navbar__logo"><span>N</span>umi</span>
+                <span class="navbar__tagline">Digital Math Experience</span>
+            </div>
+            <ul class="navbar__nav">
+                <li><a href="#" class="navbar__link navbar__link--active">Play</a></li>
+                <li><a href="#" class="navbar__link">About</a></li>
+                <li><a href="#" class="navbar__link">Help</a></li>
+            </ul>
+        </nav>
+
+        <!-- ── MAIN CONTENT ───────────────────────────────── -->
+        <main class="main-content" id="main-content">
+
+            <!-- Hero Text -->
+            <div class="hero-text">
+                <h1>Count with your <span>hands</span></h1>
+                <p>Hold up 1–5 fingers in front of your camera and Numi will recognise them. A fun, accessible way to build number confidence.</p>
+            </div>
+
+            <!-- Player -->
+            <div class="player-container" id="player-container">
+                <div class="player-frame" id="player-frame">
+                    <!-- p5.js canvas will be injected here by sketch.js -->
+                </div>
+                <div class="player-badge">
+                    <span class="player-badge__dot"></span>
+                    Hand tracking active
+                </div>
+            </div>
+
+            <!-- Instructions -->
+            <div class="instructions" id="instructions">
+                <div class="instruction-step">
+                    <div class="instruction-step__icon">📸</div>
+                    <span class="instruction-step__label">Allow camera</span>
+                </div>
+                <div class="instruction-step">
+                    <div class="instruction-step__icon">✋</div>
+                    <span class="instruction-step__label">Show your hand</span>
+                </div>
+                <div class="instruction-step">
+                    <div class="instruction-step__icon">🔊</div>
+                    <span class="instruction-step__label">Hear the number</span>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- ── FOOTER ─────────────────────────────────────── -->
+        <footer class="footer" id="footer">
+            <div class="footer__credits">Built with care by <span>94th Studios</span></div>
+            <div class="footer__tech caption-2">p5.js · ml5.js · MediaPipe</div>
+        </footer>
+
+    </div>
+
+    <!-- Scripts (order matters: libraries → then our code) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
     <script src="https://unpkg.com/ml5@1/dist/ml5.js"></script>
     <script src="sketch.js"></script>
