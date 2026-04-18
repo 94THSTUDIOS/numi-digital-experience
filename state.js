@@ -121,9 +121,29 @@ const gameState = (() => {
   //   The element ID "confetti-lottie" was kept the same when we
   //   switched to a plain <img> GIF, so these helpers needed zero changes.
 
+  let confettiClearTimer = null;
+
   function showConfetti() {
-    const el = document.getElementById('confetti-lottie');
-    if (el) el.style.display = 'block';
+    let el = document.getElementById('confetti-lottie');
+    if (el) {
+      // Re-assign src with a unique timestamp to forcefully break browser caching
+      // This guarantees the GIF animation starts over from frame 1 
+      const baseUrl = el.src.split('?')[0];
+      el.src = baseUrl + '?t=' + new Date().getTime();
+      el.style.display = 'block';
+
+      // Auto-hide the GIF before it can loop while long audio finishes
+      if (confettiClearTimer) clearTimeout(confettiClearTimer);
+      confettiClearTimer = setTimeout(() => {
+        el.style.display = 'none';
+      }, 2400); // Assumes confetti GIF is ~2.4s long
+    }
+    
+    // Play celebration audio globally
+    if (window.sounds && sounds['celeb']) {
+      sounds['celeb'].currentTime = 0;
+      sounds['celeb'].play().catch(e => console.log('Autoplay blocked:', e));
+    }
   }
 
   function hideConfetti() {

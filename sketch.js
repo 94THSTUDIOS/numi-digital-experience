@@ -85,11 +85,33 @@ function setup() {
   handPose.detectStart(video, gotHands);
 
   // Load numbered audio files (index = finger count)
-  sounds[1] = new Audio('1Elevenlabs.mp3');
-  sounds[2] = new Audio('2Elevenlabs.mp3');
-  sounds[3] = new Audio('3Elevenlabs.mp3');
-  sounds[4] = new Audio('4Elevenlabs.mp3');
-  sounds[5] = new Audio('5Elevenlabs.mp3');
+  sounds[1] = new Audio('audio/1Elevenlabs.mp3');
+  sounds[2] = new Audio('audio/2Elevenlabs.mp3');
+  sounds[3] = new Audio('audio/3Elevenlabs.mp3');
+  sounds[4] = new Audio('audio/4Elevenlabs.mp3');
+  sounds[5] = new Audio('audio/5Elevenlabs.mp3');
+  sounds['greeting'] = new Audio('audio/GreetingElevenLabs.mp3');
+  sounds['celeb'] = new Audio('audio/TOONPop-Cute_party_popper_po-Elevenlabs.mp3');
+  sounds['goodjob'] = new Audio('audio/goodjobfinal.mp3');
+  sounds['move'] = new Audio('audio/move.mp3');
+  sounds['amazing'] = new Audio('audio/amazing job.mp3');
+  sounds['flip'] = new Audio('audio/flip.mp3');
+
+  // Placeholders for Level 1 Sequential Instructions
+  sounds['l1_show_hand'] = new Audio('audio/placeholder_l1_show_hand.mp3');
+  sounds['l1_make_rock'] = new Audio('audio/placeholder_l1_make_rock.mp3');
+  sounds['l1_lift_finger'] = new Audio('audio/placeholder_l1_lift_finger.mp3');
+  sounds['l1_lift_another'] = new Audio('audio/placeholder_l1_lift_another.mp3');
+
+  window.stopAllSounds = function() {
+    if (!window.sounds) return;
+    for (let key in window.sounds) {
+      if (window.sounds[key]) {
+        window.sounds[key].pause();
+        window.sounds[key].currentTime = 0;
+      }
+    }
+  };
 
   // ── Register all levels then kick off onboarding ──────────
   // Level files must be loaded before sketch.js (see index.html).

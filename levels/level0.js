@@ -49,21 +49,22 @@ const level0 = (() => {
         }
 
         // If finger count changes, add "energy" to the movement detector
+        // INCREASED: Adds much more energy per finger movement so small wiggles count big
         if (fingerCount !== this._lastCount) {
           const diff = Math.abs(fingerCount - this._lastCount);
-          this._energy += diff * 15;
+          this._energy += diff * 30; 
           this._lastCount = fingerCount;
         } else {
-          // Passive decay when fingers stop moving
-          this._energy = Math.max(0, this._energy - 1);
+          // SLOWER: Passive decay is cut in half so they are forgiven for pausing
+          this._energy = Math.max(0, this._energy - 0.5);
         }
 
-        // Cap the energy so one big move doesn't last forever
-        this._energy = Math.min(this._energy, 50);
+        // INCREASED: Cap the energy higher so a single confident movement 
+        // can sustain the test duration (55 frames) without them needing to move continuously
+        this._energy = Math.min(this._energy, 80);
 
-        // Return true if sufficient recent movement is detected
-        // Needs a couple of consecutive movements to keep it true long enough to advance
-        return this._energy > 15;
+        // LOWERED: Threshold for triggering the "detected" state is reduced
+        return this._energy > 10;
       }
     },
     {
@@ -205,6 +206,8 @@ const level0 = (() => {
   function renderStep() {
     const step = STEPS[currentStep];
 
+    window.stopAllSounds?.();
+
     // Reset phase + stability counter for each new step
     phase = 'waiting';
     stableCount = 0;
@@ -239,6 +242,18 @@ const level0 = (() => {
     requestAnimationFrame(() => {
       contentEl.style.transition = 'opacity 0.35s ease';
       contentEl.style.opacity = '1';
+      
+      // Play instruction audio when step appears
+      if (currentStep === 0 && window.sounds && sounds['greeting']) {
+        sounds['greeting'].currentTime = 0;
+        sounds['greeting'].play().catch(e => console.log('Autoplay blocked:', e));
+      } else if (currentStep === 1 && window.sounds && sounds['move']) {
+        sounds['move'].currentTime = 0;
+        sounds['move'].play().catch(e => console.log('Autoplay blocked:', e));
+      } else if (currentStep === 2 && window.sounds && sounds['flip']) {
+        sounds['flip'].currentTime = 0;
+        sounds['flip'].play().catch(e => console.log('Autoplay blocked:', e));
+      }
     });
   }
 
@@ -265,10 +280,32 @@ const level0 = (() => {
     celebEl.classList.add('ob-celebration--active');
     document.getElementById('ob-celeb-word').textContent = step.celebration;
 
+    window.stopAllSounds?.();
+
     // Fire the Lottie confetti overlay
     gameState.showConfetti();
+    
+    let waitMs = CELEBRATION_DURATION_MS;
 
-    // After celebration duration, move to next step or finish
+    // Play specific celebration audio depending on the step
+    // We dynamically wait for the exact duration of the audio clip so it never gets cut off
+    if (currentStep === 0 && window.sounds && sounds['goodjob']) {
+      const snd = sounds['goodjob'];
+      snd.currentTime = 0;
+      snd.play().catch(e => console.log('Autoplay blocked:', e));
+      if (!isNaN(snd.duration) && snd.duration > 0) {
+          waitMs = Math.max(waitMs, (snd.duration * 1000) + 400);
+      }
+    } else if (currentStep === 1 && window.sounds && sounds['amazing']) {
+      const snd = sounds['amazing'];
+      snd.currentTime = 0;
+      snd.play().catch(e => console.log('Autoplay blocked:', e));
+      if (!isNaN(snd.duration) && snd.duration > 0) {
+          waitMs = Math.max(waitMs, (snd.duration * 1000) + 400);
+      }
+    }
+
+    // After celebration duration (or audio length, whichever is greater), move to next step
     celebTimer = setTimeout(() => {
       currentStep++;
       if (currentStep >= STEPS.length) {
@@ -276,7 +313,7 @@ const level0 = (() => {
       } else {
         renderStep();
       }
-    }, CELEBRATION_DURATION_MS);
+    }, waitMs);
   }
 
 

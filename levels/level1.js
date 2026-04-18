@@ -3,302 +3,275 @@
 // levels/level1.js
 //
 // PURPOSE:
-//   The first proper learning stage. After completing the onboarding
-//   (level0), the child sees a large target number (1 through 5)
-//   and must hold up that many fingers to match it.
-//
-// FLOW:
-//   → onEnter()   : resets state, builds the HTML overlay
-//   → update()    : called ~60x/sec by gameState; checks if the
-//                   current fingerCount matches the target
-//   → celebrate() : correct! plays audio, shows confetti, waits 2.5s
-//   → next round  : target++ until target > 5 → go to level2
-//   → onExit()    : removes overlay, clears any pending timers
-//
-// CHANGE FROM ORIGINAL:
-//   In the original sketch.js monolith, finger counting, drawing,
-//   and all level logic were tangled in one draw() loop.
-//   This file separates the "learning" experience into a standalone
-//   module that sketch.js never needs to know about.
-//
-// STRUCTURE:
-//   This file uses the same Revealing Module Pattern as state.js:
-//   const level1 = (() => { ... })()
-//   All internal state (target, stableCount, etc.) is private.
-//   Only { onEnter, update, onExit } are exposed to gameState.
+//   The first proper learning stage. 
+//   Guides the child step-by-step:
+//   Open Hand -> Rock -> 1 Finger -> 2 Fingers -> ... -> 5 Fingers.
+//   Shows an explicit "THIS IS ONE = 1" screen after successful counts.
 // ============================================================
 
 const level1 = (() => {
 
-  // ── TIMING ────────────────────────────────────────────────
-  // FRAMES_TO_CONFIRM: how many consecutive frames the fingerCount
-  // must equal the target before we treat it as a deliberate hold.
-  // At 60fps, 40 frames ≈ 0.67 seconds.
-  // WHY: Without a hold requirement, any accidental flash of the
-  // correct number (e.g. fingers briefly in position while moving)
-  // would trigger a celebration. The hold makes it intentional.
-  const FRAMES_TO_CONFIRM = 40; // ~0.67 s at 60 fps
-
-  // How long (ms) to show the celebration GIF before advancing.
-  // CHANGE: Was 1800ms originally. Tweaked to 2500ms to let the
-  //         confetti GIF play through before the next number appears.
-  const CELEBRATION_DURATION = 2500;
-
-
-  // ── AUDIO ─────────────────────────────────────────────────
-  // sounds[] is loaded in sketch.js setup().
-  // We use `window.sounds` because sketch.js declares it with `var`
-  // (making it a global), and we want to be explicit about that.
-  //
-  // sounds[1] = Audio for "one", sounds[2] = "two", etc.
-  // We play sounds[target] to narrate the correct answer.
-  function playSound(n) {
-    if (window.sounds && sounds[n]) {
-      sounds[n].currentTime = 0; // rewind in case it's already playing
-      sounds[n].play();
+  // ── SEQUENCE DEFINITION ───────────────────────────────────
+  const STEPS = [
+    {
+      title: "SHOW A COUNTING\nHAND",
+      emoji: "🖐️", // Placeholder for hand SVG
+      instructionAudio: 'l1_show_hand',
+      detect: (fingerCount, handsCount) => handsCount >= 1 && fingerCount >= 5,
+    },
+    {
+      title: "MAKE A ROCK",
+      emoji: "✊", // Placeholder for fist SVG
+      instructionAudio: 'l1_make_rock',
+      detect: (fingerCount, handsCount) => handsCount >= 1 && fingerCount === 0,
+    },
+    {
+      title: "NOW, LIFT A FINGER",
+      emoji: "☝️",
+      instructionAudio: 'l1_lift_finger',
+      numberText: "THIS IS ONE = 1",
+      numberAudio: 1, // Will map to sounds[1]
+      detect: (fingerCount, handsCount) => handsCount >= 1 && fingerCount === 1,
+    },
+    {
+      title: "NOW, LIFT ANOTHER FINGER",
+      emoji: "✌️",
+      instructionAudio: 'l1_lift_another',
+      numberText: "THIS IS TWO = 2",
+      numberAudio: 2,
+      detect: (fingerCount, handsCount) => handsCount >= 1 && fingerCount === 2,
+    },
+    {
+      title: "NOW, LIFT ANOTHER FINGER",
+      emoji: "🤟", // Placeholder generic 3
+      instructionAudio: 'l1_lift_another',
+      numberText: "THIS IS THREE = 3",
+      numberAudio: 3,
+      detect: (fingerCount, handsCount) => handsCount >= 1 && fingerCount === 3,
+    },
+    {
+      title: "NOW, LIFT ANOTHER FINGER",
+      emoji: "🖖", // Placeholder generic 4
+      instructionAudio: 'l1_lift_another',
+      numberText: "THIS IS FOUR = 4",
+      numberAudio: 4,
+      detect: (fingerCount, handsCount) => handsCount >= 1 && fingerCount === 4,
+    },
+    {
+      title: "NOW, LIFT ANOTHER FINGER",
+      emoji: "🖐️",
+      instructionAudio: 'l1_lift_another',
+      numberText: "THIS IS FIVE = 5",
+      numberAudio: 5,
+      detect: (fingerCount, handsCount) => handsCount >= 1 && fingerCount >= 5,
     }
-  }
+  ];
+
+  // ── TIMING ────────────────────────────────────────────────
+  const FRAMES_TO_CONFIRM = 40;     // ~0.67 s at 60 fps hold time
+  const CELEBRATION_DURATION = 2500; // time confetti shows
+  const NUMBER_SHOW_DURATION = 3500; // time "THIS IS 1 = 1" shows before advancing
+
+  // ── STATE ─────────────────────────────────────────────────
+  let overlay = null;
+  let currentStep = 0;
+  let phase = 'waiting'; // 'waiting' | 'celebrating' | 'showing_number'
+  let stableCount = 0;
+  let transitionTimer = null;
 
 
-  // ── INTERNAL STATE ─────────────────────────────────────────
-  // These variables track the level's progress between frames.
-  let overlay = null;  // the HTML overlay <div> we inject
-  let target = 1;     // which number the child must show (1–5)
-  let stableCount = 0;     // consecutive frames fingerCount === target
-  let celebrating = false; // true = celebration phase, ignore input
-  let celebTimer = null;  // reference to the setTimeout so we can cancel it
-
-
-  // ══════════════════════════════════════════════════════════
-  // DOM CONSTRUCTION
-  // We build all the UI in JavaScript rather than having it in
-  // HTML. This way the level is self-contained: it creates its
-  // interface when it enters, and destroys it when it exits.
-  // The overlay is inserted inside #player-frame (defined in
-  // play.html) so it floats above the p5 canvas.
-  // ══════════════════════════════════════════════════════════
-
+  // ── DOM CONSTRUCTION ──────────────────────────────────────
   function createOverlay() {
     overlay = document.createElement('div');
-    overlay.id = 'l1-overlay'; // styled by .l1-overlay in style.css
+    overlay.id = 'l1-overlay';
+    // Style matches the frosted glass overlay pattern
+    overlay.style.position = 'absolute';
+    overlay.style.inset = '0';
+    overlay.style.zIndex = '10';
+    overlay.style.background = 'rgba(14, 12, 28, 0.52)';
+    overlay.style.backdropFilter = 'blur(3px)';
+    overlay.style.WebkitBackdropFilter = 'blur(3px)';
+    overlay.style.display = 'flex';
+    overlay.style.flexDirection = 'column';
+    overlay.style.alignItems = 'center';
+    overlay.style.justifyContent = 'center';
 
     overlay.innerHTML = `
-
-      <!-- Progress dots: one per number 1–5.
-           The active dot is filled; completed dots are dimmed. -->
-      <div class="l1-progress" id="l1-progress">
-        ${[1, 2, 3, 4, 5].map(n => `<span class="l1-dot" id="l1-dot-${n}"></span>`).join('')}
+      <!-- Main Content Container -->
+      <div class="l1-content" id="l1-content" style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2rem;">
+        <h2 id="l1-title" style="font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; color: #fff; letter-spacing: 0.05em; text-transform: uppercase;"></h2>
+        
+        <div id="l1-hand-visual" style="font-size: 10rem; line-height: 1; filter: drop-shadow(0px 8px 16px rgba(0,0,0,0.4));">
+           <span id="l1-emoji"></span>
+        </div>
       </div>
 
-      <!-- Instruction prompt above the big number -->
-      <p class="l1-prompt">Show me this many fingers!</p>
-
-      <!-- The large target numeral. Updated by renderStep(). -->
-      <div class="l1-number" id="l1-number"></div>
-
-      <!-- Dot grid: dice/domino-style layout to visually reinforce
-           the number without relying purely on the numeral symbol.
-           Each dot is a <span class="l1-pip"> positioned by renderDotGrid(). -->
-      <div class="l1-dots" id="l1-dots"></div>
-
-      <!-- Stabilisation arc: an SVG circle that fills up as the child
-           holds the correct number of fingers. Visual progress feedback.
-           stroke-dashoffset starts at full (150.8 = full circumference),
-           and decreases toward 0 as stableCount approaches FRAMES_TO_CONFIRM. -->
-      <div class="l1-hold-ring" id="l1-hold-ring">
-        <svg viewBox="0 0 60 60" class="l1-ring-svg">
-          <circle class="l1-ring-bg"  cx="30" cy="30" r="24"/>
-          <circle class="l1-ring-arc" id="l1-ring-arc" cx="30" cy="30" r="24"
-                  stroke-dasharray="150.8" stroke-dashoffset="150.8"/>
+      <!-- Stabilisation arc (moved to center bottom) -->
+      <div class="l1-hold-ring" id="l1-hold-ring" style="position: absolute; bottom: 85px; left: 50%; transform: translateX(-50%); width: 60px; height: 60px;">
+        <svg viewBox="0 0 60 60" style="position: absolute; inset: 0; transform: rotate(-90deg);">
+          <circle cx="30" cy="30" r="24" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="5"/>
+          <circle id="l1-ring-arc" cx="30" cy="30" r="24" fill="none" stroke="#FF6B6F" stroke-width="5" stroke-linecap="round" stroke-dasharray="150.8" stroke-dashoffset="150.8" style="transition: stroke-dashoffset 0.1s linear;"/>
         </svg>
-        <span class="l1-ring-emoji">✋</span>
       </div>
 
-      <!-- Celebration overlay: fades in on top of the camera when correct.
-           CHANGE: background was white (rgba(255,255,255,0.94)).
-                   Now transparent so the confetti GIF plays over the camera. -->
-      <div class="l1-celebration" id="l1-celebration">
-        <span class="l1-celeb-word" id="l1-celeb-word"></span>
+      <!-- Post-Celebration Number Screen -->
+      <div id="l1-number-screen" style="display:none; position:absolute; inset:0; flex-direction:column; align-items:center; justify-content:center; background: transparent; z-index: 6;">
+         <h1 id="l1-num-text" style="font-family: var(--font-display); font-size: clamp(3rem, 7vw, 6rem); color: white; text-shadow: 0 0 30px rgba(0,0,0,0.6); animation: num-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;"></h1>
       </div>
 
-      <!-- Back button: returns the child to level0 onboarding -->
-      <button class="l1-ctrl l1-ctrl--back" id="l1-back" aria-label="Back to onboarding">←</button>
+      <!-- Celebration Screen (Superb!) -->
+      <div id="l1-celebration" style="opacity:0; pointer-events:none; position:absolute; inset:0; display:flex; justify-content:center; align-items:center; z-index: 5; transition: opacity 0.3s ease;">
+        <span id="l1-celeb-word" style="font-family: var(--font-display); font-size: clamp(3.5rem, 8vw, 6rem); font-weight: 900; color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.6), 0 0 60px rgba(255,107,111,0.5); animation: celeb-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;"></span>
+      </div>
+
+      <!-- UI Controls (Matches user screenshots) -->
+      <button class="ob-ctrl ob-ctrl--close" id="l1-close" style="position: absolute; top: 15px; left: 15px; width: 32px; height: 32px; border-radius: 50%; border: none; background: #6c5ce7; font-weight: bold; color: white; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">✕</button>
+      <button class="ob-ctrl ob-ctrl--pause" id="l1-pause" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 44px; height: 44px; border-radius: 50%; border: none; background: #6c5ce7; font-size: 1.2rem; color: white; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">⏸</button>
+      <button class="ob-ctrl ob-ctrl--help" id="l1-help" style="position: absolute; bottom: 20px; right: 20px; width: 36px; height: 36px; border-radius: 50%; border: none; background: #6c5ce7; font-weight: bold; color: white; cursor: pointer; display:flex; align-items:center; justify-content:center; font-style: italic; font-size: 1.1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">?</button>
     `;
 
-    // Mount the overlay inside the camera player frame
     document.getElementById('player-frame').appendChild(overlay);
 
-    // Wire up the back button
-    document.getElementById('l1-back').addEventListener('click', () => {
+    // Event listeners
+    document.getElementById('l1-close').addEventListener('click', () => {
       gameState.transitionTo('level0');
     });
 
-    // Show the first step immediately
     renderStep();
   }
 
 
-  // ── STEP RENDERING ────────────────────────────────────────
-  // Called once per target number to reset the UI for a new round.
-
+  // ── RENDER STEP ───────────────────────────────────────────
   function renderStep() {
-    celebrating = false;
+    phase = 'waiting';
     stableCount = 0;
-
-    // Hide celebration screen, hide confetti
-    document.getElementById('l1-celebration').classList.remove('l1-celebration--active');
+    window.stopAllSounds?.();
     gameState.hideConfetti();
 
-    // Update progress dots: done (grey) = already passed, active = current
-    document.querySelectorAll('.l1-dot').forEach((dot, i) => {
-      const n = i + 1;
-      dot.classList.toggle('l1-dot--done', n < target);
-      dot.classList.toggle('l1-dot--active', n === target);
-      dot.classList.remove('l1-dot--done-current');
-    });
+    // Reset visual layers
+    document.getElementById('l1-celebration').style.opacity = '0';
+    document.getElementById('l1-number-screen').style.display = 'none';
+    document.getElementById('l1-content').style.display = 'flex';
+    document.getElementById('l1-hold-ring').style.display = 'flex';
+    updateArc(0);
 
-    // Show the target number as a large digit
-    document.getElementById('l1-number').textContent = target;
+    const step = STEPS[currentStep];
+    // Update Text & Emoji Placeholder
+    document.getElementById('l1-title').innerHTML = step.title.replace(/\n/g, '<br>');
+    document.getElementById('l1-emoji').textContent = step.emoji;
 
-    // Render the dice/domino dot grid for this number
-    renderDotGrid(target);
-
-    // Reset the arc back to empty
-    resetArc();
+    // Play Voice Audio for the instruction
+    if (step.instructionAudio && window.sounds && sounds[step.instructionAudio]) {
+      sounds[step.instructionAudio].currentTime = 0;
+      sounds[step.instructionAudio].play().catch(e => console.log('Audio error:', e));
+    }
   }
 
-  // Renders the dice-layout dot grid for a given number.
-  // Each position is [left%, top%] percentage coordinates inside
-  // the .l1-dots container.
-  function renderDotGrid(n) {
-    // Standard dice positions for 1–5
-    // These match the familiar dot patterns children already know
-    const layouts = {
-      1: [[50, 50]],
-      2: [[25, 50], [75, 50]],
-      3: [[25, 50], [50, 50], [75, 50]],
-      4: [[25, 30], [75, 30], [25, 70], [75, 70]],
-      5: [[25, 30], [75, 30], [50, 50], [25, 70], [75, 70]],
-    };
-
-    const container = document.getElementById('l1-dots');
-    container.innerHTML = ''; // clear previous dots
-
-    (layouts[n] || []).forEach(([left, top]) => {
-      const dot = document.createElement('span');
-      dot.className = 'l1-pip';
-      dot.style.left = `${left}%`;
-      dot.style.top = `${top}%`;
-      container.appendChild(dot);
-    });
-  }
-
-  // Resets the stabilisation arc to "empty" (full dashoffset = invisible arc)
-  function resetArc() {
-    const arc = document.getElementById('l1-ring-arc');
-    if (arc) arc.style.strokeDashoffset = '150.8';
-  }
-
-  // Updates the arc fill based on how many frames have been held.
-  // progress = 0 → arc empty (dashoffset = 150.8)
-  // progress = 1 → arc full (dashoffset = 0)
   function updateArc(frames) {
     const arc = document.getElementById('l1-ring-arc');
     if (!arc) return;
     const progress = Math.min(frames / FRAMES_TO_CONFIRM, 1);
-    const circumference = 150.8;
-    arc.style.strokeDashoffset = circumference * (1 - progress);
+    arc.style.strokeDashoffset = 150.8 * (1 - progress);
   }
 
 
-  // ── CELEBRATION ───────────────────────────────────────────
-  // Called when stableCount reaches FRAMES_TO_CONFIRM.
-  // Picks a word, shows the celebration screen, shows confetti,
-  // plays the audio, then waits CELEBRATION_DURATION ms before
-  // advancing to the next target number.
+  // ── CELEBRATE & TRANSITIONS ───────────────────────────────
+  function onCelebrate() {
+    phase = 'celebrating';
+    stableCount = 0;
+    const step = STEPS[currentStep];
 
-  // One word per target number (index 0 = word for number 1)
-  const CELEB_WORDS = ['GREAT!', 'NICE!', 'WOW!', 'YES!', 'SUPER!'];
+    window.stopAllSounds?.();
 
-  function celebrate() {
-    celebrating = true;         // stop processing input
-    playSound(target);          // narrate the correct number
-
-    const word = CELEB_WORDS[target - 1]; // pick the celebration word
-
-    // Show the celebration overlay text
-    const celebEl = document.getElementById('l1-celebration');
-    document.getElementById('l1-celeb-word').textContent = word;
-    celebEl.classList.add('l1-celebration--active'); // triggers CSS fade-in
-
-    // Show the confetti GIF overlay (managed by state.js)
+    // Trigger visual confetti overlay 
     gameState.showConfetti();
+    document.getElementById('l1-celebration').style.opacity = '1';
 
-    // After the celebration window, advance to the next number (or exit)
-    celebTimer = setTimeout(() => {
-      target++;
-      if (target > 5) {
-        // Child has completed all 5 numbers → move to test mode
-        gameState.transitionTo('level2');
+    // Pick wording
+    const word = step.numberText ? "SUPERB!" : "AMAZING!";
+    document.getElementById('l1-celeb-word').textContent = word;
+
+    // Play Voice Audio (For actual counting phases)
+    if (step.numberAudio && window.sounds && sounds[step.numberAudio]) {
+      sounds[step.numberAudio].currentTime = 0;
+      sounds[step.numberAudio].play().catch(e => console.log('Audio error:', e));
+    }
+
+    // Wait for Confetti to finish, then either show the "THIS IS X" screen or advance directly
+    transitionTimer = setTimeout(() => {
+      if (step.numberText) {
+        showNumberScreen();
       } else {
-        // Show the next number
-        renderStep();
+        advanceStep();
       }
     }, CELEBRATION_DURATION);
   }
 
+  function showNumberScreen() {
+    phase = 'showing_number';
+    gameState.hideConfetti();
+    document.getElementById('l1-celebration').style.opacity = '0';
 
-  // ══════════════════════════════════════════════════════════
-  // UPDATE — called every p5 frame (~60fps) by gameState
-  // ══════════════════════════════════════════════════════════
-  // This is the core detection loop. Each frame we ask:
-  //   "Are the right number of fingers showing right now?"
-  // If yes → increment stableCount and update the arc.
-  // If no  → decay stableCount slowly (jitter-resistant).
-  // When stableCount reaches the threshold → celebrate!
+    // Isolate the number view
+    document.getElementById('l1-content').style.display = 'none';
+    document.getElementById('l1-hold-ring').style.display = 'none';
 
+    const numScr = document.getElementById('l1-number-screen');
+    numScr.style.display = 'flex';
+    document.getElementById('l1-num-text').textContent = STEPS[currentStep].numberText;
+
+    // Optional: play an audio track here later for "This is one"
+
+    transitionTimer = setTimeout(() => {
+      advanceStep();
+    }, NUMBER_SHOW_DURATION);
+  }
+
+  function advanceStep() {
+    currentStep++;
+    if (currentStep >= STEPS.length) {
+      // Done with sequential counting -> Move to Level 2 (Testing)
+      gameState.transitionTo('level2');
+    } else {
+      renderStep();
+    }
+  }
+
+
+  // ── FRAME UPDATE ──────────────────────────────────────────
   function update(fingerCount, handsCount) {
-    if (celebrating) return; // ignore input during celebration
+    // Only detect during the waiting phase
+    if (phase !== 'waiting') return;
 
-    if (fingerCount === target) {
-      // Correct finger count — accumulate hold time
+    const step = STEPS[currentStep];
+    const isGestureMatched = step.detect(fingerCount, handsCount);
+
+    if (isGestureMatched) {
       stableCount++;
       updateArc(stableCount);
 
       if (stableCount >= FRAMES_TO_CONFIRM) {
-        celebrate();
+        onCelebrate();
       }
     } else {
-      // Wrong count — decay slowly rather than hard-resetting.
-      // WHY: Natural hand jitter can cause a 1-frame glitch where the
-      //      count drops. A -1 decay means a single bad frame barely
-      //      affects progress. The child doesn't lose all their progress
-      //      from a tiny wobble.
+      // Fast decay but gentle enough to ignore 1 frame jumps
       stableCount = Math.max(0, stableCount - 1);
       updateArc(stableCount);
     }
   }
 
 
-  // ══════════════════════════════════════════════════════════
-  // PUBLIC API — what gameState can call on this level
-  // ══════════════════════════════════════════════════════════
-
+  // ── PUBLIC EXPORTS ────────────────────────────────────────
   return {
     onEnter() {
-      // Reset everything and build the overlay fresh each time we enter
-      target = 1;     // always start from 1
-      stableCount = 0;
-      celebrating = false;
+      currentStep = 0;
       createOverlay();
     },
-    update, // exposed so gameState.update() can call it every frame
+    update,
     onExit() {
-      // Cancel any pending celebration timer to prevent a delayed
-      // transition firing after we've already moved to another level
-      if (celebTimer) clearTimeout(celebTimer);
+      if (transitionTimer) clearTimeout(transitionTimer);
       gameState.hideConfetti();
-      overlay?.remove();   // remove the DOM overlay
+      overlay?.remove();
       overlay = null;
     },
   };

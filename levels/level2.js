@@ -192,6 +192,9 @@ const level2 = (() => {
   function renderRound() {
     celebrating = false;
     stableCount = 0;
+
+    window.stopAllSounds?.();
+
     target      = queue[roundIndex]; // pick the number for this round
 
     // Hide both overlay panels (celebration and results)
@@ -259,6 +262,9 @@ const level2 = (() => {
   function celebrate() {
     celebrating = true;
     score++;           // increment score
+
+    window.stopAllSounds?.();
+
     playSound(target); // narrate the correct number
 
     // NOW reveal the large numeral (the reward / confirmation)
