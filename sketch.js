@@ -17,6 +17,11 @@
 
 const CONFIDENCE_THRESHOLD = 0.75;
 
+// Skeleton overlay constants — kept for reference (overlay is currently disabled)
+// const KEYPOINT_SIZE    = 12;
+// const KEYPOINT_COLOR   = [0, 255, 160];       // mint green dots
+// const CONNECTION_COLOR = [0, 255, 160, 120];  // mint green lines, semi-transparent
+
 // BEND_THRESHOLD — minimum pixel gap a fingertip must clear past
 // its knuckle before we count it as extended. Prevents flicker.
 const BEND_THRESHOLD = 15;
