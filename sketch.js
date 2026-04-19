@@ -15,10 +15,10 @@
 
 // ── CONFIGURATION ───────────────────────────────────────────
 
-const CONFIDENCE_THRESHOLD = 0.75;
-const KEYPOINT_SIZE        = 12;
-const KEYPOINT_COLOR       = [0, 255, 160];       // mint green
-const CONNECTION_COLOR     = [0, 255, 160, 120];  // mint green, semi-transparent
+const CONFIDENCE_THRESHOLD = 0.65;
+const KEYPOINT_SIZE = 12;
+const KEYPOINT_COLOR = [0, 255, 160];       // mint green
+const CONNECTION_COLOR = [0, 255, 160, 120];  // mint green, semi-transparent
 
 // BEND_THRESHOLD — minimum pixel gap a fingertip must clear past
 // its knuckle before we count it as extended. Prevents flicker.
@@ -26,11 +26,11 @@ const BEND_THRESHOLD = 15;
 
 // Skeleton line pairs — [start landmark index, end landmark index]
 const CONNECTIONS = [
-  [0,1],[1,2],[2,3],[3,4],          // Thumb
-  [0,5],[5,6],[6,7],[7,8],          // Index
-  [0,9],[9,10],[10,11],[11,12],     // Middle
-  [0,13],[13,14],[14,15],[15,16],   // Ring
-  [0,17],[17,18],[18,19],[19,20],   // Pinky
+  [0, 1], [1, 2], [2, 3], [3, 4],          // Thumb
+  [0, 5], [5, 6], [6, 7], [7, 8],          // Index
+  [0, 9], [9, 10], [10, 11], [11, 12],     // Middle
+  [0, 13], [13, 14], [14, 15], [15, 16],   // Ring
+  [0, 17], [17, 18], [18, 19], [19, 20],   // Pinky
 ];
 
 
@@ -38,7 +38,7 @@ const CONNECTIONS = [
 
 let video;
 let handPose;
-let hands       = [];
+let hands = [];
 let fingerCount = 0;
 
 // Audio files — indexed by finger count (sounds[1]–sounds[5])
@@ -52,10 +52,10 @@ var sounds = [];
 
 function preload() {
   handPose = ml5.handPose({
-    maxHands:       2,
+    maxHands: 2,
     flipHorizontal: false, // raw camera coords — CSS mirrors the display
-    modelType:      'full',
-    runtime:        'mediapipe',
+    modelType: 'full',
+    runtime: 'mediapipe',
   });
 }
 
@@ -103,7 +103,7 @@ function setup() {
   sounds['l1_lift_finger'] = new Audio('audio/placeholder_l1_lift_finger.mp3');
   sounds['l1_lift_another'] = new Audio('audio/placeholder_l1_lift_another.mp3');
 
-  window.stopAllSounds = function() {
+  window.stopAllSounds = function () {
     if (!window.sounds) return;
     for (let key in window.sounds) {
       if (window.sounds[key]) {
@@ -203,13 +203,13 @@ function calculateFingers(hand) {
   //   Middle   12    10     9
   //   Ring     16    14    13
   //   Pinky    20    18    17
-  if (kps[8].y  < kps[6].y  - BEND_THRESHOLD && kps[8].y  < kps[5].y)  count++;
-  if (kps[12].y < kps[10].y - BEND_THRESHOLD && kps[12].y < kps[9].y)  count++;
+  if (kps[8].y < kps[6].y - BEND_THRESHOLD && kps[8].y < kps[5].y) count++;
+  if (kps[12].y < kps[10].y - BEND_THRESHOLD && kps[12].y < kps[9].y) count++;
   if (kps[16].y < kps[14].y - BEND_THRESHOLD && kps[16].y < kps[13].y) count++;
   if (kps[20].y < kps[18].y - BEND_THRESHOLD && kps[20].y < kps[17].y) count++;
 
   // ── Thumb: geometric side-projection ──────────────────
-  let wrist  = kps[0];
+  let wrist = kps[0];
   let midMcp = kps[9]; // Middle finger MCP — defines the hand's "up" axis
 
   let axX = midMcp.x - wrist.x;
@@ -222,7 +222,7 @@ function calculateFingers(hand) {
     axY /= axLen;
 
     // Rotate 90° → perpendicular "sideways" axis across the palm
-    let sideX =  axY;
+    let sideX = axY;
     let sideY = -axX;
 
     // Project thumb tip (kp4) and thumb MCP (kp2) onto the side axis
