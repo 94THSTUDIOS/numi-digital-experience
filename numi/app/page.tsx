@@ -24,53 +24,51 @@ import { TopNavbar } from "@/components/ui/top-navbar"
 // ============================================================
 const exampleImages = [
   {
-    url: "https://images.unsplash.com/photo-1727341554370-80e0fe9ad082?q=80&w=2276&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    author: "Branislav Rodman",
-    title: "A Black and White Photo of a Woman Brushing Her Teeth",
+    url: "/images/numi_1.png",
+    author: "Numi 1",
+    title: "Numi 1",
   },
   {
-    url: "https://images.unsplash.com/photo-1640680608781-2e4199dd1579?q=80&w=3087&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    link: "https://unsplash.com/photos/a-painting-of-a-palm-leaf-on-a-multicolored-background-AaNPwrSNOFE",
-    title: "Neon Palm",
-    author: "Tim Mossholder",
+    url: "/images/numi_2.png",
+    author: "Numi 2",
+    title: "Numi 2",
   },
   {
-    url: "https://images.unsplash.com/photo-1726083085160-feeb4e1e5b00?q=80&w=3024&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    link: "https://unsplash.com/photos/a-blurry-photo-of-a-crowd-of-people-UgbxzloNGsc",
-    author: "ANDRII SOLOK",
-    title: "A blurry photo of a crowd of people",
+    url: "/images/numi_3.png",
+    author: "Numi 3",
+    title: "Numi 3",
   },
   {
-    url: "https://images.unsplash.com/photo-1562016600-ece13e8ba570?q=80&w=2838&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    link: "https://unsplash.com/photos/rippling-crystal-blue-water-9-OCsKoyQlk",
-    author: "Wesley Tingey",
-    title: "Rippling Crystal Blue Water",
+    url: "/images/numi._4png.png",
+    author: "Numi 4",
+    title: "Numi 4",
   },
   {
-    url: "https://images.unsplash.com/photo-1624344965199-ed40391d20f2?q=80&w=2960&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    link: "https://unsplash.com/de/fotos/mann-im-schwarzen-hemd-unter-blauem-himmel-m8RDNiuEXro",
-    author: "Serhii Tyaglovsky",
-    title: "Mann im schwarzen Hemd unter blauem Himmel",
+    url: "/images/numi_5.png",
+    author: "Numi 5",
+    title: "Numi 5",
   },
   {
-    url: "https://images.unsplash.com/photo-1689553079282-45df1b35741b?q=80&w=3087&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    link: "https://unsplash.com/photos/a-woman-with-a-flower-crown-on-her-head-0S3muIttbsY",
-    author: "Vladimir Yelizarov",
-    title: "A women with a flower crown on her head",
+    url: "/images/numi_6.png",
+    author: "Numi 6",
+    title: "Numi 6",
   },
   {
-    url: "https://images.unsplash.com/photo-1721968317938-cf8c60fccd1a?q=80&w=2728&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    title: "A blurry photo of white flowers in a field",
-    author: "Eugene Golovesov",
-    link: "https://unsplash.com/photos/a-blurry-photo-of-white-flowers-in-a-field-6qbx0lzGPyc",
+    url: "/images/numi_7.png",
+    author: "Numi 7",
+    title: "Numi 7",
   },
   {
-    url: "https://images.unsplash.com/photo-1677338354108-223e807fb1bd?q=80&w=3087&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    author: "Mathilde Langevin",
-    link: "https://unsplash.com/photos/a-table-topped-with-two-wine-glasses-and-plates-Ig0gRAHspV0",
-    title: "A table topped with two wine glasses and plates",
+    url: "/images/numi_8.png",
+    author: "Numi 8",
+    title: "Numi 8",
   },
-]
+  {
+    url: "/images/numi_9.png",
+    author: "Numi 9",
+    title: "Numi 9",
+  },
+];
 
 // ============================================================
 // LANDING HERO COMPONENT (default export — this IS the homepage)
@@ -100,7 +98,7 @@ function LandingHero() {
             <motion.img
               src={exampleImages[0].url}
               alt={exampleImages[0].title}
-              className="w-16 h-12 sm:w-24 sm:h-16 md:w-28 md:h-20 lg:w-32 lg:h-24 object-cover hover:scale-105 duration-200 cursor-pointer transition-transform -rotate-[3deg] shadow-2xl rounded-xl"
+              className="w-16 sm:w-24 md:w-28 lg:w-32 object-contain hover:scale-105 duration-200 cursor-pointer transition-transform -rotate-[3deg] drop-shadow-2xl"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
@@ -115,7 +113,7 @@ function LandingHero() {
             <motion.img
               src={exampleImages[1].url}
               alt={exampleImages[1].title}
-              className="w-40 h-28 sm:w-48 sm:h-36 md:w-56 md:h-44 lg:w-60 lg:h-48 object-cover hover:scale-105 duration-200 cursor-pointer transition-transform -rotate-12 shadow-2xl rounded-xl"
+              className="w-40 sm:w-48 md:w-56 lg:w-60 object-contain hover:scale-105 duration-200 cursor-pointer transition-transform -rotate-12 drop-shadow-2xl"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.7 }}
@@ -130,7 +128,7 @@ function LandingHero() {
             <motion.img
               src={exampleImages[2].url}
               alt={exampleImages[2].title}
-              className="w-40 h-40 sm:w-48 sm:h-48 md:w-60 md:h-60 lg:w-64 lg:h-64 object-cover -rotate-[4deg] hover:scale-105 duration-200 cursor-pointer transition-transform shadow-2xl rounded-xl"
+              className="w-40 sm:w-48 md:w-60 lg:w-64 object-contain -rotate-[4deg] hover:scale-105 duration-200 cursor-pointer transition-transform drop-shadow-2xl"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.9 }}
@@ -145,7 +143,7 @@ function LandingHero() {
             <motion.img
               src={exampleImages[3].url}
               alt={exampleImages[3].title}
-              className="w-40 h-36 sm:w-48 sm:h-44 md:w-60 md:h-52 lg:w-64 lg:h-56 object-cover hover:scale-105 duration-200 cursor-pointer transition-transform shadow-2xl rotate-[6deg] rounded-xl"
+              className="w-40 sm:w-48 md:w-60 lg:w-64 object-contain hover:scale-105 duration-200 cursor-pointer transition-transform drop-shadow-2xl rotate-[6deg]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.1 }}
@@ -160,7 +158,7 @@ function LandingHero() {
             <motion.img
               src={exampleImages[4].url}
               alt={exampleImages[4].title}
-              className="w-44 h-44 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 object-cover hover:scale-105 duration-200 cursor-pointer transition-transform shadow-2xl rotate-[19deg] rounded-xl"
+              className="w-44 sm:w-64 md:w-72 lg:w-80 object-contain hover:scale-105 duration-200 cursor-pointer transition-transform drop-shadow-2xl rotate-[19deg]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.3 }}

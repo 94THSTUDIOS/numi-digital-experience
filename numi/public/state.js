@@ -127,7 +127,7 @@ const gameState = (() => {
     let el = document.getElementById('confetti-lottie');
     if (el) {
       // Re-assign src with a unique timestamp to forcefully break browser caching
-      // This guarantees the GIF animation starts over from frame 1 
+      // This guarantees the GIF animation starts over from frame 1
       const baseUrl = el.src.split('?')[0];
       el.src = baseUrl + '?t=' + new Date().getTime();
       el.style.display = 'block';
@@ -138,7 +138,7 @@ const gameState = (() => {
         el.style.display = 'none';
       }, 2400); // Assumes confetti GIF is ~2.4s long
     }
-    
+
     // Play celebration audio globally
     if (window.sounds && sounds['celeb']) {
       sounds['celeb'].currentTime = 0;
