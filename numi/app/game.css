@@ -1,0 +1,610 @@
+/* =============================================================
+   NUMI — Level Overlay Styles
+   Covers: Level 0 (onboarding), Level 1 (learn), Level 2 (test)
+   ============================================================= */
+
+/* ── SHARED DISPLAY FONT ──────────────────────────────────────── */
+/* Moonblossom is loaded via Typekit in index.html <head>.
+   We expose it as a CSS variable for use in .ob-title, .l1-number, etc. */
+:root {
+  --font-display: 'moonblossom', Impact, 'Arial Black', sans-serif;
+
+  /* Onboarding palette */
+  --ob-purple: #6c5ce7;
+  --ob-purple-dark: #5549c0;
+  --ob-hand-tint: #FF6B6F;
+  /* coral-pink: hand "detected" state */
+}
+
+
+/* =============================================================
+   LEVEL 0 — ONBOARDING OVERLAY
+   ============================================================= */
+
+/* ── Shell ───────────────────────────────────────────────────── */
+#ob-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  border-radius: inherit;
+  overflow: hidden;
+  /* Frosted-glass tint over the live camera feed */
+  background: rgba(14, 12, 28, 0.52);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  transition: opacity 0.45s ease;
+}
+
+#ob-overlay.ob-overlay--exit {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Instruction content ─────────────────────────────────────── */
+.ob-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 2rem 2rem 3.5rem;
+  text-align: center;
+  transition: opacity 0.35s ease;
+}
+
+/* ── Step progress dots ──────────────────────────────────────── */
+.ob-progress {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 0.25rem;
+}
+
+.ob-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.ob-dot--active {
+  background: var(--ob-hand-tint);
+  transform: scale(1.25);
+}
+
+.ob-dot--done {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+/* ── Hand illustrations ──────────────────────────────────────── */
+.ob-hands {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+.ob-hand {
+  width: 88px;
+  height: auto;
+  /* Render SVG as white silhouette over the dark overlay */
+  filter: brightness(0) invert(1);
+  transition: filter 0.4s ease, transform 0.4s ease;
+  transform-origin: bottom center;
+}
+
+/* Detected state: tint to coral-pink */
+.ob-hand--detected {
+  filter: brightness(0) invert(1) sepia(1) saturate(4) hue-rotate(315deg);
+  transform: scale(1.06);
+}
+
+/* ── Instruction text ────────────────────────────────────────── */
+.ob-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 3.5vw, 2.3rem);
+  font-weight: 900;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1.08;
+  text-shadow:
+    2px 2px 0 rgba(0, 0, 0, 0.45),
+    0 0 18px rgba(0, 0, 0, 0.3);
+}
+
+.ob-subtitle {
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.82);
+  letter-spacing: 0.01em;
+}
+
+/* ── Celebration screen ──────────────────────────────────────── */
+.ob-celebration {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  /* Camera feed shows through */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  border-radius: inherit;
+  z-index: 5;
+}
+
+.ob-celebration--active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.ob-celeb-word {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 6vw, 4rem);
+  font-weight: 900;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.5), 0 0 60px rgba(255, 107, 111, 0.4);
+  animation: celeb-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes celeb-pop {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ── Controls (close / pause / help) ────────────────────────── */
+.ob-ctrl {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: var(--ob-purple);
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  font-size: 0.95rem;
+  transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.ob-ctrl:hover {
+  background: var(--ob-purple-dark);
+  transform: scale(1.08);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.ob-ctrl:active {
+  transform: scale(0.96);
+}
+
+.ob-ctrl--close {
+  top: 12px;
+  left: 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.ob-ctrl--pause {
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.ob-ctrl--pause:hover {
+  transform: translateX(-50%) scale(1.08);
+}
+
+.ob-ctrl--pause:active {
+  transform: translateX(-50%) scale(0.96);
+}
+
+.ob-ctrl--help {
+  bottom: 12px;
+  right: 12px;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+
+/* =============================================================
+   SHARED: LEVEL 1 + LEVEL 2 OVERLAY BASE
+   Both levels use the same canvas-overlay pattern.
+   ============================================================= */
+
+/* ── Overlay shell ───────────────────────────────────────────── */
+#l1-overlay,
+#l2-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  border-radius: inherit;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1.5rem 3.5rem;
+  gap: 0.5rem;
+  /* Semi-transparent dark overlay — camera shows through */
+  background: rgba(14, 12, 28, 0.45);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* ── Progress dots (round tracker) ──────────────────────────── */
+.l1-progress,
+.l2-progress {
+  display: flex;
+  gap: 8px;
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.l1-dot,
+.l2-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.l1-dot--active,
+.l2-dot--active {
+  background: var(--color-pink);
+  transform: scale(1.3);
+}
+
+.l1-dot--done,
+.l2-dot--done {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+/* ── Prompt text ─────────────────────────────────────────────── */
+.l1-prompt,
+.l2-prompt {
+  font-family: var(--font-primary);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.75);
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+/* ── Big target numeral ──────────────────────────────────────── */
+.l1-number,
+.l2-number {
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 14vw, 8rem);
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1;
+  text-shadow:
+    3px 3px 0 rgba(0, 0, 0, 0.4),
+    0 0 28px rgba(0, 0, 0, 0.3);
+  animation: num-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes num-pop {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ── Dot grid (dice layout) ──────────────────────────────────── */
+.l1-dots,
+.l2-dots {
+  position: relative;
+  width: 90px;
+  height: 90px;
+}
+
+.l1-pip,
+.l2-pip {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+  animation: pip-in 0.25s ease both;
+}
+
+@keyframes pip-in {
+  from {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+/* ── Stabilisation ring ──────────────────────────────────────── */
+.l1-hold-ring,
+.l2-hold-ring {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.l1-ring-svg,
+.l2-ring-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+  /* start arc from top */
+}
+
+.l1-ring-bg,
+.l2-ring-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.15);
+  stroke-width: 4;
+}
+
+.l1-ring-arc,
+.l2-ring-arc {
+  fill: none;
+  stroke: var(--color-pink);
+  stroke-width: 4;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+.l1-ring-emoji,
+.l2-ring-emoji {
+  font-size: 1.4rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Celebration screen ──────────────────────────────────────── */
+.l1-celebration,
+.l2-celebration {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  /* Camera feed shows through */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  border-radius: inherit;
+  z-index: 5;
+}
+
+.l1-celebration--active,
+.l2-celebration--active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.l1-celeb-word,
+.l2-celeb-word {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 7vw, 4rem);
+  font-weight: 900;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.5), 0 0 60px rgba(255, 107, 111, 0.4);
+  animation: celeb-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* ── Score badge (Level 2 top-right) ──────────────────────────── */
+.l2-score-badge {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  font-family: var(--font-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(0, 0, 0, 0.35);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* ── Results screen (Level 2) ────────────────────────────────── */
+.l2-results {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(14, 12, 28, 0.88);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  border-radius: inherit;
+  z-index: 8;
+}
+
+.l2-results--active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.l2-results__card {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2rem;
+}
+
+.l2-results__label {
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.65);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.l2-results__score {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.l2-results__stars {
+  font-size: 1.6rem;
+  letter-spacing: 0.1em;
+}
+
+.l2-results__btns {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  width: 100%;
+}
+
+.l2-btn {
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 0.6rem 1.5rem;
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.l2-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.l2-btn:active {
+  transform: translateY(0);
+}
+
+.l2-btn--primary {
+  background: var(--color-pink);
+  color: #ffffff;
+}
+
+.l2-btn--secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ── Back controls ───────────────────────────────────────────── */
+.l1-ctrl,
+.l2-ctrl {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(108, 92, 231, 0.85);
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.l1-ctrl:hover,
+.l2-ctrl:hover {
+  background: #5549c0;
+  transform: scale(1.08);
+}
+
+.l1-ctrl--back,
+.l2-ctrl--back {
+  bottom: 12px;
+  left: 12px;
+}.player-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.player-frame {
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg), var(--shadow-glow-pink);
+  border: 1px solid var(--color-stroke);
+  background: var(--color-surface);
+  transition: box-shadow var(--transition-slow);
+}
+
+.player-frame:hover {
+  box-shadow: var(--shadow-lg), var(--shadow-glow-green);
+}
+
+/* The p5 canvas goes inside the player-frame */
+.player-frame canvas {
+  display: block;
+  border-radius: var(--radius-xl);
+  transform: scaleX(-1);
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+}
+
+.player-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-stroke);
+  border-radius: var(--radius-full);
+  font-size: var(--text-caption-2);
+  color: var(--color-text-muted);
+}
+
