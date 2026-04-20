@@ -452,17 +452,56 @@ function LandingHero() {
         </div>{/* END two-column layout */}
       </section >
 
-      {/* ======================================================
-        HOW IT WORKS SECTION
-        3 steps showing the hand-counting game mechanic
-        Uses the same hand SVGs as the in-game UI
-        ====================================================== */}
-      < section id="how-it-works" className="w-full py-20 px-6 md:px-12 bg-[#FDF0E8]" >
-        <div className="max-w-5xl mx-auto flex flex-col items-center gap-12">
+      < section id="how-it-works" className="w-full py-20 px-6 md:px-12 bg-[#FDF0E8] relative overflow-hidden md:overflow-visible" >
+        {/* ---------- FLOATING CHARACTER (ch1) - RIGHT SIDE ---------- */}
+        <div className="absolute top-0 right-0 bottom-0 z-[10] pointer-events-none md:flex items-center hidden">
+          <div className="relative right-[-5%] lg:right-[-8%] xl:right-[-5%]">
+            <motion.img
+              src="/images/ch1.png"
+              alt="Numi Character Right"
+              className="w-56 sm:w-80 md:w-96 lg:w-[45rem] object-contain drop-shadow-10xl"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{
+                opacity: 1,
+                y: [0, -15, 0],
+                rotate: [8, 10, 6, 8],
+              }}
+              transition={{
+                opacity: { duration: 0.8, ease: "easeOut", delay: 0.2 },
+                y: { duration: 3, ease: "easeInOut", repeat: Infinity },
+                rotate: { duration: 3, ease: "easeInOut", repeat: Infinity },
+              }}
+            />
+          </div>
+        </div>
+
+        {/* ---------- FLOATING CHARACTER (ch2) - LEFT SIDE ---------- */}
+        <div className="absolute top-0 left-0 bottom-0 z-[10] pointer-events-none md:flex items-center hidden">
+          <div className="relative left-[-5%] lg:left-[-8%] xl:left-[-5%]">
+            <motion.img
+              src="/images/ch2.png"
+              alt="Numi Character Left"
+              className="w-56 sm:w-80 md:w-96 lg:w-[45rem] object-contain drop-shadow-10xl"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{
+                opacity: 1,
+                y: [0, 15, 0],
+                rotate: [-8, -10, -6, -8],
+              }}
+              transition={{
+                opacity: { duration: 0.8, ease: "easeOut", delay: 0.4 },
+                y: { duration: 4, ease: "easeInOut", repeat: Infinity },
+                rotate: { duration: 4, ease: "easeInOut", repeat: Infinity },
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="max-w-5xl mx-auto flex flex-col items-center gap-12 relative z-20">
 
           {/* Heading */}
           <motion.h2
-            className="text-4xl sm:text-5xl md:text-6xl font-body text-center text-[#1A0A08] leading-tight"
+            className="text-4xl sm:text-5xl md:text-6xl font-fredoka text-center text-[#1A0A08] leading-tight"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
