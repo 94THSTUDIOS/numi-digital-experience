@@ -90,15 +90,7 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
   )
 }
 
-// Plays the hover pop sound, respecting navbar mute/volume settings
-function playHover() {
-  const muted = (window as any).numiMuted ?? localStorage.getItem("numiMuted") === "true"
-  const volume = (window as any).numiVolume ?? parseFloat(localStorage.getItem("numiVolume") || "0.8")
-  if (muted) return
-  const sfx = new Audio("/audio/flip.mp3")
-  sfx.volume = volume
-  sfx.play().catch(() => { })
-}
+
 
 // ============================================================
 // IMAGE DATA
@@ -195,7 +187,6 @@ function LandingHero() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              onMouseEnter={playHover}
             />
           </FloatingElement>
 
@@ -211,7 +202,6 @@ function LandingHero() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.7 }}
-              onMouseEnter={playHover}
             />
           </FloatingElement>
 
@@ -227,7 +217,6 @@ function LandingHero() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.9 }}
-              onMouseEnter={playHover}
             />
           </FloatingElement>
 
@@ -243,7 +232,6 @@ function LandingHero() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.1 }}
-              onMouseEnter={playHover}
             />
           </FloatingElement>
 
@@ -259,7 +247,66 @@ function LandingHero() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.3 }}
-              onMouseEnter={playHover}
+            />
+          </FloatingElement>
+
+          {/* New Image 5 — center-left, light depth */}
+          <FloatingElement
+            depth={1.5}
+            className="top-[55%] left-[0%] md:top-[50%] md:left-[3%]"
+          >
+            <motion.img
+              src={exampleImages[5].url}
+              alt={exampleImages[5].title}
+              className="w-32 sm:w-40 md:w-48 lg:w-52 object-contain hover:scale-105 duration-200 cursor-pointer transition-transform rotate-[12deg] drop-shadow-2xl"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.5 }}
+            />
+          </FloatingElement>
+
+          {/* New Image 6 — top-center, far back depth */}
+          <FloatingElement
+            depth={0.3}
+            className="top-[2%] left-[45%] md:top-[4%] md:left-[42%]"
+          >
+            <motion.img
+              src={exampleImages[6].url}
+              alt={exampleImages[6].title}
+              className="w-24 sm:w-32 md:w-36 lg:w-40 object-contain hover:scale-105 duration-200 cursor-pointer transition-transform -rotate-[8deg] drop-shadow-2xl"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.7 }}
+            />
+          </FloatingElement>
+
+          {/* New Image 7 — bottom-center, foreground depth */}
+          <FloatingElement
+            depth={3}
+            className="top-[85%] left-[50%] md:top-[88%] md:left-[45%]"
+          >
+            <motion.img
+              src={exampleImages[7].url}
+              alt={exampleImages[7].title}
+              className="w-36 sm:w-48 md:w-56 lg:w-64 object-contain hover:scale-105 duration-200 cursor-pointer transition-transform rotate-[5deg] drop-shadow-2xl"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.9 }}
+            />
+          </FloatingElement>
+
+          {/* New Image 8 — right-side center, medium depth */}
+          <FloatingElement
+            depth={1.2}
+            className="top-[40%] left-[90%] md:top-[45%] md:left-[92%]"
+          >
+            <motion.img
+              src={exampleImages[8].url}
+              alt={exampleImages[8].title}
+              className="w-28 sm:w-36 md:w-44 lg:w-48 object-contain hover:scale-105 duration-200 cursor-pointer transition-transform -rotate-[15deg] drop-shadow-2xl"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 2.1 }}
             />
           </FloatingElement>
         </Floating>{/* END parallax layer */}
