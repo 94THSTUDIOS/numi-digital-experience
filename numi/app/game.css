@@ -13,6 +13,7 @@
   --ob-purple: #6c5ce7;
   --ob-purple-dark: #5549c0;
   --ob-hand-tint: #FF6B6F;
+  --color-pink: #ff007f;
   /* coral-pink: hand "detected" state */
 }
 
@@ -288,10 +289,13 @@
 .l1-prompt,
 .l2-prompt {
   font-family: var(--font-primary);
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.75);
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 800;
+  color: #fff;
   letter-spacing: 0.02em;
   text-align: center;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.8);
+  margin-bottom: 2rem;
 }
 
 /* ── Big target numeral ──────────────────────────────────────── */
@@ -321,11 +325,22 @@
 }
 
 /* ── Dot grid (dice layout) ──────────────────────────────────── */
-.l1-dots,
-.l2-dots {
+.l1-dots {
   position: relative;
   width: 90px;
   height: 90px;
+}
+
+.l2-dots {
+  position: relative;
+  width: 90%;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 1rem;
 }
 
 .l1-pip,

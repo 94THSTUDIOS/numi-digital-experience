@@ -15,7 +15,7 @@
 
 // ── CONFIGURATION ───────────────────────────────────────────
 
-const CONFIDENCE_THRESHOLD = 0.65;
+const CONFIDENCE_THRESHOLD = 0.7;
 const KEYPOINT_SIZE = 12;
 const KEYPOINT_COLOR = [0, 255, 160];       // mint green
 const CONNECTION_COLOR = [0, 255, 160, 120];  // mint green, semi-transparent
@@ -45,6 +45,10 @@ let fingerCount = 0;
 // Referenced globally by level1.js and level2.js via window.sounds
 var sounds = [];
 
+// Stability buffer for finger counting
+let fingerHistory = [];
+const HISTORY_SIZE = 15;
+
 
 // ── PRELOAD ─────────────────────────────────────────────────
 // p5 calls this once before setup(). We load the HandPose model here
@@ -64,8 +68,16 @@ function preload() {
 // ml5 calls this automatically whenever it finishes processing a frame.
 
 function gotHands(results) {
-  // Discard any detections below the confidence threshold
-  hands = results.filter(h => h.confidence > CONFIDENCE_THRESHOLD);
+  // 1. Discard any detections below the confidence threshold
+  // 2. Discard any detection that is physically too small (background noise)
+  hands = results.filter(h => {
+    if (h.confidence < CONFIDENCE_THRESHOLD) return false;
+
+    // Size check: distance from Wrist (kp0) to Middle MCP (kp9)
+    const kps = h.keypoints;
+    const dHand = dist(kps[0].x, kps[0].y, kps[9].x, kps[9].y);
+    return dHand > 35; // 35px is the floor for a 'real' hand detection
+  });
 }
 
 
@@ -91,17 +103,42 @@ function setup() {
   sounds[4] = new Audio('audio/4Elevenlabs.mp3');
   sounds[5] = new Audio('audio/5Elevenlabs.mp3');
   sounds['greeting'] = new Audio('audio/GreetingElevenLabs.mp3');
-  sounds['celeb'] = new Audio('audio/TOONPop-Cute_party_popper_po-Elevenlabs.mp3');
+  sounds['celeb_pop'] = new Audio('audio/TOONPop-Cute_party_popper_po-Elevenlabs.mp3');
+  sounds['celeb_magic'] = new Audio('audio/learn/learn-celeb.mp3');
   sounds['goodjob'] = new Audio('audio/goodjobfinal.mp3');
   sounds['move'] = new Audio('audio/move.mp3');
   sounds['amazing'] = new Audio('audio/amazing job.mp3');
   sounds['flip'] = new Audio('audio/flip.mp3');
 
-  // Placeholders for Level 1 Sequential Instructions
-  sounds['l1_show_hand'] = new Audio('audio/placeholder_l1_show_hand.mp3');
-  sounds['l1_make_rock'] = new Audio('audio/placeholder_l1_make_rock.mp3');
-  sounds['l1_lift_finger'] = new Audio('audio/placeholder_l1_lift_finger.mp3');
-  sounds['l1_lift_another'] = new Audio('audio/placeholder_l1_lift_another.mp3');
+  // Level 1 Core Assets
+  sounds['l1_show_hand'] = new Audio('audio/learn/learn-1-0.mp3');
+  sounds['l1_make_rock'] = new Audio('audio/learn/learn-1-1.mp3');
+  sounds['l1_lift_finger'] = new Audio('audio/learn/learn-1-2.mp3');
+  sounds['l1_this_is_one'] = new Audio('audio/learn/learn-1-3.mp3');
+
+  // Number 2
+  sounds['l1_lift_another_2'] = new Audio('audio/learn/learn-2-1.mp3');
+  sounds['l1_this_is_two'] = new Audio('audio/learn/learn-2-2.mp3');
+  sounds['l1_counting_2'] = new Audio('audio/learn/learn-2-3.mp3');
+
+  // Number 3
+  sounds['l1_lift_another_3'] = new Audio('audio/learn/learn-3-1.mp3');
+  sounds['l1_this_is_three'] = new Audio('audio/learn/learn-3-2.mp3');
+  sounds['l1_counting_3'] = new Audio('audio/learn/learn-3-3.mp3');
+
+  // Number 4
+  sounds['l1_lift_another_4'] = new Audio('audio/learn/learn-4-0.mp3');
+  sounds['l1_this_is_four'] = new Audio('audio/learn/learn-4-1.mp3');
+  sounds['l1_counting_4'] = new Audio('audio/learn/learn-4-2.mp3');
+
+  // Number 5
+  sounds['l1_lift_another_5'] = new Audio('audio/learn/learn-5-0.mp3');
+  sounds['l1_this_is_five'] = new Audio('audio/learn/learn-5-1.mp3');
+  sounds['l1_counting_5'] = new Audio('audio/learn/learn-5-2.mp3');
+
+  // Common
+  sounds['l1_your_turn'] = new Audio('audio/learn/learn-yourturn.mp3');
+  sounds['ready'] = new Audio('audio/Ready.mp3');
 
   window.stopAllSounds = function () {
     if (!window.sounds) return;
@@ -116,7 +153,7 @@ function setup() {
   // Apply persisted volume settings to all loaded sounds
   function applyVolumeToSounds() {
     const v = (window.numiVolume !== undefined) ? window.numiVolume : 0.8;
-    const m = (window.numiMuted  !== undefined) ? window.numiMuted  : false;
+    const m = (window.numiMuted !== undefined) ? window.numiMuted : false;
     for (let key in sounds) {
       if (sounds[key]) sounds[key].volume = m ? 0 : v;
     }
@@ -137,7 +174,6 @@ function setup() {
   gameState.register('level0', level0);
   gameState.register('level1', level1);
   gameState.register('level2', level2);
-  gameState.transitionTo('level0');
 }
 
 
@@ -161,8 +197,25 @@ function draw() {
   // Cap at 5 (current audio set covers 1–5 only)
   fingerCount = min(fingerCount, 5);
 
-  // Forward to the active level every frame
-  gameState.update(fingerCount, hands.length, hands);
+  // Update stability history
+  fingerHistory.push(fingerCount);
+  if (fingerHistory.length > HISTORY_SIZE) fingerHistory.shift();
+
+  // Find the MODE (most frequent value) in our history to prevent flicker
+  const counts = {};
+  let maxCount = 0;
+  let stableFingerCount = fingerCount;
+
+  fingerHistory.forEach(val => {
+    counts[val] = (counts[val] || 0) + 1;
+    if (counts[val] > maxCount) {
+      maxCount = counts[val];
+      stableFingerCount = val;
+    }
+  });
+
+  // Forward the STABLE count to the active level
+  gameState.update(stableFingerCount, hands.length, hands);
 }
 
 
@@ -215,40 +268,39 @@ function calculateFingers(hand) {
   if (!kps || kps.length < 21) return 0;
 
   let count = 0;
+  const wrist = kps[0];
 
-  // ── Four main fingers ──────────────────────────────────
-  //   Finger   Tip   PIP   MCP
-  //   Index     8     6     5
-  //   Middle   12    10     9
-  //   Ring     16    14    13
-  //   Pinky    20    18    17
-  if (kps[8].y < kps[6].y - BEND_THRESHOLD && kps[8].y < kps[5].y) count++;
-  if (kps[12].y < kps[10].y - BEND_THRESHOLD && kps[12].y < kps[9].y) count++;
-  if (kps[16].y < kps[14].y - BEND_THRESHOLD && kps[16].y < kps[13].y) count++;
-  if (kps[20].y < kps[18].y - BEND_THRESHOLD && kps[20].y < kps[17].y) count++;
+  // ── Four main fingers: Distance-based logic (Rotation Invariant) ──
+  //   Finger   Tip   MCP
+  //   Index     8     5
+  //   Middle   12     9
+  //   Ring     16    13
+  //   Pinky    20    17
+  const fingers = [
+    { tip: 8, mcp: 5 }, { tip: 12, mcp: 9 },
+    { tip: 16, mcp: 13 }, { tip: 20, mcp: 17 }
+  ];
 
-  // ── Thumb: geometric side-projection ──────────────────
-  let wrist = kps[0];
-  let midMcp = kps[9]; // Middle finger MCP — defines the hand's "up" axis
+  fingers.forEach(f => {
+    let dTip = dist(wrist.x, wrist.y, kps[f.tip].x, kps[f.tip].y);
+    let dMcp = dist(wrist.x, wrist.y, kps[f.mcp].x, kps[f.mcp].y);
 
+    // If the tip is significantly further from the wrist than the knuckle, it's extended.
+    // 1.4 is a strict multiplier that ensures fingers are fully outstretched.
+    if (dTip > dMcp * 1.4) count++;
+  });
+
+  // ── Thumb: geometric side-projection (already robust) ──
+  let midMcp = kps[9];
   let axX = midMcp.x - wrist.x;
   let axY = midMcp.y - wrist.y;
   let axLen = Math.sqrt(axX * axX + axY * axY);
 
   if (axLen > 1) {
-    // Normalise to unit vector
-    axX /= axLen;
-    axY /= axLen;
-
-    // Rotate 90° → perpendicular "sideways" axis across the palm
-    let sideX = axY;
-    let sideY = -axX;
-
-    // Project thumb tip (kp4) and thumb MCP (kp2) onto the side axis
+    axX /= axLen; axY /= axLen;
+    let sideX = axY; let sideY = -axX;
     let tipProj = (kps[4].x - wrist.x) * sideX + (kps[4].y - wrist.y) * sideY;
     let mcpProj = (kps[2].x - wrist.x) * sideX + (kps[2].y - wrist.y) * sideY;
-
-    // Thumb is extended if tip is further out from palm centre than its MCP
     if (Math.abs(tipProj) > Math.abs(mcpProj) + BEND_THRESHOLD) count++;
   }
 

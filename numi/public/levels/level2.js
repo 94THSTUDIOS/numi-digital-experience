@@ -32,11 +32,12 @@
 //   Entirely new. The original sketch.js had no test/scoring mode.
 // ============================================================
 
-const level2 = (() => {
+window.level2 = (() => {
 
   // ── TIMING ────────────────────────────────────────────────
   // Same hold requirement as Level 1 — 40 frames ≈ 0.67s
   const FRAMES_TO_CONFIRM    = 40;
+  const QUIZ_OBJECTS = ['apple', 'ball', 'bear', 'butterfly', 'car', 'cat', 'dog', 'leaf', 'orange', 'pencil'];
 
   // How long (ms) to show the celebration before the next round.
   // CHANGE: Was 1800ms originally. Adjusted to 2500ms for confetti.
@@ -64,8 +65,12 @@ const level2 = (() => {
   let roundIndex  = 0;    // current position in queue[] (0–4)
   let target      = 1;    // queue[roundIndex] — what the child must show
   let score       = 0;    // correct answers so far (0–5)
+  let currentObj  = 'apple'; // default
+  let lastCountAudio = 0; // last spoken finger count
   let stableCount = 0;    // consecutive frames fingerCount === target
   let celebrating = false;
+  let isPaused    = false;
+  let quizStarted = false;
   let celebTimer  = null;
 
 
@@ -164,16 +169,70 @@ const level2 = (() => {
         </div>
       </div>
 
-      <!-- Back button (bottom-left): exits test mode back to learning -->
-      <button class="l2-ctrl l2-ctrl--back" id="l2-back" aria-label="Back to learning">←</button>
+
+      <!-- Pause Menu -->
+      <div id="l2-pause-menu"
+           style="display:none;position:absolute;inset:0;flex-direction:column;
+                  align-items:center;justify-content:center;gap:2rem;
+                  background:rgba(14, 12, 28, 0.9);backdrop-filter:blur(10px);
+                  -webkit-backdrop-filter:blur(10px);z-index:100;">
+        <h1 style="font-family:var(--font-display);font-size:4rem;color:#fff;
+                   text-transform:uppercase;letter-spacing:0.1em;margin:0;">Paused</h1>
+        
+        <div style="display:flex;flex-direction:column;gap:1.5rem;width:260px;">
+          <button id="l2-resume"
+                  style="font-family:var(--font-display);font-size:1.8rem;font-weight:900;
+                         color:white;background:#6c5ce7;border:none;padding:1.2rem;
+                         border-radius:16px;cursor:pointer;text-transform:uppercase;
+                         box-shadow:0 10px 20px rgba(108,92,231,0.3);">
+            Resume
+          </button>
+        </div>
+      </div>
+
+      <div id="l2-controls" style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
+                                    display:flex;align-items:center;gap:15px;z-index:20;">
+        <button id="l2-skip-back"
+                style="width:36px;height:36px;border-radius:50%;border:none;background:rgba(108,92,231,0.6);
+                       font-size:1rem;color:white;cursor:pointer;
+                       box-shadow:0 2px 8px rgba(0,0,0,0.3);">⏮</button>
+        <button id="l2-pause"
+                style="width:48px;height:48px;border-radius:50%;border:none;background:#6c5ce7;
+                       font-size:1.4rem;color:white;cursor:pointer;
+                       box-shadow:0 4px 12px rgba(0,0,0,0.4);">⏸</button>
+      </div>
+
+      <div id="l2-start-menu"
+           style="display:flex;position:absolute;inset:0;flex-direction:column;
+                  align-items:center;justify-content:center;gap:1rem;
+                  background:rgba(26, 26, 46, 0.8);backdrop-filter:blur(4px);
+                  -webkit-backdrop-filter:blur(4px);z-index:150;">
+        <p style="text-transform:uppercase;letter-spacing:0.1em;font-family:var(--font-sans);
+                  font-size:0.875rem;color:rgba(255,255,255,0.6);margin-bottom:0.5rem;">
+          Ready to count?
+        </p>
+        <h1 style="font-family:var(--font-display);font-size:clamp(2rem,5vw,3.5rem);
+                   color:#fff;text-align:center;text-transform:none;
+                   letter-spacing:0.05em;margin:0;line-height:1.2;margin-bottom:1.5rem;">
+          Let's test your<br/>counting
+        </h1>
+        
+        <button id="l2-start-play"
+                style="font-family:var(--font-display);font-size:1.5rem;font-weight:900;
+                       color:white;background:#EF5A00;border:none;padding:1.2rem 2.8rem;
+                       border-radius:999px;cursor:pointer;text-transform:none;
+                       box-shadow:0 15px 30px rgba(239,90,0,0.3);
+                       transition:all 0.2s cubic-bezier(0.34,1.56,0.64,1);"
+                onmouseover="this.style.transform='scale(1.05)';this.style.background='#d44f00'"
+                onmouseout="this.style.transform='scale(1)';this.style.background='#EF5A00'">
+          Play ▶
+        </button>
+      </div>
     `;
 
     document.getElementById('player-frame').appendChild(overlay);
 
     // Wire up all buttons to the correct gameState transitions
-    document.getElementById('l2-back').addEventListener('click', () => {
-      gameState.transitionTo('level1');
-    });
     document.getElementById('l2-btn-retry').addEventListener('click', () => {
       // Re-entering level2 triggers onExit then onEnter, re-shuffling the queue
       gameState.transitionTo('level2');
@@ -181,8 +240,39 @@ const level2 = (() => {
     document.getElementById('l2-btn-learn').addEventListener('click', () => {
       gameState.transitionTo('level1');
     });
+    
+    document.getElementById('l2-pause').addEventListener('click', togglePause);
+    document.getElementById('l2-resume').addEventListener('click', togglePause);
+    document.getElementById('l2-skip-back').addEventListener('click', () => {
+      window.stopAllSounds?.();
+      gameState.transitionTo('level1');
+    });
 
-    renderRound();
+    document.getElementById('l2-start-play').addEventListener('click', () => {
+      quizStarted = true;
+      document.getElementById('l2-start-menu').style.display = 'none';
+      renderRound();
+    });
+
+    // Don't render the round until they click Play
+    // renderRound(); 
+  }
+
+  function togglePause() {
+    isPaused = !isPaused;
+    const menu = document.getElementById('l2-pause-menu');
+    if (!menu) return;
+
+    if (isPaused) {
+      menu.style.display = 'flex';
+      // Pause all audio
+      if (window.sounds) {
+        Object.values(window.sounds).forEach(s => s && s.pause());
+      }
+    } else {
+      menu.style.display = 'none';
+      // We don't necessarily resume sounds here to avoid overwhelming overlay
+    }
   }
 
 
@@ -202,6 +292,9 @@ const level2 = (() => {
     document.getElementById('l2-results').classList.remove('l2-results--active');
     gameState.hideConfetti();
 
+    // Pick a new random object for this round
+    currentObj = QUIZ_OBJECTS[Math.floor(Math.random() * QUIZ_OBJECTS.length)];
+
     // Update the round progress dots
     document.querySelectorAll('.l2-dot').forEach((dot, i) => {
       dot.classList.toggle('l2-dot--done',   i < roundIndex);
@@ -211,11 +304,29 @@ const level2 = (() => {
     // Update the live score display
     document.getElementById('l2-score-val').textContent = score;
 
-    // Show the dot grid (the question)
+    // Update the prompt to use the object name with pluralization
+    const plurals = {
+      'butterfly': 'butterflies',
+      'leaf': 'leaves'
+    };
+    const objectName = plurals[currentObj] || (currentObj + 's');
+    document.querySelector('.l2-prompt').textContent = `How many ${objectName}?`;
+
+    // Update the emoji in the ring
+    const emojis = { 1: '☝️', 2: '✌️', 3: '🤟', 4: '🖖', 5: '✋' };
+    const emojiEl = document.querySelector('.l2-ring-emoji');
+    if (emojiEl) emojiEl.textContent = emojis[target] || '✋';
+
+    // Show the objects in a horizontal row
     renderDotGrid(target);
 
-    // Clear the numeral — it stays blank until the child gets it right
-    document.getElementById('l2-number').textContent = '';
+    // Sync UI with the new round state
+    const numberEl = document.getElementById('l2-number');
+    numberEl.textContent = '';
+    numberEl.style.fontSize = ''; // reset to CSS default (large single digit)
+    
+    lastCountAudio = 0;
+    stableCount = 0;
 
     // Reset the arc to empty
     const arc = document.getElementById('l2-ring-arc');
@@ -224,23 +335,20 @@ const level2 = (() => {
 
   // Dice/domino dot layout — identical to Level 1's renderDotGrid.
   // Duplicated here so each level is self-contained (no shared state).
+  // Renders countable objects in a horizontal row with proper spacing
+  // Renders countable objects in a responsive flex row
   function renderDotGrid(n) {
-    const layouts = {
-      1: [[50, 50]],
-      2: [[25, 50], [75, 50]],
-      3: [[25, 50], [50, 50], [75, 50]],
-      4: [[25, 30], [75, 30], [25, 70], [75, 70]],
-      5: [[25, 30], [75, 30], [50, 50], [25, 70], [75, 70]],
-    };
     const container = document.getElementById('l2-dots');
     container.innerHTML = '';
-    (layouts[n] || []).forEach(([left, top]) => {
-      const dot       = document.createElement('span');
-      dot.className   = 'l2-pip';
-      dot.style.left  = `${left}%`;
-      dot.style.top   = `${top}%`;
-      container.appendChild(dot);
-    });
+    
+    for (let i = 0; i < n; i++) {
+      const img       = document.createElement('img');
+      img.src         = `images/quiz/${currentObj}.png`;
+      img.style.width = `clamp(100px, 16vw, 150px)`; 
+      img.style.height = 'auto';
+      img.style.filter = 'drop-shadow(0 10px 20px rgba(0,0,0,0.45))';
+      container.appendChild(img);
+    }
   }
 
   // Updates the arc fill percentage based on hold duration.
@@ -265,13 +373,20 @@ const level2 = (() => {
 
     window.stopAllSounds?.();
 
-    playSound(target); // narrate the correct number
+    // Move the confirmation text to the large central numeral
+    const plurals = {
+      'butterfly': 'butterflies',
+      'leaf': 'leaves'
+    };
+    const objectName = plurals[currentObj] || (currentObj + 's');
+    const displayObj = objectName.charAt(0).toUpperCase() + objectName.slice(1);
+    
+    const numberEl = document.getElementById('l2-number');
+    numberEl.textContent = `${target} ${displayObj}`;
+    numberEl.style.fontSize = 'clamp(3rem, 10vw, 6rem)'; // slightly smaller for phrases
 
-    // NOW reveal the large numeral (the reward / confirmation)
-    document.getElementById('l2-number').textContent = target;
-
-    // Update the live score badge immediately
-    document.getElementById('l2-score-val').textContent = score;
+    // Clear the top question during celebration
+    document.querySelector('.l2-prompt').textContent = '';
 
     // Pick a random celebration word (different from L1's fixed mapping)
     const word = CELEB_WORDS[Math.floor(Math.random() * CELEB_WORDS.length)];
@@ -324,7 +439,16 @@ const level2 = (() => {
   // Also guard against running after all 5 rounds are done.
 
   function update(fingerCount, handsCount) {
-    if (celebrating || roundIndex >= 5) return;
+    if (!quizStarted || isPaused || celebrating || roundIndex >= 5) return;
+
+    // Real-time counting audio ("Count with me" feel)
+    if (fingerCount > 0 && fingerCount !== lastCountAudio && fingerCount <= 5) {
+      playSound(fingerCount);
+      lastCountAudio = fingerCount;
+    }
+    if (fingerCount === 0) {
+      lastCountAudio = 0;
+    }
 
     if (fingerCount === target) {
       stableCount++;
@@ -352,6 +476,8 @@ const level2 = (() => {
       score      = 0;
       stableCount = 0;
       celebrating = false;
+      isPaused    = false;
+      quizStarted = false;
       createOverlay();
     },
     update,

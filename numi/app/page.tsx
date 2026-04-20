@@ -7,7 +7,6 @@ import { TextRotate } from "@/components/ui/text-rotate"
 import Floating, { FloatingElement } from "@/components/ui/parallax-floating"
 import { Player } from "@/components/ui/player"
 import { TopNavbar } from "@/components/ui/top-navbar"
-
 // ============================================================
 // LOADING SCREEN
 // Full-screen splash shown on first visit. Numbers count up 1–5,
@@ -57,8 +56,8 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
         }}
         transition={{
           opacity: { duration: 0.4 },
-          scale:   { duration: 0.4 },
-          rotate:  { duration: 0.8, delay: 0.3, ease: "easeInOut" },
+          scale: { duration: 0.4 },
+          rotate: { duration: 0.8, delay: 0.3, ease: "easeInOut" },
         }}
       />
 
@@ -67,7 +66,7 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
         {NUMBERS.map((n, i) => (
           <motion.span
             key={n}
-            className="font-calendas text-5xl text-[#1A0A08]"
+            className="font-body text-5xl text-[#1A0A08]"
             initial={{ scale: 0, opacity: 0 }}
             animate={i <= current ? { scale: 1, opacity: 1 } : {}}
             transition={{ type: "spring", stiffness: 400, damping: 18 }}
@@ -80,7 +79,7 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
 
       {/* "Let's count!" label */}
       <motion.p
-        className="font-calendas text-lg text-[#1A0A08]/50 tracking-wide"
+        className="font-body text-lg text-[#1A0A08]/50 tracking-wide"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
@@ -93,12 +92,12 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
 
 // Plays the hover pop sound, respecting navbar mute/volume settings
 function playHover() {
-  const muted  = (window as any).numiMuted  ?? localStorage.getItem("numiMuted")  === "true"
+  const muted = (window as any).numiMuted ?? localStorage.getItem("numiMuted") === "true"
   const volume = (window as any).numiVolume ?? parseFloat(localStorage.getItem("numiVolume") || "0.8")
   if (muted) return
   const sfx = new Audio("/audio/flip.mp3")
   sfx.volume = volume
-  sfx.play().catch(() => {})
+  sfx.play().catch(() => { })
 }
 
 // ============================================================
@@ -161,8 +160,11 @@ const exampleImages = [
 //   1. Background: Floating parallax images
 //   2. Foreground: Two-column layout with text + buttons
 // ============================================================
+const ROTATE_COLORS = ["#F6636F", "#F45F00", "#3F6F29"] as const
+
 function LandingHero() {
   const [loading, setLoading] = useState(true)
+  const [rotateColorIdx, setRotateColorIdx] = useState(0)
 
   return (
     <>
@@ -270,6 +272,7 @@ function LandingHero() {
           ====================================================== */}
         <div className="flex flex-col md:flex-row justify-center items-center md:items-stretch w-full max-w-7xl z-50 pointer-events-auto gap-8 px-4">
 
+
           {/* ---------- LEFT COLUMN (Image) ---------- */}
           <div className="flex flex-col justify-center items-center flex-1 w-full relative z-50">
             <motion.img
@@ -304,44 +307,53 @@ function LandingHero() {
           <div className="flex flex-col justify-center items-start flex-1">
             {/* ANIMATED HEADING — fades up on load (delay: 0.3s) */}
             <motion.h1
-              className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-left w-full justify-start items-start flex-col flex whitespace-pre leading-none font-calendas tracking-tight"
+              className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-left w-full justify-start items-start flex-col flex whitespace-pre leading-none font-fredoka tracking-tight"
               animate={{ opacity: 1, y: 0 }}
               initial={{ opacity: 0, y: 20 }}
               transition={{ duration: 0.2, ease: "easeOut", delay: 0.3 }}
             >
-              {/* Line 1: static text */}
-              <span>Make Learning</span>
+              {/* Line 1 — Fredoka */}
+              <span className="font-fredoka">Make Learning</span>
 
-              {/* Line 2: "learning" + rotating word
-                LayoutGroup keeps the layout smooth when the rotating word
-                changes width. TextRotate cycles every 3s with spring physics. */}
+              {/* Line 2: "Math " + rotating word
+                The invisible sizer span (aria-hidden) locks the container to
+                the width of the longest word so the layout never shifts. */}
               <LayoutGroup>
-                <motion.span layout className="flex whitespace-pre">
-                  <motion.span
-                    layout
-                    className="flex whitespace-pre"
-                    transition={{ type: "spring", damping: 30, stiffness: 400 }}
-                  >
-                    Math{" "}
-                  </motion.span>
-                  <TextRotate
-                    texts={[
-                      "fun",
-                      "easy",
-                      "tangible"
-                    ]}
-                    mainClassName="overflow-hidden pr-3 text-[#F6636F] py-0 pb-2 md:pb-4 rounded-xl"
-                    staggerDuration={0.03}
-                    staggerFrom="last"
-                    rotationInterval={3000}
-                    transition={{ type: "spring", damping: 30, stiffness: 400 }}
-                  />
+                <motion.span layout className="flex whitespace-pre items-center">
+                  <span className="flex whitespace-pre font-fredoka">Math{" "}</span>
+                  {/* Sizer: invisible longest word keeps container width constant */}
+                  <span className="relative inline-flex items-center">
+                    <span
+                      className="invisible font-moonbloom font-black pr-3"
+                      aria-hidden="true"
+                    >
+                      tangible
+                    </span>
+                    {/* Rotating word absolutely fills the sizer */}
+                    <span className="absolute inset-0 flex items-center">
+                      <TextRotate
+                        texts={[
+                          "fun",
+                          "easy",
+                          "tangible"
+                        ]}
+                        mainClassName="overflow-hidden pr-3 rounded-xl font-moonbloom font-[800]"
+                        staggerDuration={0.03}
+                        staggerFrom="last"
+                        rotationInterval={3000}
+                        transition={{ type: "spring", damping: 30, stiffness: 400 }}
+                        onNext={(idx) => setRotateColorIdx(idx)}
+                        // Apply color via inline style — dynamic Tailwind classes aren't JIT-safe
+                        style={{ color: ROTATE_COLORS[rotateColorIdx] }}
+                      />
+                    </span>
+                  </span>
                 </motion.span>
               </LayoutGroup>
             </motion.h1>
             {/* SUBTITLE — fades up on load (delay: 0.5s) */}
             <motion.p
-              className="text-sm sm:text-lg md:text-xl lg:text-2xl text-left font-overusedGrotesk pt-2 sm:pt-8 md:pt-10 lg:pt-12"
+              className="text-sm sm:text-lg md:text-xl lg:text-2xl text-left font-body pt-2 sm:pt-8 md:pt-10 lg:pt-12"
               animate={{ opacity: 1, y: 0 }}
               initial={{ opacity: 0, y: 20 }}
               transition={{ duration: 0.2, ease: "easeOut", delay: 0.5 }}
@@ -355,7 +367,7 @@ function LandingHero() {
             <div className="flex flex-row justify-start space-x-4 items-center mt-10 sm:mt-16 md:mt-20 lg:mt-20 text-xs">
               {/* Primary button (dark bg) */}
               <motion.button
-                className="sm:text-base md:text-lg lg:text-xl font-semibold tracking-tight text-background bg-foreground px-4 py-2 sm:px-5 sm:py-2.5 md:px-6 md:py-3 lg:px-8 lg:py-3 rounded-full z-20 shadow-2xl font-calendas"
+                className="sm:text-base md:text-lg lg:text-xl font-semibold tracking-tight text-background bg-[#3F6F29] px-4 py-2 sm:px-5 sm:py-2.5 md:px-6 md:py-3 lg:px-8 lg:py-3 rounded-full z-20 shadow-2xl font-body"
                 animate={{ opacity: 1, y: 0 }}
                 initial={{ opacity: 0, y: 20 }}
                 transition={{
@@ -370,14 +382,14 @@ function LandingHero() {
                 }}
               >
                 <Link href="/play">
-                  Start Learning <span className="font-serif ml-1">→</span>
+                  Start Learning with Numi <span className="font-serif ml-1">→</span>
                 </Link>
               </motion.button>
 
               {/* Secondary button — scrolls to How it Works */}
               <motion.a
                 href="#how-it-works"
-                className="sm:text-base md:text-lg lg:text-xl font-semibold tracking-tight text-foreground border-2 border-foreground px-4 py-2 sm:px-5 sm:py-2.5 md:px-6 md:py-3 lg:px-8 lg:py-3 rounded-full z-20 shadow-md font-calendas"
+                className="sm:text-base md:text-lg lg:text-xl font-semibold tracking-tight text-foreground border-2 border-foreground px-4 py-2 sm:px-5 sm:py-2.5 md:px-6 md:py-3 lg:px-8 lg:py-3 rounded-full z-20 shadow-md font-body"
                 animate={{ opacity: 1, y: 0 }}
                 initial={{ opacity: 0, y: 20 }}
                 transition={{ duration: 0.2, ease: "easeOut", delay: 0.8 }}
@@ -391,19 +403,19 @@ function LandingHero() {
             </div>
           </div>{/* END right column */}
         </div>{/* END two-column layout */}
-      </section>
+      </section >
 
       {/* ======================================================
         HOW IT WORKS SECTION
         3 steps showing the hand-counting game mechanic
         Uses the same hand SVGs as the in-game UI
         ====================================================== */}
-      <section id="how-it-works" className="w-full py-20 px-6 md:px-12 bg-[#FDF0E8]">
+      < section id="how-it-works" className="w-full py-20 px-6 md:px-12 bg-[#FDF0E8]" >
         <div className="max-w-5xl mx-auto flex flex-col items-center gap-12">
 
           {/* Heading */}
           <motion.h2
-            className="text-4xl sm:text-5xl md:text-6xl font-calendas text-center text-[#1A0A08] leading-tight"
+            className="text-4xl sm:text-5xl md:text-6xl font-body text-center text-[#1A0A08] leading-tight"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -428,7 +440,7 @@ function LandingHero() {
                 transition={{ duration: 0.4, ease: "easeOut", delay: i * 0.15 }}
               >
                 {/* Step number badge */}
-                <div className="w-10 h-10 rounded-full bg-[#EF5A00] flex items-center justify-center text-white font-calendas text-lg shadow">
+                <div className="w-10 h-10 rounded-full bg-[#EF5A00] flex items-center justify-center text-white font-body text-lg shadow">
                   {item.step}
                 </div>
 
@@ -440,7 +452,7 @@ function LandingHero() {
                 />
 
                 {/* Labels */}
-                <p className="font-calendas text-xl text-[#1A0A08] text-center">{item.label}</p>
+                <p className="font-body text-xl text-[#1A0A08] text-center">{item.label}</p>
                 <p className="font-sans text-sm text-[#1A0A08]/60 text-center">{item.desc}</p>
               </motion.div>
             ))}
@@ -455,14 +467,14 @@ function LandingHero() {
           >
             <Link
               href="/play"
-              className="inline-block px-10 py-4 bg-[#EF5A00] hover:bg-[#d44f00] text-white font-calendas text-xl rounded-full shadow-xl transition-colors"
+              className="inline-block px-10 py-4 bg-[#EF5A00] hover:bg-[#d44f00] text-white font-body text-xl rounded-full shadow-xl transition-colors"
             >
               Start Learning →
             </Link>
           </motion.div>
 
         </div>
-      </section>
+      </section >
     </>
   )
 }

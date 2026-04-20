@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import MagicRings from "@/components/MagicRings";
 
 /**
  * Dynamically loads a script. Setting `async = false` ensures that multiple
@@ -25,6 +26,7 @@ export function Player() {
   const [isStarted, setIsStarted] = useState(false); // <--- We need explicit user intent to unlock Audio context!
   const [isReady, setIsReady] = useState(false);     // <--- Gate shown after camera loads, before game begins
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMagicCelebrating, setIsMagicCelebrating] = useState(false);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -55,6 +57,8 @@ export function Player() {
         // 1. Core libraries
         await loadScript("https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js");
         await loadScript("https://unpkg.com/ml5@1/dist/ml5.js");
+
+
 
         // 2. Global State manager
         await loadScript("/state.js");
@@ -120,6 +124,39 @@ export function Player() {
       // (Though p5 instances typically need a full reload anyway if not instance mode)
     };
   }, [isStarted]);
+
+  // Officially start Level 0 only when the user clicks "Start Learning"
+  useEffect(() => {
+    if (isReady && typeof window !== "undefined") {
+      const startLevel = () => {
+        const gs = (window as any).gameState;
+        if (gs && typeof gs.transitionTo === "function") {
+          // If the level isn't registered yet, transitionTo will log a warning and return.
+          // We can check if it worked by looking at the current level.
+          gs.transitionTo('level0');
+          if (gs.getCurrent() === 'level0') {
+            console.log("Level 0 started successfully.");
+          } else {
+            console.log("Level 0 not ready yet, retrying...");
+            setTimeout(startLevel, 100);
+          }
+        } else {
+          console.log("GameState not found, retrying...");
+          setTimeout(startLevel, 100);
+        }
+      };
+      startLevel();
+    }
+  }, [isReady]);
+
+  // Handle MagicRings celebration events from Vanilla JS
+  useEffect(() => {
+    const handleMagic = (e: any) => {
+      setIsMagicCelebrating(!!e.detail.active);
+    };
+    window.addEventListener('numi:magic-rings', handleMagic);
+    return () => window.removeEventListener('numi:magic-rings', handleMagic);
+  }, []);
 
   return (
     <div className="player-container w-full max-w-4xl mx-auto flex flex-col items-center gap-4">
@@ -202,6 +239,24 @@ export function Player() {
           }}
           alt="Confetti Celebration"
         />
+
+        {/* 
+          MagicRings Celebration Overlay (Exclusive to Level 1)
+          Triggered via custom event from state.js
+        */}
+        {isMagicCelebrating && (
+          <div className="absolute inset-0 z-[25] pointer-events-none">
+            <MagicRings
+              color="#ff007f" // Pink
+              colorTwo="#fc42ff" // Light Pink
+              ringCount={8}
+              speed={1.2}
+              opacity={1}
+              clickBurst={true}
+              noiseAmount={0.05}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

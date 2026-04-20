@@ -31,14 +31,14 @@
 //   gameState calls these at the right moments automatically.
 // ============================================================
 
-const gameState = (() => {
+window.gameState = (() => {
 
   // ── PRIVATE STATE ────────────────────────────────────────
   // These variables are internal to this module.
   // Nothing outside this file can read or modify them directly.
 
   // The key of the currently active level (e.g. 'level0')
-  let current = 'level0';
+  let current = null;
 
   // A dictionary of all registered level objects.
   // key = level name (string), value = level object
@@ -123,6 +123,20 @@ const gameState = (() => {
 
   let confettiClearTimer = null;
 
+  function showMagicRings() {
+    window.dispatchEvent(new CustomEvent('numi:magic-rings', { detail: { active: true } }));
+
+    // Play celebration audio globally (Specific to Magic Rings)
+    if (window.sounds && sounds['celeb_magic']) {
+      sounds['celeb_magic'].currentTime = 0;
+      sounds['celeb_magic'].play().catch(e => console.log('Autoplay blocked:', e));
+    }
+  }
+
+  function hideMagicRings() {
+    window.dispatchEvent(new CustomEvent('numi:magic-rings', { detail: { active: false } }));
+  }
+
   function showConfetti() {
     let el = document.getElementById('confetti-lottie');
     if (el) {
@@ -136,13 +150,13 @@ const gameState = (() => {
       if (confettiClearTimer) clearTimeout(confettiClearTimer);
       confettiClearTimer = setTimeout(() => {
         el.style.display = 'none';
-      }, 2400); // Assumes confetti GIF is ~2.4s long
+      }, 2400);      // Assumes confetti GIF is ~2.4s long
     }
 
-    // Play celebration audio globally
-    if (window.sounds && sounds['celeb']) {
-      sounds['celeb'].currentTime = 0;
-      sounds['celeb'].play().catch(e => console.log('Autoplay blocked:', e));
+    // Play celebration audio globally (Specific to Popper/Confetti)
+    if (window.sounds && sounds['celeb_pop']) {
+      sounds['celeb_pop'].currentTime = 0;
+      sounds['celeb_pop'].play().catch(e => console.log('Autoplay blocked:', e));
     }
   }
 
@@ -154,6 +168,6 @@ const gameState = (() => {
   // ── EXPOSE PUBLIC API ────────────────────────────────────
   // Only the functions listed here are accessible from outside.
   // `current` and `levels` remain private — nothing can mess with them.
-  return { register, transitionTo, update, getCurrent, showConfetti, hideConfetti };
+  return { register, transitionTo, update, getCurrent, showConfetti, hideConfetti, showMagicRings, hideMagicRings };
 
 })();

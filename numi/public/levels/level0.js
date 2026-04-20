@@ -11,7 +11,7 @@
 //   celebrating → white flash + Lottie confetti + word
 // ============================================================
 
-const level0 = (() => {
+window.level0 = (() => {
 
   // ── STEP DEFINITIONS ──────────────────────────────────────
   // Each step defines the text shown and the gesture needed to advance.
@@ -185,8 +185,14 @@ const level0 = (() => {
 
       <!-- ── UI CONTROLS ── -->
       <button class="ob-ctrl ob-ctrl--close" id="ob-close" aria-label="Skip onboarding">✕</button>
-      <button class="ob-ctrl ob-ctrl--pause" id="ob-pause" aria-label="Pause">⏸</button>
-      <button class="ob-ctrl ob-ctrl--help"  id="ob-help"  aria-label="Help">?</button>
+
+      <div id="ob-controls" style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
+                                    display:flex;align-items:center;gap:15px;z-index:20;">
+        <button id="ob-skip-forward"
+                style="width:36px;height:36px;border-radius:50%;border:none;background:rgba(108,92,231,0.6);
+                       font-size:1rem;color:white;cursor:pointer;
+                       box-shadow:0 2px 8px rgba(0,0,0,0.3);">⏭</button>
+      </div>
     `;
 
     // Mount inside the camera player frame (above the canvas)
@@ -194,6 +200,10 @@ const level0 = (() => {
 
     // Skip button exits onboarding immediately
     document.getElementById('ob-close').addEventListener('click', finish);
+    document.getElementById('ob-skip-forward').addEventListener('click', () => {
+      window.stopAllSounds?.();
+      gameState.transitionTo('level1');
+    });
 
     renderStep();
   }
