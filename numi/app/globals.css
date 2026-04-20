@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Rethink+Sans:ital,wght@0,400..800;1,400..800&family=Hedvig+Letters+Serif:opsz@12..24&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Rethink+Sans:ital,wght@0,400..800;1,400..800&family=Hedvig+Letters+Serif:opsz@12..24&display=swap');
 @import url("https://use.typekit.net/wui1dah.css");
 
 @import "tailwindcss";
@@ -120,6 +120,25 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* ── Numi Brand Tokens ───────────────────────────────────── */
+:root {
+  --numi-cream:   #FDF0E8;
+  --numi-stripe:  #F2DDD0;
+  --numi-coral:   #F47C6E;
+  --numi-green:   #5BAD52;
+  --numi-orange:  #EF5A00;
+  --numi-dark:    #1A0A08;
+}
+
+/* ── Brand Font Utilities ────────────────────────────────── */
+@utility font-display {
+  font-family: 'Moon Blossom', 'Fredoka', cursive;
+}
+
+@utility font-body {
+  font-family: 'Rethink Sans', sans-serif;
 }
 
 @layer base {

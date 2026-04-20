@@ -1,20 +1,105 @@
 "use client"
 
-// ============================================================
-// IMPORTS
-// - React hooks (useEffect, useRef) for side effects & DOM refs
-// - Link: Next.js client-side navigation (no full page reload)
-// - LayoutGroup + motion: Framer Motion for animations
-// - TextRotate: auto-rotating text component (cycles through words)
-// - Floating / FloatingElement: parallax images that move on mouse hover
-// ============================================================
-import { useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import { LayoutGroup, motion } from "framer-motion"
+import { LayoutGroup, motion, AnimatePresence } from "framer-motion"
 import { TextRotate } from "@/components/ui/text-rotate"
 import Floating, { FloatingElement } from "@/components/ui/parallax-floating"
 import { Player } from "@/components/ui/player"
 import { TopNavbar } from "@/components/ui/top-navbar"
+
+// ============================================================
+// LOADING SCREEN
+// Full-screen splash shown on first visit. Numbers count up 1–5,
+// then the screen slides up to reveal the homepage.
+// ============================================================
+const NUMBERS = ["1", "2", "3", "4", "5"]
+
+function LoadingScreen({ onDone }: { onDone: () => void }) {
+  const [current, setCurrent] = useState(0)
+
+  useEffect(() => {
+    if (current < NUMBERS.length - 1) {
+      const t = setTimeout(() => setCurrent(c => c + 1), 350)
+      return () => clearTimeout(t)
+    } else {
+      // All numbers shown — wait a beat then dismiss
+      const t = setTimeout(onDone, 600)
+      return () => clearTimeout(t)
+    }
+  }, [current, onDone])
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-[999] flex flex-col items-center justify-center bg-[#FDF0E8] gap-6"
+      exit={{ y: "-100%", transition: { duration: 0.6, ease: [0.76, 0, 0.24, 1] } }}
+    >
+      {/* Logo */}
+      <motion.img
+        src="/images/logo.svg"
+        alt="Numi"
+        className="h-20 w-auto object-contain"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      />
+
+      {/* Character */}
+      <motion.img
+        src="/images/ch3.png"
+        alt="Numi Character"
+        className="h-48 w-auto object-contain"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{
+          opacity: 1,
+          scale: 1,
+          rotate: [0, -6, 6, -4, 4, 0],
+        }}
+        transition={{
+          opacity: { duration: 0.4 },
+          scale:   { duration: 0.4 },
+          rotate:  { duration: 0.8, delay: 0.3, ease: "easeInOut" },
+        }}
+      />
+
+      {/* Counting numbers */}
+      <div className="flex items-center gap-4">
+        {NUMBERS.map((n, i) => (
+          <motion.span
+            key={n}
+            className="font-calendas text-5xl text-[#1A0A08]"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={i <= current ? { scale: 1, opacity: 1 } : {}}
+            transition={{ type: "spring", stiffness: 400, damping: 18 }}
+            style={{ color: i === current ? "#EF5A00" : "#1A0A08" }}
+          >
+            {n}
+          </motion.span>
+        ))}
+      </div>
+
+      {/* "Let's count!" label */}
+      <motion.p
+        className="font-calendas text-lg text-[#1A0A08]/50 tracking-wide"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+      >
+        Let's count!
+      </motion.p>
+    </motion.div>
+  )
+}
+
+// Plays the hover pop sound, respecting navbar mute/volume settings
+function playHover() {
+  const muted  = (window as any).numiMuted  ?? localStorage.getItem("numiMuted")  === "true"
+  const volume = (window as any).numiVolume ?? parseFloat(localStorage.getItem("numiVolume") || "0.8")
+  if (muted) return
+  const sfx = new Audio("/audio/flip.mp3")
+  sfx.volume = volume
+  sfx.play().catch(() => {})
+}
 
 // ============================================================
 // IMAGE DATA
@@ -77,8 +162,14 @@ const exampleImages = [
 //   2. Foreground: Two-column layout with text + buttons
 // ============================================================
 function LandingHero() {
+  const [loading, setLoading] = useState(true)
+
   return (
     <>
+      <AnimatePresence>
+        {loading && <LoadingScreen onDone={() => setLoading(false)} />}
+      </AnimatePresence>
+
       <TopNavbar />
       {/* SECTION WRAPPER — full viewport height, centers everything */}
       <section className="w-full h-screen overflow-hidden md:overflow-visible flex flex-col items-center justify-center relative">
@@ -102,6 +193,7 @@ function LandingHero() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
+              onMouseEnter={playHover}
             />
           </FloatingElement>
 
@@ -117,6 +209,7 @@ function LandingHero() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.7 }}
+              onMouseEnter={playHover}
             />
           </FloatingElement>
 
@@ -132,6 +225,7 @@ function LandingHero() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.9 }}
+              onMouseEnter={playHover}
             />
           </FloatingElement>
 
@@ -147,6 +241,7 @@ function LandingHero() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.1 }}
+              onMouseEnter={playHover}
             />
           </FloatingElement>
 
@@ -162,6 +257,7 @@ function LandingHero() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.3 }}
+              onMouseEnter={playHover}
             />
           </FloatingElement>
         </Floating>{/* END parallax layer */}
@@ -180,9 +276,27 @@ function LandingHero() {
               src="/images/ch3.png"
               alt="Numi Character"
               className="w-full max-w-2xl md:max-w-3xl lg:max-w-[40rem] scale-110 transform rotate-[10deg] object-contain drop-shadow-10xl"
-              animate={{ opacity: 1, y: 0 }}
               initial={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+              animate={{
+                opacity: 1,
+                y: [0, -14, 0],
+                rotate: [10, 12, 8, 10],
+              }}
+              transition={{
+                opacity: { duration: 0.8, ease: "easeOut", delay: 0.2 },
+                y: {
+                  duration: 3,
+                  ease: "easeInOut",
+                  repeat: Infinity,
+                  delay: 1,
+                },
+                rotate: {
+                  duration: 3,
+                  ease: "easeInOut",
+                  repeat: Infinity,
+                  delay: 1,
+                },
+              }}
             />
           </div>
 
@@ -216,7 +330,7 @@ function LandingHero() {
                       "easy",
                       "tangible"
                     ]}
-                    mainClassName="overflow-hidden pr-3 text-[#0015ff] py-0 pb-2 md:pb-4 rounded-xl"
+                    mainClassName="overflow-hidden pr-3 text-[#F6636F] py-0 pb-2 md:pb-4 rounded-xl"
                     staggerDuration={0.03}
                     staggerFrom="last"
                     rotationInterval={3000}
@@ -259,10 +373,96 @@ function LandingHero() {
                   Start Learning <span className="font-serif ml-1">→</span>
                 </Link>
               </motion.button>
+
+              {/* Secondary button — scrolls to How it Works */}
+              <motion.a
+                href="#how-it-works"
+                className="sm:text-base md:text-lg lg:text-xl font-semibold tracking-tight text-foreground border-2 border-foreground px-4 py-2 sm:px-5 sm:py-2.5 md:px-6 md:py-3 lg:px-8 lg:py-3 rounded-full z-20 shadow-md font-calendas"
+                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.2, ease: "easeOut", delay: 0.8 }}
+                whileHover={{
+                  scale: 1.05,
+                  transition: { type: "spring", damping: 30, stiffness: 400 },
+                }}
+              >
+                How it works ✋
+              </motion.a>
             </div>
           </div>{/* END right column */}
         </div>{/* END two-column layout */}
-      </section>/* END hero section */
+      </section>
+
+      {/* ======================================================
+        HOW IT WORKS SECTION
+        3 steps showing the hand-counting game mechanic
+        Uses the same hand SVGs as the in-game UI
+        ====================================================== */}
+      <section id="how-it-works" className="w-full py-20 px-6 md:px-12 bg-[#FDF0E8]">
+        <div className="max-w-5xl mx-auto flex flex-col items-center gap-12">
+
+          {/* Heading */}
+          <motion.h2
+            className="text-4xl sm:text-5xl md:text-6xl font-calendas text-center text-[#1A0A08] leading-tight"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+          >
+            How it works
+          </motion.h2>
+
+          {/* 3 Steps */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 w-full">
+            {[
+              { step: "1", label: "Show your hand", desc: "Hold your hand up to the camera", hand: "/images/Hand Right.svg", flip: false },
+              { step: "2", label: "Count your fingers", desc: "Hold up 1, 2 or 3 fingers", hand: "/images/Hand left.svg", flip: false },
+              { step: "3", label: "Match the number!", desc: "Numi checks your answer live", hand: "/images/Hand Right.svg", flip: true },
+            ].map((item, i) => (
+              <motion.div
+                key={item.step}
+                className="flex flex-col items-center gap-4 bg-white rounded-3xl p-6 shadow-md"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, ease: "easeOut", delay: i * 0.15 }}
+              >
+                {/* Step number badge */}
+                <div className="w-10 h-10 rounded-full bg-[#EF5A00] flex items-center justify-center text-white font-calendas text-lg shadow">
+                  {item.step}
+                </div>
+
+                {/* Hand image */}
+                <img
+                  src={item.hand}
+                  alt={item.label}
+                  className={`h-32 w-auto object-contain ${item.flip ? "scale-x-[-1]" : ""}`}
+                />
+
+                {/* Labels */}
+                <p className="font-calendas text-xl text-[#1A0A08] text-center">{item.label}</p>
+                <p className="font-sans text-sm text-[#1A0A08]/60 text-center">{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Bottom CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, ease: "easeOut", delay: 0.5 }}
+          >
+            <Link
+              href="/play"
+              className="inline-block px-10 py-4 bg-[#EF5A00] hover:bg-[#d44f00] text-white font-calendas text-xl rounded-full shadow-xl transition-colors"
+            >
+              Start Learning →
+            </Link>
+          </motion.div>
+
+        </div>
+      </section>
     </>
   )
 }

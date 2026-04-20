@@ -113,6 +113,25 @@ function setup() {
     }
   };
 
+  // Apply persisted volume settings to all loaded sounds
+  function applyVolumeToSounds() {
+    const v = (window.numiVolume !== undefined) ? window.numiVolume : 0.8;
+    const m = (window.numiMuted  !== undefined) ? window.numiMuted  : false;
+    for (let key in sounds) {
+      if (sounds[key]) sounds[key].volume = m ? 0 : v;
+    }
+  }
+
+  applyVolumeToSounds();
+
+  // Keep in sync whenever the navbar changes volume
+  window.addEventListener('numiVolumeChange', (e) => {
+    const { volume, muted } = e.detail;
+    for (let key in sounds) {
+      if (sounds[key]) sounds[key].volume = muted ? 0 : volume;
+    }
+  });
+
   // ── Register all levels then kick off onboarding ──────────
   // Level files must be loaded before sketch.js (see index.html).
   gameState.register('level0', level0);

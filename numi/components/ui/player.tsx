@@ -23,6 +23,7 @@ const loadScript = (src: string) => {
 export function Player() {
   const [loaded, setLoaded] = useState(false);
   const [isStarted, setIsStarted] = useState(false); // <--- We need explicit user intent to unlock Audio context!
+  const [isReady, setIsReady] = useState(false);     // <--- Gate shown after camera loads, before game begins
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
@@ -148,6 +149,19 @@ export function Player() {
           <div className="absolute inset-0 flex flex-col items-center justify-center z-50 text-white/70" style={{ background: "rgba(14, 12, 28, 0.5)" }}>
             <div className="w-8 h-8 border-4 border-t-white border-white/20 rounded-full animate-spin mb-4"></div>
             <p className="font-sans text-sm">Loading AI & Camera...</p>
+          </div>
+        )}
+
+        {/* START LEARNING gate — shown once camera + AI are ready */}
+        {isStarted && loaded && !isReady && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center z-[150] bg-[#1a1a2e]/80 backdrop-blur-sm gap-4">
+            <p className="text-white/60 font-sans text-sm uppercase tracking-widest">Camera ready!</p>
+            <button
+              onClick={() => setIsReady(true)}
+              className="px-10 py-5 bg-[#EF5A00] hover:bg-[#d44f00] hover:scale-105 active:scale-95 text-white font-calendas rounded-full transition-all text-2xl shadow-xl shadow-[#EF5A00]/30"
+            >
+              Start Learning ▶
+            </button>
           </div>
         )}
 
