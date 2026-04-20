@@ -720,6 +720,14 @@ a:hover,
   transform: scale(1.06);
 }
 
+/* Flipped state (for mirrored duplication) */
+.ob-hand--flipped {
+  transform: scaleX(-1);
+}
+.ob-hand--flipped.ob-hand--detected {
+  transform: scaleX(-1) scale(1.06);
+}
+
 /* ── Instruction text ────────────────────────────────────────── */
 .ob-title {
   font-family: var(--font-display);

@@ -100,14 +100,14 @@ window.level1 = (() => {
     {
       kind: 'gesture',
       title: 'SHOW A COUNTING\nHAND',
-      emoji: '🖐️',
+      image: 'images/5.svg', // Custom image replaces emoji
       instructionAudio: 'l1_show_hand',
       detect: (f, h) => h >= 1 && f >= 5,
     },
     {
       kind: 'gesture',
       title: 'MAKE A ROCK',
-      emoji: '✊',
+      image: 'images/0.svg',
       instructionAudio: 'l1_make_rock',
       detect: (f, h) => h >= 1 && f === 0,
     },
@@ -116,7 +116,7 @@ window.level1 = (() => {
     {
       kind: 'gesture',
       title: 'NOW, LIFT A FINGER',
-      emoji: '☝️',
+      image: 'images/1.svg',
       instructionAudio: 'l1_lift_finger',
       numberText: 'THIS IS ONE = 1',
       numberAudio: 'l1_this_is_one',
@@ -127,7 +127,8 @@ window.level1 = (() => {
     {
       kind: 'gesture',
       title: 'NOW, LIFT ANOTHER FINGER',
-      emoji: '✌️',
+      image: 'images/1.svg',   // Base: 1 finger
+      image2: 'images/2_1.svg', // Final: 2 fingers
       instructionAudio: 'l1_lift_another_2',
       numberText: 'THIS IS TWO = 2',
       numberAudio: 'l1_this_is_two',
@@ -141,7 +142,8 @@ window.level1 = (() => {
     {
       kind: 'gesture',
       title: 'NOW, LIFT ANOTHER FINGER',
-      emoji: '🤟',
+      image: 'images/2_1.svg',
+      image2: 'images/3.svg',
       instructionAudio: 'l1_lift_another_3',
       numberText: 'THIS IS THREE = 3',
       numberAudio: 'l1_this_is_three',
@@ -155,7 +157,8 @@ window.level1 = (() => {
     {
       kind: 'gesture',
       title: 'NOW, LIFT ANOTHER FINGER',
-      emoji: '🖖',
+      image: 'images/3.svg',
+      image2: 'images/4.svg',
       instructionAudio: 'l1_lift_another_4',
       numberText: 'THIS IS FOUR = 4',
       numberAudio: 'l1_this_is_four',
@@ -169,7 +172,8 @@ window.level1 = (() => {
     {
       kind: 'gesture',
       title: 'NOW, LIFT ANOTHER FINGER',
-      emoji: '🖐️',
+      image: 'images/4.svg',
+      image2: 'images/5.svg',
       instructionAudio: 'l1_lift_another_5',
       numberText: 'THIS IS FIVE = 5',
       numberAudio: 'l1_this_is_five',
@@ -188,6 +192,7 @@ window.level1 = (() => {
   let isPaused        = false;
   let stableCount     = 0;
   let transitionTimer = null;
+  let gestureInterval = null; // Animation timer for gesture guides
 
   let expectedSubCount = 1;      // Tracking 1 -> 2 -> 3... in Your Turn
   let gestureOk        = false;
@@ -258,13 +263,13 @@ window.level1 = (() => {
       <!-- ── "COUNT WITH ME" Screen ── -->
       <div id="l1-cwm-screen"
            style="display:none;position:absolute;inset:0;flex-direction:column;
-                  align-items:center;justify-content:center;gap:1.4rem;z-index:6;">
+                  align-items:center;justify-content:center;gap:2.4rem;z-index:6;">
         <h2 style="font-family:var(--font-display);font-size:clamp(2rem,4.5vw,3.2rem);
                    font-weight:900;color:#fff;text-transform:uppercase;
                    text-shadow:0 2px 14px rgba(0,0,0,0.5);letter-spacing:0.06em;">
           COUNT WITH ME
         </h2>
-        <div id="l1-cwm-hand" style="width:160px;height:200px;display:flex;align-items:center;justify-content:center;"></div>
+        <div id="l1-cwm-hand" style="display:flex;align-items:center;justify-content:center;"></div>
         <div id="l1-cwm-numtext"
              style="font-family:var(--font-display);font-size:clamp(2rem,4vw,2.8rem);
                     font-weight:900;color:#FFD93D;
@@ -444,6 +449,7 @@ window.level1 = (() => {
     window.stopAllSounds?.();
     gameState.hideMagicRings();
     clearTimeout(transitionTimer);
+    clearInterval(gestureInterval);
     hideAllPanels();
 
     const step = STEPS[currentStep];
@@ -454,8 +460,28 @@ window.level1 = (() => {
 
   // ── RENDER: GESTURE STEP ──────────────────────────────────
   function renderGestureStep(step) {
-    el('l1-title').innerHTML   = step.title.replace(/\n/g, '<br>');
-    el('l1-emoji').textContent = step.emoji;
+    el('l1-title').innerHTML = step.title.replace(/\n/g, '<br>');
+
+    if (step.image) {
+      // Show a single centered hand for maximum clarity
+      el('l1-emoji').innerHTML = `
+        <img id="l1-gesture-img" src="${step.image}" style="width:clamp(120px, 20vw, 200px);filter:brightness(0) invert(1);" />
+      `;
+
+      // If a transition animation is provided (e.g. lift finger), loop it
+      if (step.image2) {
+        let showingSecondary = false;
+        gestureInterval = setInterval(() => {
+          showingSecondary = !showingSecondary;
+          const img = el('l1-gesture-img');
+          if (img) img.src = showingSecondary ? step.image2 : step.image;
+        }, 1000);
+      }
+    } else {
+      el('l1-emoji').textContent = step.emoji;
+      el('l1-emoji').style.fontSize = '10rem';
+    }
+
     playSound(step.instructionAudio);
   }
 
@@ -467,7 +493,38 @@ window.level1 = (() => {
     const screen = el('l1-cwm-screen');
     screen.style.display = 'flex';
 
-    el('l1-cwm-hand').innerHTML    = getHandSVG(step.number);
+    // Incremental counting animation using high-fidelity assets
+    const images = [];
+    if (step.number >= 1) images.push('images/1.svg');
+    if (step.number >= 2) images.push('images/2_1.svg');
+    if (step.number >= 3) images.push('images/3.svg');
+    if (step.number >= 4) images.push('images/4.svg');
+    if (step.number >= 5) images.push('images/5.svg');
+
+    if (images.length > 0) {
+      el('l1-cwm-hand').innerHTML = `
+        <img id="l1-cwm-img" src="${images[0]}" 
+             style="width:clamp(100px, 15vw, 140px);filter:brightness(0) invert(1);" />
+      `;
+
+      let idx = 1;
+      // Use a slower rhythm for higher numbers as requested
+      const animationDelay = (step.number >= 4) ? 1500 : 1000;
+      
+      clearInterval(gestureInterval);
+      gestureInterval = setInterval(() => {
+        if (idx < images.length) {
+          const img = el('l1-cwm-img');
+          if (img) img.src = images[idx];
+          idx++;
+        } else {
+          clearInterval(gestureInterval);
+        }
+      }, animationDelay);
+    } else {
+      el('l1-cwm-hand').innerHTML = getHandSVG(step.number);
+    }
+
     el('l1-cwm-numtext').textContent =
       NUM_WORDS[step.number].toUpperCase() + ' = ' + step.number;
 
@@ -476,8 +533,12 @@ window.level1 = (() => {
 
     phase = 'auto';
     
-    // Safety fallback timeout, but ideally we wait for the sound to finish
-    const duration = (s && s.duration && s.duration > 0) ? (s.duration * 1000 + 800) : COUNT_WITH_ME_DURATION;
+    // Ensure duration accounts for the potentially slower animation
+    const animationTotalTime = (images.length - 1) * ((step.number >= 4) ? 1500 : 1000) + 1200;
+    const duration = Math.max(
+      (s && s.duration && s.duration > 0) ? (s.duration * 1000 + 800) : COUNT_WITH_ME_DURATION,
+      animationTotalTime
+    );
     
     if (s) {
       s.onended = () => { if (phase === 'auto') advanceStep(); };

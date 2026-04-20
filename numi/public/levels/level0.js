@@ -248,6 +248,40 @@ window.level0 = (() => {
       step.title.replace(/\n/g, '<br>');
     document.getElementById('ob-subtitle').textContent = step.subtitle;
 
+    // Update hand imagery:
+    const leftHand = document.getElementById('ob-hand-left');
+    const rightHand = document.getElementById('ob-hand-right');
+
+    if (currentStep === 0) {
+      // Step 0: Use the '5' hand (High Five)
+      leftHand.src = 'images/5.svg';
+      rightHand.src = 'images/5.svg';
+      rightHand.classList.add('ob-hand--flipped');
+      leftHand.classList.remove('ob-hand--flip-demo');
+      rightHand.classList.remove('ob-hand--flip-demo-mirrored');
+    } else if (currentStep === 1) {
+      // Step 1: Use the animated wiggle GIF
+      leftHand.src = 'images/hand-wiggle.gif';
+      rightHand.src = 'images/hand-wiggle.gif';
+      rightHand.classList.add('ob-hand--flipped');
+      leftHand.classList.remove('ob-hand--flip-demo');
+      rightHand.classList.remove('ob-hand--flip-demo-mirrored');
+    } else if (currentStep === 2) {
+      // Step 2: Flip step - Use '5' SVG with a flip animation
+      leftHand.src = 'images/5.svg';
+      rightHand.src = 'images/5.svg';
+      leftHand.classList.add('ob-hand--flip-demo');
+      rightHand.classList.add('ob-hand--flip-demo-mirrored');
+      rightHand.classList.remove('ob-hand--flipped'); // Animation handles mirroring
+    } else {
+      // Default / Other steps
+      leftHand.src = 'images/Hand left.svg';
+      rightHand.src = 'images/Hand Right.svg';
+      rightHand.classList.remove('ob-hand--flipped');
+      leftHand.classList.remove('ob-hand--flip-demo');
+      rightHand.classList.remove('ob-hand--flip-demo-mirrored');
+    }
+
     // Fade content in
     requestAnimationFrame(() => {
       contentEl.style.transition = 'opacity 0.35s ease';

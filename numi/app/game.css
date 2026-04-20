@@ -102,6 +102,32 @@
   transform: scale(1.06);
 }
 
+/* Flipped state (for mirrored duplication) */
+.ob-hand--flipped {
+  transform: scaleX(-1);
+}
+.ob-hand--flipped.ob-hand--detected {
+  transform: scaleX(-1) scale(1.06);
+}
+
+/* Flip demonstration animation (Step 2) */
+@keyframes ob-hand-flip-demo {
+  0%, 45% { transform: scaleX(1); }
+  55%, 100% { transform: scaleX(-1); }
+}
+.ob-hand--flip-demo {
+  animation: ob-hand-flip-demo 2s infinite ease-in-out alternate;
+}
+
+/* Mirrored flip demonstration for the right hand */
+@keyframes ob-hand-flip-demo-mirrored {
+  0%, 45% { transform: scaleX(-1); }
+  55%, 100% { transform: scaleX(1); }
+}
+.ob-hand--flip-demo-mirrored {
+  animation: ob-hand-flip-demo-mirrored 2s infinite ease-in-out alternate;
+}
+
 /* ── Instruction text ────────────────────────────────────────── */
 .ob-title {
   font-family: var(--font-display);
