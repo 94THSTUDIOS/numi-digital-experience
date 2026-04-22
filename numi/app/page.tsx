@@ -378,6 +378,7 @@ function LandingHero() {
                     </span>
                     {/* Rotating word absolutely fills the sizer */}
                     <span className="absolute inset-0 flex items-center">
+                      <span style={{ color: ROTATE_COLORS[rotateColorIdx] }}>
                       <TextRotate
                         texts={[
                           "fun",
@@ -390,9 +391,8 @@ function LandingHero() {
                         rotationInterval={3000}
                         transition={{ type: "spring", damping: 30, stiffness: 400 }}
                         onNext={(idx) => setRotateColorIdx(idx)}
-                        // Apply color via inline style — dynamic Tailwind classes aren't JIT-safe
-                        style={{ color: ROTATE_COLORS[rotateColorIdx] }}
                       />
+                      </span>
                     </span>
                   </span>
                 </motion.span>
