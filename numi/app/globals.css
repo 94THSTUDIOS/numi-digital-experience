@@ -152,6 +152,10 @@
   font-family: 'Rethink Sans', sans-serif;
 }
 
+@utility font-body {
+  font-family: 'Rethink Sans', sans-serif;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

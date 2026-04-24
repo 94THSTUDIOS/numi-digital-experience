@@ -8,13 +8,39 @@
    We expose it as a CSS variable for use in .ob-title, .l1-number, etc. */
 :root {
   --font-display: 'moonblossom', Impact, 'Arial Black', sans-serif;
+  --font-primary: 'Rethink Sans', sans-serif;
+
+  /* Timing */
+  --transition-fast: 0.15s ease;
+  --transition-slow: 0.4s ease;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.12);
+  --shadow-glow-pink: 0 0 24px rgba(255, 0, 127, 0.25);
+  --shadow-glow-green: 0 0 24px rgba(91, 173, 82, 0.35);
+
+  /* Radii */
+  --radius-xl: 1.25rem;
+  --radius-full: 9999px;
+
+  /* Surface colors */
+  --color-stroke: rgba(26, 10, 8, 0.12);
+  --color-surface: rgba(253, 240, 232, 0.9);
+  --color-text-muted: rgba(26, 10, 8, 0.5);
+
+  /* Spacing */
+  --space-xs: 0.375rem;
+  --space-md: 0.75rem;
+
+  /* Typography */
+  --text-caption-2: 0.7rem;
 
   /* Onboarding palette */
   --ob-purple: #6c5ce7;
   --ob-purple-dark: #5549c0;
   --ob-hand-tint: #FF6B6F;
   --color-pink: #ff007f;
-  /* coral-pink: hand "detected" state */
 }
 
 

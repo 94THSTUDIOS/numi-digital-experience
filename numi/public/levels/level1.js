@@ -609,6 +609,7 @@ window.level1 = (() => {
     if (el('l1-content')) el('l1-content').style.display = 'none';
     if (el('l1-hold-ring')) el('l1-hold-ring').style.display = 'none';
 
+    gameState.showConfetti();
     gameState.showMagicRings();
     el('l1-celebration').style.opacity    = '1';
     
@@ -631,6 +632,7 @@ window.level1 = (() => {
       : CELEBRATION_DURATION;
 
     transitionTimer = setTimeout(() => {
+      gameState.hideConfetti();
       gameState.hideMagicRings();
       el('l1-celebration').style.opacity = '0';
 

@@ -166,7 +166,7 @@ function LandingHero() {
 
       <TopNavbar />
       {/* SECTION WRAPPER — full viewport height, centers everything */}
-      <section className="w-full h-screen overflow-hidden md:overflow-visible flex flex-col items-center justify-center relative">
+      <section className="w-full h-screen overflow-hidden md:overflow-visible flex flex-col items-center justify-center relative bg-[#FDF0E8]">
         {/* ======================================================
           PARALLAX FLOATING LAYER (background)
           - sensitivity: how much images move relative to mouse (-0.5 = inverted, subtle)

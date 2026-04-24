@@ -168,7 +168,7 @@ export function Player() {
       */}
       <div
         id="player-frame"
-        className={`player-frame relative rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-[#242440] ${isFullscreen ? 'w-full h-full aspect-auto' : 'aspect-[4/3] h-[70vh] md:h-[75vh] w-auto max-w-full'} flex shrink-0 items-center justify-center transition-all duration-300 [&>canvas]:!w-full [&>canvas]:!h-full [&>canvas]:!object-cover`}
+        className={`player-frame relative rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-[#242440] ${isFullscreen ? 'w-full h-full aspect-auto' : 'w-full aspect-[4/3] max-h-[80vh]'} flex shrink-0 items-center justify-center transition-all duration-300 [&>canvas]:!w-full [&>canvas]:!h-full [&>canvas]:!object-cover`}
       >
         {!isStarted && (
           <div className="absolute inset-0 flex flex-col items-center justify-center z-[100] bg-[#1a1a2e]">
