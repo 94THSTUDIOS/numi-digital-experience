@@ -140,7 +140,6 @@ export function TopNavbar() {
                 <div className="absolute top-[100%] left-0 w-full bg-[#FDF0E8] border-t-2 border-black flex flex-col p-8 gap-8 shadow-xl md:hidden">
                     <Link href="/about" className="font-display font-black text-2xl uppercase">About</Link>
                     <Link href="/play" className="font-display font-black text-2xl uppercase text-[#EF5A00]">Try Numi</Link>
-                    <Link href="/team" className="font-display font-black text-2xl uppercase">Our Team</Link>
                     {/* Mobile volume slider */}
                     <div className="flex items-center gap-3">
                         <span className="text-xl">{SpeakerIcon}</span>

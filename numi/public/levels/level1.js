@@ -784,6 +784,8 @@ window.level1 = (() => {
 
     onExit() {
       clearTimeout(transitionTimer);
+      clearInterval(gestureInterval);
+      gameState.hideConfetti();
       gameState.hideMagicRings();
       overlay?.remove();
       overlay = null;

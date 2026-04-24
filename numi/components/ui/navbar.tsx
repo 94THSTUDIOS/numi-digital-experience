@@ -29,8 +29,8 @@ export function Navbar() {
                 colors={['#B497CF', '#5227FF']}
                 logoUrl="/images/logo.svg"
                 accentColor="#5227FF"
-                onMenuOpen={() => console.log('Menu opened')}
-                onMenuClose={() => console.log('Menu closed')}
+                onMenuOpen={() => {}}
+                onMenuClose={() => {}}
             />
         </div>
     );
