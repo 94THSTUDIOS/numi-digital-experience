@@ -36,7 +36,7 @@ window.level2 = (() => {
 
   // ── TIMING ────────────────────────────────────────────────
   // Increased to 50 frames for a longer, more deliberate hold.
-  const FRAMES_TO_CONFIRM    = 50;
+  const FRAMES_TO_CONFIRM    = 45;
   const QUIZ_OBJECTS = ['apple', 'basketball', 'bear', 'butterfly', 'car', 'cat', 'dog', 'leaf', 'pencil'];
 
   // How long (ms) to show the celebration before the next round.
