@@ -57,58 +57,58 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
     >
       <div className="flex flex-col items-center justify-center gap-6">
         {/* Logo */}
-      <motion.img
-        src="/images/logo.svg"
-        alt="Numi"
-        className="h-20 w-auto object-contain"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-      />
+        <motion.img
+          src="/images/logo.svg"
+          alt="Numi"
+          className="h-20 w-auto object-contain"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        />
 
-      {/* Character */}
-      <motion.img
-        src="/images/ch3.png"
-        alt="Numi Character"
-        className="h-48 w-auto object-contain"
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{
-          opacity: 1,
-          scale: 1,
-          rotate: [0, -6, 6, -4, 4, 0],
-        }}
-        transition={{
-          opacity: { duration: 0.4 },
-          scale: { duration: 0.4 },
-          rotate: { duration: 0.8, delay: 0.3, ease: "easeInOut" },
-        }}
-      />
+        {/* Character */}
+        <motion.img
+          src="/images/ch3.png"
+          alt="Numi Character"
+          className="h-48 w-auto object-contain"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{
+            opacity: 1,
+            scale: 1,
+            rotate: [0, -6, 6, -4, 4, 0],
+          }}
+          transition={{
+            opacity: { duration: 0.4 },
+            scale: { duration: 0.4 },
+            rotate: { duration: 0.8, delay: 0.3, ease: "easeInOut" },
+          }}
+        />
 
-      {/* Counting numbers */}
-      <div className="flex items-center gap-4">
-        {NUMBERS.map((n, i) => (
-          <motion.span
-            key={n}
-            className="font-body text-5xl text-[#1A0A08]"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={i <= current ? { scale: 1, opacity: 1 } : {}}
-            transition={{ type: "spring", stiffness: 400, damping: 18 }}
-            style={{ color: i === current ? "#EF5A00" : "#1A0A08" }}
-          >
-            {n}
-          </motion.span>
-        ))}
-      </div>
+        {/* Counting numbers */}
+        <div className="flex items-center gap-4">
+          {NUMBERS.map((n, i) => (
+            <motion.span
+              key={n}
+              className="font-body text-5xl text-[#1A0A08]"
+              initial={{ scale: 0, opacity: 0 }}
+              animate={i <= current ? { scale: 1, opacity: 1 } : {}}
+              transition={{ type: "spring", stiffness: 400, damping: 18 }}
+              style={{ color: i === current ? "#EF5A00" : "#1A0A08" }}
+            >
+              {n}
+            </motion.span>
+          ))}
+        </div>
 
-      {/* "Let's count!" label */}
-      <motion.p
-        className="font-body text-lg text-[#1A0A08]/50 tracking-wide"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-      >
-        Let's count!
-      </motion.p>
+        {/* "Let's count!" label */}
+        <motion.p
+          className="font-body text-lg text-[#1A0A08]/50 tracking-wide"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          Let's count!
+        </motion.p>
       </div>
     </motion.div>
   )
@@ -286,11 +286,11 @@ function LandingHero() {
     <div ref={containerRef}>
       <AnimatePresence>
         {loading && (
-          <LoadingScreen 
+          <LoadingScreen
             onDone={() => {
               setLoading(false);
               forcePlayBGM();
-            }} 
+            }}
           />
         )}
       </AnimatePresence>
@@ -537,7 +537,7 @@ function LandingHero() {
                 initial={{ opacity: 0, y: 20 }}
                 transition={{ duration: 0.2, ease: "easeOut", delay: 0.5 }}
               >
-                Numi turns your fingers into learning tools! Using smart camera hand tracking, kids can count, explore numbers, and solve simple math problems just by holding up their hands.
+                Numi turns your fingers into learning tools! <br /> Using smart camera hand tracking, kids can count, explore numbers, and solve simple math problems just by holding up their hands.
               </motion.p>
 
               {/* CTA BUTTONS */}
@@ -594,7 +594,7 @@ function LandingHero() {
         </div>{/* END main hero layer */}
       </section>
 
-      <section id="how-it-works" className="w-full pb-20 pt-40 md:pt-64 lg:pt-80 px-6 md:px-12 bg-[#FDF0E8] relative overflow-hidden md:overflow-visible">
+      <section id="how-it-works" className="w-full pb-20 pt-40 md:pt-64 lg:pt-80 px-6 md:px-12 bg-[#F6636F] text-white relative overflow-hidden md:overflow-visible">
         {/* ---------- FLOATING CHARACTER (ch1) - RIGHT SIDE ---------- */}
         <div className="absolute top-0 right-0 bottom-0 z-[10] pointer-events-none md:flex items-center hidden">
           <div className="relative right-[5%] sm:right-[10%] md:right-[12%] lg:right-[15%]">
@@ -629,22 +629,22 @@ function LandingHero() {
             transition={{ duration: 0.4, ease: "easeOut" }}
           >
             <SparklesText
-              text="How it works"
-              className="text-4xl sm:text-5xl md:text-6xl font-fredoka text-center text-[#1A0A08] leading-tight"
-              colors={{ first: "#F6636F", second: "#EF5A00" }}
+              text="How it Works"
+              className="text-4xl sm:text-5xl md:text-6xl font-fredoka text-center text-white leading-tight"
+              colors={{ first: "#FFFFFF", second: "#C6EBF7" }}
             />
           </motion.div>
 
           {/* 3 Steps */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 w-full">
             {[
-              { step: "1", label: "Show your hand", desc: "Hold your hand up to the camera", hand: "/images/Hand Right.svg", flip: false },
-              { step: "2", label: "Count your fingers", desc: "Hold up 1, 2 or 3 fingers", hand: "/images/Hand left.svg", flip: false },
-              { step: "3", label: "Match the number!", desc: "Numi checks your answer live", hand: "/images/Hand Right.svg", flip: true },
+              { step: "1", label: "Numi uses your Camera", desc: "AI powered hand-tracking turns fingers into numbers", hand: "/images/1 how.png" },
+              { step: "2", label: "Simple On-Screen Guides", desc: "Count with natural hand movements", hand: "/images/2 how.png" },
+              { step: "3", label: "Instant Learning and Feeback!", desc: "Numbers appear instantly with feedback that builds understanding.", hand: "/images/3 how.png" },
             ].map((item, i) => (
               <motion.div
                 key={item.step}
-                className="flex flex-col items-center gap-4 bg-white rounded-3xl p-6 shadow-md"
+                className="flex flex-col items-center gap-4 bg-white rounded-3xl p-6 shadow-md py-12"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -663,7 +663,7 @@ function LandingHero() {
                 />
 
                 {/* Labels */}
-                <p className="font-body text-xl text-[#1A0A08] text-center">{item.label}</p>
+                <p className="font-fredoka font-bold text-xl text-[#F6636F] text-center">{item.label}</p>
                 <p className="font-sans text-sm text-[#1A0A08]/60 text-center">{item.desc}</p>
               </motion.div>
             ))}
@@ -676,12 +676,12 @@ function LandingHero() {
             viewport={{ once: true }}
             transition={{ duration: 0.4, ease: "easeOut", delay: 0.5 }}
           >
-            <Link
+            <StarButton
               href="/play"
-              className="inline-block px-10 py-4 bg-[#EF5A00] hover:bg-[#d44f00] text-white font-body text-xl rounded-full shadow-xl transition-colors"
+              className="!bg-[#3F6F29] !border-[#3F6F29] !text-white hover:!bg-white hover:!text-[#3F6F29] text-xl md:text-2xl font-black tracking-tight font-body shadow-2xl px-10 py-4 transition-all duration-300"
             >
-              Start Learning →
-            </Link>
+              Start Learning <span className="font-serif ml-1">→</span>
+            </StarButton>
           </motion.div>
 
         </div>
