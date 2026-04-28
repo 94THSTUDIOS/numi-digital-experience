@@ -305,8 +305,8 @@ function LandingHero() {
       />
 
       <TopNavbar />
-      {/* SECTION WRAPPER — full viewport height, centers everything */}
-      <section ref={heroRef} id="hero-section" className="w-full h-screen overflow-hidden md:overflow-visible flex flex-col items-center justify-center pt-20 md:pt-32 lg:pt-40 relative z-20 bg-[#FDF0E8]">
+      {/* SECTION WRAPPER — dynamic viewport height (dvh) for mobile bars, centers everything */}
+      <section ref={heroRef} id="hero-section" className="w-full h-screen h-[100dvh] overflow-hidden md:overflow-visible flex flex-col items-center justify-center pt-20 md:pt-32 lg:pt-40 relative z-20 bg-[#FDF0E8]">
         {/* ======================================================
           PARALLAX FLOATING LAYER (background)
           - sensitivity: how much images move relative to mouse (-0.5 = inverted, subtle)

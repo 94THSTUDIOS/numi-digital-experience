@@ -179,17 +179,17 @@ export function Player() {
         className={`player-frame relative rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-[#242440] ${isFullscreen ? 'w-full h-full aspect-auto' : 'w-full aspect-[4/3] max-h-[80vh]'} flex shrink-0 items-center justify-center transition-all duration-300 [&>canvas]:!w-full [&>canvas]:!h-full [&>canvas]:!object-cover`}
       >
         {!isStarted && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center z-[100] bg-[#1a1a2e]">
+          <div className="absolute inset-0 flex flex-col items-center justify-center z-[100] bg-[#1a1a2e] p-6 text-center">
             <button
               onClick={() => {
                 setIsStarted(true);
                 forcePlayBGM();
               }}
-              className="px-8 py-4 bg-[#EF5A00] hover:bg-[#d44f00] hover:scale-105 text-white font-calendas rounded-full transition-all text-xl shadow-lg shadow-[#EF5A00]/30"
+              className="px-6 py-4 sm:px-8 sm:py-4 bg-[#EF5A00] hover:bg-[#d44f00] hover:scale-105 text-white font-calendas rounded-full transition-all text-lg sm:text-xl shadow-lg shadow-[#EF5A00]/30"
             >
               Start Camera & Audio
             </button>
-            <p className="mt-4 text-white/50 font-sans text-sm">Required to unlock audio playback</p>
+            <p className="mt-4 text-white/50 font-sans text-xs sm:text-sm">Required to unlock audio playback</p>
           </div>
         )}
 
@@ -202,11 +202,11 @@ export function Player() {
 
         {/* START LEARNING gate — shown once camera + AI are ready */}
         {isStarted && loaded && !isReady && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center z-[150] bg-[#1a1a2e]/80 backdrop-blur-sm gap-4">
-            <p className="text-white/60 font-sans text-sm uppercase tracking-widest">Camera ready!</p>
+          <div className="absolute inset-0 flex flex-col items-center justify-center z-[150] bg-[#1a1a2e]/80 backdrop-blur-sm gap-4 p-6 text-center">
+            <p className="text-white/60 font-sans text-xs sm:text-sm uppercase tracking-widest">Camera ready!</p>
             <button
               onClick={() => setIsReady(true)}
-              className="px-10 py-5 bg-[#EF5A00] hover:bg-[#d44f00] hover:scale-105 active:scale-95 text-white font-calendas rounded-full transition-all text-2xl shadow-xl shadow-[#EF5A00]/30"
+              className="px-6 py-4 sm:px-10 sm:py-5 bg-[#EF5A00] hover:bg-[#d44f00] hover:scale-105 active:scale-95 text-white font-calendas rounded-full transition-all text-xl sm:text-2xl shadow-xl shadow-[#EF5A00]/30"
             >
               Start Learning ▶
             </button>

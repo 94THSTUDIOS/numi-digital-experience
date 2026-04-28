@@ -3,6 +3,7 @@
 import Link from "next/link";
 import React, { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { VolumeIcon, type VolumeIconHandle } from "@/components/ui/volume";
 import { StarButton } from "@/components/ui/star-button";
 import { MusicToggleButton } from "@/components/ui/music-toggle-btn";
@@ -159,29 +160,74 @@ export function TopNavbar() {
                 </div>
             </div>
 
-            {/* MOBILE DROPDOWN */}
-            {isMobileMenuOpen && (
-                <div className="absolute top-[100%] left-0 w-full bg-[#FDF0E8] border-t-2 border-black flex flex-col p-6 gap-6 shadow-xl md:hidden">
-                    <Link href="/about" className="font-display font-black text-xl uppercase text-[#F45F00]">ABOUT</Link>
-                    <StarButton href={isPlayPage ? "/" : "/play"} className="font-display font-black text-xl uppercase w-fit">
-                        {isPlayPage ? "BACK HOME" : "LET'S PLAY!"}
-                    </StarButton>
-                    {/* Mobile volume slider */}
-                    <div className="flex items-center gap-3">
-                        <VolumeIcon size={26} className="text-[#F45F00]" />
-                        <input
-                            type="range"
-                            min="0"
-                            max="1"
-                            step="0.05"
-                            value={effectiveVolume}
-                            onChange={handleVolumeChange}
-                            className="flex-1 accent-[#3F6F29] bg-white h-2 rounded-full cursor-pointer"
-                            aria-label="Volume"
-                        />
-                    </div>
-                </div>
-            )}
+            {/* MOBILE DROPDOWN — Full-screen overlay for a premium feel */}
+            <AnimatePresence>
+                {isMobileMenuOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
+                        className="fixed inset-0 top-0 left-0 w-full h-screen bg-[#FDF0E8] z-[90] md:hidden flex flex-col p-6 pt-28 gap-8 shadow-2xl"
+                    >
+                        <div className="flex flex-col gap-6">
+                            <Link 
+                                href="/about" 
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className="font-display font-black text-3xl uppercase text-[#F45F00] hover:scale-105 transition-transform w-fit origin-left"
+                            >
+                                ABOUT
+                            </Link>
+                            
+                            <StarButton 
+                                href={isPlayPage ? "/" : "/play"} 
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className="font-display font-black text-xl uppercase w-full py-4 text-center shadow-lg"
+                            >
+                                {isPlayPage ? "BACK HOME" : "LET'S PLAY!"}
+                            </StarButton>
+                        </div>
+
+                        {/* Mobile volume & BGM section */}
+                        <div className="mt-auto pb-10 flex flex-col gap-8 border-t border-black/10 pt-8">
+                            <div className="flex items-center justify-between">
+                                <p className="font-display font-black text-lg uppercase text-black/40">Music</p>
+                                <MusicToggleButton isPlaying={isPlayingBGM} onClick={toggleBGM} />
+                            </div>
+
+                            <div className="flex flex-col gap-4">
+                                <div className="flex items-center justify-between">
+                                    <p className="font-display font-black text-lg uppercase text-black/40">Volume</p>
+                                    <button
+                                        onClick={toggleMute}
+                                        className="text-[#F45F00] hover:scale-110 transition-transform"
+                                    >
+                                        <VolumeIcon size={32} />
+                                    </button>
+                                </div>
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max="1"
+                                    step="0.05"
+                                    value={effectiveVolume}
+                                    onChange={handleVolumeChange}
+                                    className="w-full accent-[#3F6F29] bg-white h-3 rounded-full cursor-pointer"
+                                    aria-label="Volume"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Close button at the bottom for accessibility */}
+                        <button
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="mt-4 w-full py-4 font-display font-black text-[#F45F00] uppercase tracking-widest border-2 border-[#F45F00] rounded-full hover:bg-[#F45F00] hover:text-white transition-colors"
+                        >
+                            Close Menu
+                        </button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </nav>
     );
 }

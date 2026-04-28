@@ -2,8 +2,8 @@ import Link from "next/link";
 
 export function MinimalFooter() {
 	return (
-		<footer className="w-full bg-[#FDF0E8] py-12 px-8 md:px-16 pt-20 border-t-2 border-[#9C2A2A]/10 relative z-50">
-			<div className="max-w-[90rem] mx-auto flex flex-col md:flex-row justify-between items-start gap-16 md:gap-8">
+		<footer className="w-full bg-[#FDF0E8] py-12 px-4 sm:px-6 md:px-10 lg:px-16 pt-20 border-t-2 border-[#9C2A2A]/10 relative z-50">
+			<div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-16 md:gap-8">
 				
 				{/* LEFT: Logo */}
 				<div className="w-full md:w-1/2 flex items-center">
@@ -15,7 +15,7 @@ export function MinimalFooter() {
 				</div>
 
 				{/* RIGHT: Links & Credits */}
-				<div className="w-full md:w-1/2 flex flex-col sm:flex-row justify-start md:justify-end gap-16 lg:gap-32">
+				<div className="w-full md:w-1/2 flex flex-col sm:flex-row justify-start md:justify-end gap-12 sm:gap-16 lg:gap-32">
 					
 					{/* Navigation Links */}
 					<div className="flex flex-col gap-4 text-[#9C2A2A] font-body font-semibold text-xl lg:text-2xl">
@@ -38,7 +38,7 @@ export function MinimalFooter() {
 			</div>
 
 			{/* COPYRIGHT */}
-			<div className="max-w-[90rem] mx-auto mt-16 md:mt-24 flex justify-start md:justify-end">
+			<div className="max-w-7xl mx-auto mt-16 md:mt-24 flex justify-start md:justify-end">
 				<span className="text-[#9C2A2A] font-body font-bold text-xl lg:text-2xl">
 					© 2026 Numi
 				</span>

@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { TopNavbar } from "@/components/ui/top-navbar"
+import { MinimalFooter } from "@/components/ui/minimal-footer"
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
@@ -76,8 +77,8 @@ export default function AboutPage() {
       </div>
 
       {/* MISSION */}
-      <section className="bg-[#F47C6E] text-white px-6 md:px-16 py-20">
-        <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+      <section className="bg-[#F47C6E] text-white px-4 sm:px-6 md:px-10 lg:px-16 py-20">
+        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <motion.div
             className="flex flex-col gap-5"
             initial={{ opacity: 0, x: -30 }}
@@ -118,7 +119,8 @@ export default function AboutPage() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="px-6 md:px-16 py-20 max-w-5xl mx-auto">
+      <section className="px-4 sm:px-6 md:px-10 lg:px-16 py-20">
+        <div className="max-w-7xl mx-auto">
         <motion.h2
           className="font-display font-black text-[clamp(1.8rem,4vw,3rem)] uppercase text-center mb-14"
           initial={{ opacity: 0, y: 20 }}
@@ -171,10 +173,12 @@ export default function AboutPage() {
             </motion.div>
           ))}
         </div>
-      </section>
+      </div>
+    </section>
 
       {/* CTA */}
-      <section className="bg-[#1A0A08] text-white px-6 md:px-16 py-20 flex flex-col items-center text-center gap-7">
+      <section className="bg-[#1A0A08] text-white px-4 sm:px-6 md:px-10 lg:px-16 py-20 flex flex-col items-center text-center gap-7">
+        <div className="max-w-7xl mx-auto flex flex-col items-center">
         <motion.h2
           className="font-display font-black text-[clamp(2rem,5vw,4rem)] uppercase leading-tight max-w-xl"
           initial={{ opacity: 0, y: 20 }}
@@ -206,15 +210,10 @@ export default function AboutPage() {
             Try Numi Free
           </Link>
         </motion.div>
+        </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="px-6 md:px-16 py-8 flex items-center justify-between text-sm text-[#1A0A08]/50">
-        <Link href="/" className="hover:text-[#1A0A08] transition-colors">
-          ← Back home
-        </Link>
-        <span>© {new Date().getFullYear()} Numi</span>
-      </footer>
+      <MinimalFooter />
     </main>
   )
 }
