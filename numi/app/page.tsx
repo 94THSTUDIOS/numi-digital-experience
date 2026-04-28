@@ -452,10 +452,10 @@ function LandingHero() {
         </Floating>{/* END parallax layer */}
 
         {/* HERO LOGO SLOT — desktop only: space reserved for GSAP flying logo */}
-        <div className="hidden md:flex justify-center w-full z-50 pointer-events-none px-4">
+        <div className="hidden md:flex justify-center w-full z-50 pointer-events-none px-4 mb-4 sm:mb-6 md:mb-8">
           <div
             id="hero-logo-slot"
-            className="w-full max-w-xl md:max-w-2xl lg:max-w-4xl aspect-[510/304]"
+            className="w-full max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-2xl aspect-[510/304]"
           />
         </div>
 
@@ -468,11 +468,11 @@ function LandingHero() {
 
           {/* ---------- LEFT CHARACTER (ch3 orange) ---------- */}
           {/* Anchored to the center and pushed left so it never moves when text changes width */}
-          <div className="absolute top-1/2 -translate-y-1/2 right-[50%] mr-[10rem] sm:mr-[14rem] md:mr-[18rem] lg:mr-[28rem] xl:mr-[34rem] z-0 opacity-40 md:opacity-100 pointer-events-none">
+          <div className="absolute top-1/2 -translate-y-1/2 right-[50%] mr-[7rem] sm:mr-[8rem] md:mr-[11rem] lg:mr-[15rem] xl:mr-[19rem] z-0 opacity-40 md:opacity-100 pointer-events-none">
             <motion.img
               src="/images/ch3.png"
               alt="Numi Character Left"
-              className="w-[16rem] sm:w-[20rem] md:w-[24rem] lg:w-[32rem] xl:w-[44rem] max-w-none max-h-[70vh] object-contain drop-shadow-2xl"
+              className="w-[16rem] sm:w-[20rem] md:w-[24rem] lg:w-[28rem] xl:w-[32rem] max-w-none max-h-[70vh] object-contain drop-shadow-2xl"
               initial={{ opacity: 0, x: -40 }}
               animate={{
                 opacity: 1,
@@ -495,7 +495,7 @@ function LandingHero() {
             <div id="hero-cta" className="flex flex-col items-center">
               {/* ANIMATED HEADING — fades up on load */}
               <motion.h1
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-center w-full justify-center items-center flex-row flex flex-wrap lg:flex-nowrap lg:whitespace-nowrap leading-tight font-fredoka tracking-tight"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl text-center w-full justify-center items-center flex-row flex flex-wrap lg:flex-nowrap lg:whitespace-nowrap leading-tight font-fredoka tracking-tight"
                 animate={{ opacity: 1, y: 0 }}
                 initial={{ opacity: 0, y: 20 }}
                 transition={{ duration: 0.2, ease: "easeOut", delay: 0.3 }}
@@ -532,7 +532,7 @@ function LandingHero() {
 
               {/* SUBTITLE */}
               <motion.p
-                className="text-base sm:text-lg md:text-xl lg:text-2xl text-center font-body pt-4 sm:pt-6 md:pt-8 max-w-xl md:max-w-2xl lg:max-w-4xl"
+                className="text-base sm:text-lg md:text-xl lg:text-xl text-center font-body pt-4 sm:pt-6 md:pt-8 max-w-xl md:max-w-2xl lg:max-w-3xl"
                 animate={{ opacity: 1, y: 0 }}
                 initial={{ opacity: 0, y: 20 }}
                 transition={{ duration: 0.2, ease: "easeOut", delay: 0.5 }}
@@ -570,38 +570,38 @@ function LandingHero() {
 
           {/* ---------- RIGHT CHARACTER (ch2 pink) ---------- */}
           {/* Anchored to the center and pushed right so it never moves when text changes width */}
-          <div className="absolute top-1/2 -translate-y-1/2 left-[50%] ml-[10rem] sm:ml-[14rem] md:ml-[18rem] lg:ml-[28rem] xl:ml-[34rem] z-0 opacity-40 md:opacity-100 pointer-events-none">
+          <div className="absolute top-1/2 -translate-y-1/2 left-[50%] ml-[7rem] sm:ml-[10rem] md:ml-[13rem] lg:ml-[16rem] xl:ml-[20rem] z-0 opacity-40 md:opacity-100 pointer-events-none">
             <motion.img
               src="/images/ch2.png"
               alt="Numi Character Right"
-              className="w-[20rem] sm:w-[24rem] md:w-[28rem] lg:w-[36rem] xl:w-[48rem] max-w-none max-h-[70vh] object-contain drop-shadow-2xl"
-              initial={{ opacity: 0, x: 40 }}
+              className="w-[16rem] sm:w-[18rem] md:w-[20rem] lg:w-[24rem] xl:w-[28rem] max-w-none max-h-[70vh] object-contain drop-shadow-2xl"
+              initial={{ opacity: 0, x: 40, scaleX: -1 }}
               animate={{
                 opacity: 1,
                 x: 0,
-                y: [0, 12, 0],
+                scaleX: -1,
+                y: [0, -14, 0],
                 rotate: [5, 3, 7, 5],
               }}
               transition={{
-                opacity: { duration: 0.8, ease: "easeOut", delay: 0.6 },
-                x: { duration: 0.8, ease: "easeOut", delay: 0.6 },
-                y: { duration: 3.5, ease: "easeInOut", repeat: Infinity, delay: 1.2 },
-                rotate: { duration: 3.5, ease: "easeInOut", repeat: Infinity, delay: 1.2 },
+                opacity: { duration: 0.8, ease: "easeOut", delay: 0.4 },
+                x: { duration: 0.8, ease: "easeOut", delay: 0.4 },
+                y: { duration: 3, ease: "easeInOut", repeat: Infinity, delay: 1 },
+                rotate: { duration: 3, ease: "easeInOut", repeat: Infinity, delay: 1 },
               }}
             />
           </div>
-
         </div>{/* END main hero layer */}
       </section>
 
       <section id="how-it-works" className="w-full pb-20 pt-40 md:pt-64 lg:pt-80 px-6 md:px-12 bg-[#FDF0E8] relative overflow-hidden md:overflow-visible">
         {/* ---------- FLOATING CHARACTER (ch1) - RIGHT SIDE ---------- */}
         <div className="absolute top-0 right-0 bottom-0 z-[10] pointer-events-none md:flex items-center hidden">
-          <div className="relative right-[-5%] lg:right-[-8%] xl:right-[-5%]">
+          <div className="relative right-[5%] sm:right-[10%] md:right-[12%] lg:right-[15%]">
             <motion.img
               src="/images/ch1.png"
               alt="Numi Character Right"
-              className="w-56 sm:w-80 md:w-96 lg:w-[45rem] object-contain drop-shadow-10xl"
+              className="w-56 sm:w-80 md:w-96 lg:w-[32rem] object-contain drop-shadow-10xl"
               initial={{ opacity: 0, x: 20 }}
               animate={{
                 opacity: 1,
@@ -617,27 +617,7 @@ function LandingHero() {
           </div>
         </div>
 
-        {/* ---------- FLOATING CHARACTER (ch2) - LEFT SIDE ---------- */}
-        <div className="absolute top-0 left-0 bottom-0 z-[10] pointer-events-none md:flex items-center hidden">
-          <div className="relative left-[-5%] lg:left-[-8%] xl:left-[-5%]">
-            <motion.img
-              src="/images/ch2.png"
-              alt="Numi Character Left"
-              className="w-56 sm:w-80 md:w-96 lg:w-[45rem] object-contain drop-shadow-10xl"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{
-                opacity: 1,
-                y: [0, 15, 0],
-                rotate: [-8, -10, -6, -8],
-              }}
-              transition={{
-                opacity: { duration: 0.8, ease: "easeOut", delay: 0.4 },
-                y: { duration: 4, ease: "easeInOut", repeat: Infinity },
-                rotate: { duration: 4, ease: "easeInOut", repeat: Infinity },
-              }}
-            />
-          </div>
-        </div>
+
 
         <div className="max-w-5xl mx-auto flex flex-col items-center gap-12 relative z-20">
 
