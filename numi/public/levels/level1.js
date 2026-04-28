@@ -17,14 +17,14 @@ window.level1 = (() => {
   // Fingers raise in standard child-counting order:
   //   1=index, 2=+middle, 3=+ring, 4=+pinky, 5=+thumb
   function getHandSVG(count) {
-    const SKIN    = '#FFCB74';
+    const SKIN = '#FFCB74';
     const OUTLINE = '#C07820';
-    const NAIL    = 'rgba(255,255,255,0.38)';
+    const NAIL = 'rgba(255,255,255,0.38)';
 
     // [cx, tipY_raised, tipY_curled, fingerWidth]
     const FINGER_DEFS = [
       [35, 14, 61, 14],   // index
-      [50,  6, 56, 14],   // middle
+      [50, 6, 56, 14],   // middle
       [65, 14, 61, 13],   // ring
       [78, 27, 64, 11],   // pinky
     ];
@@ -36,7 +36,7 @@ window.level1 = (() => {
     FINGER_DEFS.forEach(([cx, tipUp, tipDown, w], i) => {
       if (i >= Math.min(count, 4)) {
         const tipY = tipDown;
-        const h    = PALM_TOP + 8 - tipY;
+        const h = PALM_TOP + 8 - tipY;
         parts.push(
           `<rect x="${cx - w / 2}" y="${tipY}" width="${w}" height="${h}" rx="${Math.floor(w / 2)}" ` +
           `fill="${SKIN}" stroke="${OUTLINE}" stroke-width="2"/>`
@@ -54,7 +54,7 @@ window.level1 = (() => {
     FINGER_DEFS.forEach(([cx, tipUp, tipDown, w], i) => {
       if (i < Math.min(count, 4)) {
         const tipY = tipUp;
-        const h    = PALM_TOP + 12 - tipY;
+        const h = PALM_TOP + 12 - tipY;
         parts.push(
           `<rect x="${cx - w / 2}" y="${tipY}" width="${w}" height="${h}" rx="${Math.floor(w / 2)}" ` +
           `fill="${SKIN}" stroke="${OUTLINE}" stroke-width="2.5"/>`
@@ -85,13 +85,13 @@ window.level1 = (() => {
   }
 
   // ── CONSTANTS ─────────────────────────────────────────────
-  const NUM_WORDS  = ['', 'one', 'two', 'three', 'four', 'five'];
+  const NUM_WORDS = ['', 'one', 'two', 'three', 'four', 'five'];
 
-  const FRAMES_TO_CONFIRM      = 60;      // ~1.0 s at 60 fps hold (Increased from 40)
-  const CELEBRATION_DURATION   = 2000;    // Increased from 1200
-  const NUMBER_SHOW_DURATION   = 3000;    // Increased from 1800
+  const FRAMES_TO_CONFIRM = 30;      // ~0.5 s at 60 fps hold (Decreased for snappier response)
+  const CELEBRATION_DURATION = 2000;    // Increased from 1200
+  const NUMBER_SHOW_DURATION = 3000;    // Increased from 1800
   const COUNT_WITH_ME_DURATION = 4200;    // auto-advance from Count-With-Me (fallback)
-  const AUDIO_CONFIDENCE_MIN   = 0.45;    // Lowered for better accessibility/testing
+  const AUDIO_CONFIDENCE_MIN = 0.45;    // Lowered for better accessibility/testing
 
   // ── SEQUENCE DEFINITION ───────────────────────────────────
   // kind: 'gesture' | 'count_with_me' | 'your_turn'
@@ -130,13 +130,13 @@ window.level1 = (() => {
       image: 'images/1.svg',   // Base: 1 finger
       image2: 'images/2_1.svg', // Final: 2 fingers
       instructionAudio: 'l1_lift_another_2',
-      numberText: 'THIS IS TWO = 2',
+      // numberText removed — celebration goes straight to count_sequence
       numberAudio: 'l1_this_is_two',
       number: 2,
       detect: (f, h) => h >= 1 && f === 2,
     },
-    { kind: 'count_with_me', number: 2 },
-    { kind: 'your_turn',     number: 2 },
+    { kind: 'count_sequence', number: 2 },
+    { kind: 'your_turn', number: 2 },
 
     // ── Number 3 ─────────────────────────────────────────────
     {
@@ -145,13 +145,13 @@ window.level1 = (() => {
       image: 'images/2_1.svg',
       image2: 'images/3.svg',
       instructionAudio: 'l1_lift_another_3',
-      numberText: 'THIS IS THREE = 3',
+      // numberText removed — celebration goes straight to count_sequence
       numberAudio: 'l1_this_is_three',
       number: 3,
       detect: (f, h) => h >= 1 && f === 3,
     },
-    { kind: 'count_with_me', number: 3 },
-    { kind: 'your_turn',     number: 3 },
+    { kind: 'count_sequence', number: 3 },
+    { kind: 'your_turn', number: 3 },
 
     // ── Number 4 ─────────────────────────────────────────────
     {
@@ -160,13 +160,13 @@ window.level1 = (() => {
       image: 'images/3.svg',
       image2: 'images/4.svg',
       instructionAudio: 'l1_lift_another_4',
-      numberText: 'THIS IS FOUR = 4',
+      // numberText removed — celebration goes straight to count_sequence
       numberAudio: 'l1_this_is_four',
       number: 4,
       detect: (f, h) => h >= 1 && f === 4,
     },
-    { kind: 'count_with_me', number: 4 },
-    { kind: 'your_turn',     number: 4 },
+    { kind: 'count_sequence', number: 4 },
+    { kind: 'your_turn', number: 4 },
 
     // ── Number 5 ─────────────────────────────────────────────
     {
@@ -175,27 +175,76 @@ window.level1 = (() => {
       image: 'images/4.svg',
       image2: 'images/5.svg',
       instructionAudio: 'l1_lift_another_5',
-      numberText: 'THIS IS FIVE = 5',
+      // numberText removed — celebration goes straight to count_sequence
       numberAudio: 'l1_this_is_five',
       number: 5,
       detect: (f, h) => h >= 1 && f >= 5,
     },
-    { kind: 'count_with_me', number: 5 },
-    { kind: 'your_turn',     number: 5 },
+    { kind: 'count_sequence', number: 5 },
+    { kind: 'your_turn', number: 5 },
   ];
 
   // ── STATE ─────────────────────────────────────────────────
-  let overlay         = null;
-  let currentStep     = 0;
+  let overlay = null;
+  let currentStep = 0;
   // 'waiting' | 'celebrating' | 'showing_number' | 'auto' | 'your_turn'
-  let phase           = 'waiting';
-  let isPaused        = false;
-  let stableCount     = 0;
-  let transitionTimer = null;
-  let gestureInterval = null; // Animation timer for gesture guides
+  let phase = 'waiting';
+  let isPaused = false;
+  let stableCount = 0;
+  let transitionTimer = null; // now a PausableTimeout
+  let gestureInterval = null; // now a PausableInterval
 
   let expectedSubCount = 1;      // Tracking 1 -> 2 -> 3... in Your Turn
-  let gestureOk        = false;
+  let gestureOk = false;
+  let activeAudioOnPause = [];   // tracking currently playing audio
+
+  // ── PAUSABLE TIMERS ───────────────────────────────────────
+  class PausableTimeout {
+    constructor(callback, delay) {
+      this.callback = callback;
+      this.remaining = delay;
+      this.resume();
+    }
+    pause() {
+      clearTimeout(this.timerId);
+      this.remaining -= Date.now() - this.start;
+    }
+    resume() {
+      if (this.remaining <= 0) return;
+      this.start = Date.now();
+      clearTimeout(this.timerId);
+      this.timerId = setTimeout(this.callback, this.remaining);
+    }
+    clear() {
+      clearTimeout(this.timerId);
+    }
+  }
+
+  class PausableInterval {
+    constructor(callback, delay) {
+      this.callback = callback;
+      this.delay = delay;
+      this.remaining = delay;
+      this.resume();
+    }
+    pause() {
+      clearTimeout(this.timerId);
+      this.remaining -= Date.now() - this.start;
+    }
+    resume() {
+      this.start = Date.now();
+      clearTimeout(this.timerId);
+      this.timerId = setTimeout(() => this.tick(), this.remaining);
+    }
+    tick() {
+      this.callback();
+      this.remaining = this.delay;
+      this.resume();
+    }
+    clear() {
+      clearTimeout(this.timerId);
+    }
+  }
 
   // ── HELPER: id shorthand ──────────────────────────────────
   const el = (id) => document.getElementById(id);
@@ -205,16 +254,16 @@ window.level1 = (() => {
     overlay = document.createElement('div');
     overlay.id = 'l1-overlay';
     Object.assign(overlay.style, {
-      position        : 'absolute',
-      inset           : '0',
-      zIndex          : '10',
-      background      : 'rgba(14, 12, 28, 0.52)',
-      backdropFilter  : 'blur(3px)',
+      position: 'absolute',
+      inset: '0',
+      zIndex: '10',
+      background: 'rgba(14, 12, 28, 0.52)',
+      backdropFilter: 'blur(3px)',
       WebkitBackdropFilter: 'blur(3px)',
-      display         : 'flex',
-      flexDirection   : 'column',
-      alignItems      : 'center',
-      justifyContent  : 'center',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
     });
 
     overlay.innerHTML = `
@@ -338,9 +387,9 @@ window.level1 = (() => {
         <div style="display:flex;flex-direction:column;gap:1rem;width:240px;">
           <button id="l1-resume"
                   style="font-family:var(--font-display);font-size:1.8rem;font-weight:900;
-                         color:white;background:#6c5ce7;border:none;padding:1rem;
+                         color:white;background:#F6636F;border:none;padding:1rem;
                          border-radius:12px;cursor:pointer;text-transform:uppercase;
-                         box-shadow:0 10px 20px rgba(108,92,231,0.3);">
+                         box-shadow:0 10px 20px rgba(246,99,111,0.3);">
             Resume
           </button>
         </div>
@@ -359,29 +408,24 @@ window.level1 = (() => {
       </div>
 
       <!-- ── Controls ── -->
-      <button id="l1-close"
-              style="position:absolute;top:15px;left:15px;width:32px;height:32px;border-radius:50%;
-                     border:none;background:#6c5ce7;font-weight:bold;color:white;cursor:pointer;
-                     box-shadow:0 2px 8px rgba(0,0,0,0.3);z-index:20;">✕</button>
       <div id="l1-controls" style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
                                     display:flex;align-items:center;gap:15px;z-index:20;">
         <button id="l1-skip-back"
-                style="width:36px;height:36px;border-radius:50%;border:none;background:rgba(108,92,231,0.6);
+                style="width:36px;height:36px;border-radius:50%;border:none;background:rgba(246,99,111,0.6);
                        font-size:1rem;color:white;cursor:pointer;
                        box-shadow:0 2px 8px rgba(0,0,0,0.3);">⏮</button>
         <button id="l1-pause"
-                style="width:48px;height:48px;border-radius:50%;border:none;background:#6c5ce7;
+                style="width:48px;height:48px;border-radius:50%;border:none;background:#F6636F;
                        font-size:1.4rem;color:white;cursor:pointer;
                        box-shadow:0 4px 12px rgba(0,0,0,0.4);">⏸</button>
         <button id="l1-skip-forward"
-                style="width:36px;height:36px;border-radius:50%;border:none;background:rgba(108,92,231,0.6);
+                style="width:36px;height:36px;border-radius:50%;border:none;background:rgba(246,99,111,0.6);
                        font-size:1rem;color:white;cursor:pointer;
                        box-shadow:0 2px 8px rgba(0,0,0,0.3);">⏭</button>
       </div>
     `;
 
     document.getElementById('player-frame').appendChild(overlay);
-    el('l1-close').addEventListener('click', () => gameState.transitionTo('level0'));
     el('l1-pause').addEventListener('click', togglePause);
     el('l1-resume').addEventListener('click', togglePause);
     el('l1-skip-back').addEventListener('click', () => {
@@ -403,14 +447,29 @@ window.level1 = (() => {
 
     if (isPaused) {
       menu.style.display = 'flex';
-      // Pause all audio
+
+      // Pause timers
+      if (transitionTimer && transitionTimer.pause) transitionTimer.pause();
+      if (gestureInterval && gestureInterval.pause) gestureInterval.pause();
+
+      // Pause all audio and remember what was playing
+      activeAudioOnPause = [];
       for (let key in window.sounds) {
-        if (window.sounds[key]) window.sounds[key].pause();
+        if (window.sounds[key] && !window.sounds[key].paused) {
+          activeAudioOnPause.push(window.sounds[key]);
+          window.sounds[key].pause();
+        }
       }
     } else {
       menu.style.display = 'none';
-      // Resume could be tricky; we'll let the user manually trigger audio if needed
-      // but for "Auto" phases, we might want to resume the current sound.
+
+      // Resume timers
+      if (transitionTimer && transitionTimer.resume) transitionTimer.resume();
+      if (gestureInterval && gestureInterval.resume) gestureInterval.resume();
+
+      // Resume audio
+      activeAudioOnPause.forEach(a => a.play().catch(() => { }));
+      activeAudioOnPause = [];
     }
   }
 
@@ -418,44 +477,48 @@ window.level1 = (() => {
   function setOverlayDim(on) {
     if (!overlay) return;
     if (on) {
-      overlay.style.background           = 'rgba(14, 12, 28, 0.52)';
-      overlay.style.backdropFilter       = 'blur(3px)';
+      overlay.style.background = 'rgba(14, 12, 28, 0.52)';
+      overlay.style.backdropFilter = 'blur(3px)';
       overlay.style.WebkitBackdropFilter = 'blur(3px)';
     } else {
       // Remove dim so the camera feed shows through
-      overlay.style.background           = 'transparent';
-      overlay.style.backdropFilter       = 'none';
+      overlay.style.background = 'transparent';
+      overlay.style.backdropFilter = 'none';
       overlay.style.WebkitBackdropFilter = 'none';
     }
   }
 
   // ── HIDE ALL CONTENT PANELS ───────────────────────────────
   function hideAllPanels() {
-    el('l1-content').style.display       = 'flex'; // gesture default
-    el('l1-hold-ring').style.display     = 'flex';
+    el('l1-content').style.display = 'flex'; // gesture default
+    el('l1-hold-ring').style.display = 'flex';
     el('l1-number-screen').style.display = 'none';
-    el('l1-cwm-screen').style.display    = 'none';
-    el('l1-yt-screen').style.display     = 'none';
-    el('l1-celebration').style.opacity   = '0';
+    el('l1-cwm-screen').style.display = 'none';
+    el('l1-yt-screen').style.display = 'none';
+    el('l1-celebration').style.opacity = '0';
     updateGestureArc(0);
     setOverlayDim(true);
   }
 
   // ── RENDER STEP (dispatcher) ──────────────────────────────
   function renderStep() {
-    phase       = 'waiting';
+    phase = 'waiting';
     stableCount = 0;
-    gestureOk   = false;
+    gestureOk = false;
     window.stopAllSounds?.();
     gameState.hideMagicRings();
-    clearTimeout(transitionTimer);
-    clearInterval(gestureInterval);
+    if (transitionTimer) transitionTimer.clear();
+    if (gestureInterval) gestureInterval.clear();
+    // Clean up any in-progress count sequence state
+    window._l1_seq_target = null;
+    window._l1_seq_advance = null;
     hideAllPanels();
 
     const step = STEPS[currentStep];
-    if      (step.kind === 'gesture')       renderGestureStep(step);
+    if (step.kind === 'gesture') renderGestureStep(step);
     else if (step.kind === 'count_with_me') renderCountWithMeStep(step);
-    else if (step.kind === 'your_turn')     renderYourTurnStep(step);
+    else if (step.kind === 'count_sequence') renderCountSequenceStep(step);
+    else if (step.kind === 'your_turn') renderYourTurnStep(step);
   }
 
   // ── RENDER: GESTURE STEP ──────────────────────────────────
@@ -471,7 +534,7 @@ window.level1 = (() => {
       // If a transition animation is provided (e.g. lift finger), loop it
       if (step.image2) {
         let showingSecondary = false;
-        gestureInterval = setInterval(() => {
+        gestureInterval = new PausableInterval(() => {
           showingSecondary = !showingSecondary;
           const img = el('l1-gesture-img');
           if (img) img.src = showingSecondary ? step.image2 : step.image;
@@ -487,7 +550,7 @@ window.level1 = (() => {
 
   // ── RENDER: COUNT WITH ME ─────────────────────────────────
   function renderCountWithMeStep(step) {
-    el('l1-content').style.display   = 'none';
+    el('l1-content').style.display = 'none';
     el('l1-hold-ring').style.display = 'none';
 
     const screen = el('l1-cwm-screen');
@@ -510,15 +573,15 @@ window.level1 = (() => {
       let idx = 1;
       // Use a slower rhythm for higher numbers as requested
       const animationDelay = (step.number >= 4) ? 1500 : 1000;
-      
-      clearInterval(gestureInterval);
-      gestureInterval = setInterval(() => {
+
+      if (gestureInterval) gestureInterval.clear();
+      gestureInterval = new PausableInterval(() => {
         if (idx < images.length) {
           const img = el('l1-cwm-img');
           if (img) img.src = images[idx];
           idx++;
         } else {
-          clearInterval(gestureInterval);
+          if (gestureInterval) gestureInterval.clear();
         }
       }, animationDelay);
     } else {
@@ -532,24 +595,76 @@ window.level1 = (() => {
     const s = playSound('l1_counting_' + step.number);
 
     phase = 'auto';
-    
+
     // Ensure duration accounts for the potentially slower animation
     const animationTotalTime = (images.length - 1) * ((step.number >= 4) ? 1500 : 1000) + 1200;
     const duration = Math.max(
       (s && s.duration && s.duration > 0) ? (s.duration * 1000 + 800) : COUNT_WITH_ME_DURATION,
       animationTotalTime
     );
-    
+
     if (s) {
       s.onended = () => { if (phase === 'auto') advanceStep(); };
     } else {
-      transitionTimer = setTimeout(advanceStep, duration);
+      transitionTimer = new PausableTimeout(advanceStep, duration);
     }
+  }
+
+  // ── RENDER: COUNT SEQUENCE (gesture-gated, 1 → N) ─────────
+  // Shows SVGs 1..N one at a time. Each sub-step plays sounds[i] and
+  // waits for the child to hold up i fingers before advancing.
+  // On the final sub-count, calls onCelebrate() instead of advanceStep().
+  function renderCountSequenceStep(step) {
+    el('l1-content').style.display = 'none';
+    el('l1-cwm-screen').style.display = 'flex';
+    // Keep the hold arc visible so the child sees progress
+    el('l1-hold-ring').style.display = 'flex';
+
+    const SVG_PATHS = [null, 'images/1.svg', 'images/2_1.svg', 'images/3.svg', 'images/4.svg', 'images/5.svg'];
+
+    let subCount = 1;
+    phase = 'count_sequence';
+
+    function showSub(n) {
+      const existing = el('l1-cwm-img');
+      if (existing) {
+        existing.src = SVG_PATHS[n];
+      } else {
+        el('l1-cwm-hand').innerHTML = `
+          <img id="l1-cwm-img" src="${SVG_PATHS[n]}"
+               style="width:clamp(100px,15vw,140px);filter:brightness(0) invert(1);" />
+        `;
+      }
+      el('l1-cwm-numtext').textContent = NUM_WORDS[n].toUpperCase() + ' = ' + n;
+
+      // Play the spoken number audio (sounds[1], sounds[2], etc.)
+      playSound(n);
+
+      // Reset arc and expose target for the update loop
+      stableCount = 0;
+      updateGestureArc(0);
+      window._l1_seq_target = n;
+    }
+
+    // Called by updateCountSequencePhase when the gesture hold is confirmed
+    window._l1_seq_advance = () => {
+      subCount++;
+      if (subCount > step.number) {
+        // All sub-counts done — final celebration, then advance
+        window._l1_seq_advance = null;
+        window._l1_seq_target = null;
+        onCelebrate();
+      } else {
+        showSub(subCount);
+      }
+    };
+
+    showSub(subCount);
   }
 
   // ── RENDER: YOUR TURN ─────────────────────────────────────
   function renderYourTurnStep(step) {
-    el('l1-content').style.display   = 'none';
+    el('l1-content').style.display = 'none';
     el('l1-hold-ring').style.display = 'none';
 
     // Remove dim — camera shows through the overlay
@@ -591,28 +706,32 @@ window.level1 = (() => {
     if (!key || !window.sounds?.[key]) return null;
     const s = window.sounds[key];
     s.currentTime = 0;
-    s.play().catch(() => {});
+    s.play().catch(() => { });
     return s;
   }
 
   // ── CELEBRATE ─────────────────────────────────────────────
   function onCelebrate() {
-    phase       = 'celebrating';
+    phase = 'celebrating';
     stableCount = 0;
-    const step  = STEPS[currentStep];
+    const step = STEPS[currentStep];
 
     window.stopAllSounds?.();
-    setOverlayDim(true); // re-dim so confetti is visible
+    setOverlayDim(true);
 
     // Hide all instructional panels before showing celebration
     if (el('l1-yt-screen')) el('l1-yt-screen').style.display = 'none';
     if (el('l1-content')) el('l1-content').style.display = 'none';
     if (el('l1-hold-ring')) el('l1-hold-ring').style.display = 'none';
 
-    gameState.showConfetti();
-    gameState.showMagicRings();
-    el('l1-celebration').style.opacity    = '1';
-    
+    if (step.kind !== 'your_turn') {
+      gameState.showMagicRings();
+    }
+    if (step.kind === 'your_turn') {
+      gameState.showConfetti();
+    }
+    el('l1-celebration').style.opacity = '1';
+
     // Starting from number 2, show the number itself. Otherwise "SUPERB!"
     if (step.number && step.number >= 2) {
       el('l1-celeb-word').textContent = step.number;
@@ -627,11 +746,11 @@ window.level1 = (() => {
 
     // Calculate duration: wait for the number audio to finish if one is playing
     const s = step.numberAudio ? (window.sounds && window.sounds[step.numberAudio]) : null;
-    const celebrationDelay = (s && s.duration && s.duration > 0) 
-      ? (s.duration * 1000 + 800) 
+    const celebrationDelay = (s && s.duration && s.duration > 0)
+      ? (s.duration * 1000 + 800)
       : CELEBRATION_DURATION;
 
-    transitionTimer = setTimeout(() => {
+    transitionTimer = new PausableTimeout(() => {
       gameState.hideConfetti();
       gameState.hideMagicRings();
       el('l1-celebration').style.opacity = '0';
@@ -648,14 +767,38 @@ window.level1 = (() => {
   // ── NUMBER INTERSTITIAL ───────────────────────────────────
   function showNumberScreen() {
     phase = 'showing_number';
-    el('l1-content').style.display   = 'none';
+    el('l1-content').style.display = 'none';
     el('l1-hold-ring').style.display = 'none';
 
+    const step = STEPS[currentStep];
     const scr = el('l1-number-screen');
     scr.style.display = 'flex';
-    el('l1-num-text').textContent = STEPS[currentStep].numberText;
+    el('l1-num-text').textContent = step.numberText;
 
-    transitionTimer = setTimeout(advanceStep, NUMBER_SHOW_DURATION);
+    // For Number 1: chain a second audio ("Can you say one?") that plays
+    // while the text screen is still visible, then advance when it ends.
+    if (step.number === 1 && window.sounds?.['l1_can_you_say_one']) {
+      const s2 = window.sounds['l1_can_you_say_one'];
+      // Wait 0.8 seconds for the child to read/register the text before asking
+      transitionTimer = new PausableTimeout(() => {
+        s2.currentTime = 0;
+        s2.play().catch(() => { });
+        s2.onended = () => {
+          // Wait 1.5 seconds AFTER the audio finishes to give the child time to say "one"
+          transitionTimer = new PausableTimeout(() => {
+            if (phase === 'showing_number') advanceStep();
+          }, 1500);
+        };
+        // Fallback timer (duration + 2 seconds buffer/wait time)
+        const fallback = (s2.duration && s2.duration > 0) ? (s2.duration * 1000 + 2000) : 4000;
+        transitionTimer = new PausableTimeout(() => {
+          if (phase === 'showing_number') advanceStep();
+        }, fallback);
+      }, 800);
+    } else {
+      // All other numbers: standard timer-based advance
+      transitionTimer = new PausableTimeout(advanceStep, NUMBER_SHOW_DURATION);
+    }
   }
 
   // ── ADVANCE ───────────────────────────────────────────────
@@ -671,11 +814,9 @@ window.level1 = (() => {
   // ── FRAME UPDATE (called every video frame) ───────────────
   function update(fingerCount, handsCount) {
     if (isPaused) return;
-    if (phase === 'waiting') {
-      updateGesturePhase(fingerCount, handsCount);
-    } else if (phase === 'your_turn') {
-      updateYourTurnPhase(fingerCount, handsCount);
-    }
+    if (phase === 'waiting') updateGesturePhase(fingerCount, handsCount);
+    else if (phase === 'count_sequence') updateCountSequencePhase(fingerCount, handsCount);
+    else if (phase === 'your_turn') updateYourTurnPhase(fingerCount, handsCount);
   }
 
   function updateGesturePhase(fingerCount, handsCount) {
@@ -686,7 +827,33 @@ window.level1 = (() => {
     if (matched) {
       stableCount++;
       updateGestureArc(stableCount);
-      if (stableCount >= FRAMES_TO_CONFIRM) onCelebrate();
+      if (stableCount >= FRAMES_TO_CONFIRM) {
+        playSound('ding');
+        onCelebrate();
+      }
+    } else {
+      stableCount = Math.max(0, stableCount - 1);
+      updateGestureArc(stableCount);
+    }
+  }
+
+  // ── UPDATE: COUNT SEQUENCE ────────────────────────────────
+  // Waits for the child to hold up exactly `target` fingers.
+  // When confirmed, calls window._l1_seq_advance() to move to
+  // the next sub-count or trigger the final celebration.
+  function updateCountSequencePhase(fingerCount, handsCount) {
+    const target = window._l1_seq_target;
+    if (target == null || !window._l1_seq_advance) return;
+
+    if (fingerCount === target && handsCount >= 1) {
+      stableCount++;
+      updateGestureArc(stableCount);
+      if (stableCount >= FRAMES_TO_CONFIRM) {
+        stableCount = 0;
+        updateGestureArc(0);
+        playSound('ding');
+        window._l1_seq_advance();
+      }
     } else {
       stableCount = Math.max(0, stableCount - 1);
       updateGestureArc(stableCount);
@@ -696,15 +863,16 @@ window.level1 = (() => {
   function updateYourTurnPhase(fingerCount, handsCount) {
     if (isPaused) return;
 
-    const step   = STEPS[currentStep];
+    const step = STEPS[currentStep];
     const target = step.number;
 
     // ── Iterative Sequence Logic ──
     // If they hit the NEXT expected number, registering it
     if (fingerCount === expectedSubCount && handsCount >= 1) {
+      playSound('ding');
       playSound(expectedSubCount); // Plays sounds['1'], sounds['2'] etc if registered
       expectedSubCount++;
-      
+
       // Update UI feedback
       el('l1-yt-progress').textContent = (expectedSubCount - 1).toString();
       // Reset stableCount for the final hold if needed, 
@@ -732,17 +900,17 @@ window.level1 = (() => {
     overlay = document.createElement('div');
     overlay.id = 'l1-gate';
     Object.assign(overlay.style, {
-      position            : 'absolute',
-      inset               : '0',
-      zIndex              : '100',
-      background          : 'rgba(14, 12, 28, 0.85)',
-      backdropFilter      : 'blur(8px)',
+      position: 'absolute',
+      inset: '0',
+      zIndex: '100',
+      background: 'rgba(14, 12, 28, 0.85)',
+      backdropFilter: 'blur(8px)',
       WebkitBackdropFilter: 'blur(8px)',
-      display             : 'flex',
-      flexDirection       : 'column',
-      alignItems          : 'center',
-      justifyContent      : 'center',
-      gap                 : '2rem',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '2rem',
     });
 
     overlay.innerHTML = `
@@ -753,10 +921,10 @@ window.level1 = (() => {
       </h1>
       <button id="l1-gate-start"
               style="font-family:var(--font-display);font-size:2.5rem;font-weight:900;
-                     color:white;background:#EF5A00;border:none;padding:1.5rem 4rem;
+                     color:white;background:#F6636F;border:none;padding:1.5rem 4rem;
                      border-radius:999px;cursor:pointer;text-transform:uppercase;
                      transform:scale(1);transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
-                     box-shadow:0 15px 30px rgba(239,90,0,0.3);">
+                     box-shadow:0 15px 30px rgba(246,99,111,0.3);">
         yes!
       </button>
     `;
@@ -766,7 +934,7 @@ window.level1 = (() => {
 
     const btn = el('l1-gate-start');
     btn.addEventListener('mouseenter', () => { btn.style.transform = 'scale(1.05)'; });
-    btn.addEventListener('mouseleave', () => { btn.style.transform = 'scale(1)';    });
+    btn.addEventListener('mouseleave', () => { btn.style.transform = 'scale(1)'; });
     btn.addEventListener('click', () => {
       overlay.remove();
       createOverlay();
@@ -776,6 +944,7 @@ window.level1 = (() => {
   // ── PUBLIC API ────────────────────────────────────────────
   return {
     onEnter() {
+      // Always start Level 1 from the beginning (index 0)
       currentStep = 0;
       createGateOverlay();
     },
@@ -783,8 +952,8 @@ window.level1 = (() => {
     update,
 
     onExit() {
-      clearTimeout(transitionTimer);
-      clearInterval(gestureInterval);
+      if (transitionTimer) transitionTimer.clear();
+      if (gestureInterval) gestureInterval.clear();
       gameState.hideConfetti();
       gameState.hideMagicRings();
       overlay?.remove();

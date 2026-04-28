@@ -35,9 +35,9 @@
 window.level2 = (() => {
 
   // ── TIMING ────────────────────────────────────────────────
-  // Same hold requirement as Level 1 — 40 frames ≈ 0.67s
-  const FRAMES_TO_CONFIRM    = 40;
-  const QUIZ_OBJECTS = ['apple', 'ball', 'bear', 'butterfly', 'car', 'cat', 'dog', 'leaf', 'orange', 'pencil'];
+  // Increased to 50 frames for a longer, more deliberate hold.
+  const FRAMES_TO_CONFIRM    = 50;
+  const QUIZ_OBJECTS = ['apple', 'ball', 'bear', 'butterfly', 'car', 'cat', 'dog', 'leaf', 'pencil'];
 
   // How long (ms) to show the celebration before the next round.
   // CHANGE: Was 1800ms originally. Adjusted to 2500ms for confetti.
@@ -72,6 +72,32 @@ window.level2 = (() => {
   let isPaused    = false;
   let quizStarted = false;
   let celebTimer  = null;
+  let resultsTimer = null;
+  let activeAudioOnPause = [];
+  let isVoiceOverMuted = false;
+  let isQuestionAudioPlaying = false;
+
+  // ── PAUSABLE TIMER ────────────────────────────────────────
+  class PausableTimeout {
+    constructor(callback, delay) {
+      this.callback = callback;
+      this.remaining = delay;
+      this.resume();
+    }
+    pause() {
+      clearTimeout(this.timerId);
+      this.remaining -= Date.now() - this.start;
+    }
+    resume() {
+      if (this.remaining <= 0) return;
+      this.start = Date.now();
+      clearTimeout(this.timerId);
+      this.timerId = setTimeout(this.callback, this.remaining);
+    }
+    clear() {
+      clearTimeout(this.timerId);
+    }
+  }
 
 
   // ── Fisher-Yates Shuffle ──────────────────────────────────
@@ -143,7 +169,6 @@ window.level2 = (() => {
           <circle class="l2-ring-arc" id="l2-ring-arc" cx="30" cy="30" r="24"
                   stroke-dasharray="150.8" stroke-dashoffset="150.8"/>
         </svg>
-        <span class="l2-ring-emoji">✋</span>
       </div>
 
       <!-- Celebration overlay — transparent background so confetti
@@ -182,10 +207,16 @@ window.level2 = (() => {
         <div style="display:flex;flex-direction:column;gap:1.5rem;width:260px;">
           <button id="l2-resume"
                   style="font-family:var(--font-display);font-size:1.8rem;font-weight:900;
-                         color:white;background:#6c5ce7;border:none;padding:1.2rem;
+                         color:white;background:#F6636F;border:none;padding:1.2rem;
                          border-radius:16px;cursor:pointer;text-transform:uppercase;
-                         box-shadow:0 10px 20px rgba(108,92,231,0.3);">
+                         box-shadow:0 10px 20px rgba(246,99,111,0.3);">
             Resume
+          </button>
+          <button id="l2-mute-vo"
+                  style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;
+                         color:#fff;background:rgba(255,255,255,0.1);border:2px solid rgba(255,255,255,0.2);
+                         padding:1rem;border-radius:12px;cursor:pointer;text-transform:uppercase;">
+            Mute Voice Over
           </button>
         </div>
       </div>
@@ -193,11 +224,11 @@ window.level2 = (() => {
       <div id="l2-controls" style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
                                     display:flex;align-items:center;gap:15px;z-index:20;">
         <button id="l2-skip-back"
-                style="width:36px;height:36px;border-radius:50%;border:none;background:rgba(108,92,231,0.6);
+                style="width:36px;height:36px;border-radius:50%;border:none;background:rgba(246,99,111,0.6);
                        font-size:1rem;color:white;cursor:pointer;
                        box-shadow:0 2px 8px rgba(0,0,0,0.3);">⏮</button>
         <button id="l2-pause"
-                style="width:48px;height:48px;border-radius:50%;border:none;background:#6c5ce7;
+                style="width:48px;height:48px;border-radius:50%;border:none;background:#F6636F;
                        font-size:1.4rem;color:white;cursor:pointer;
                        box-shadow:0 4px 12px rgba(0,0,0,0.4);">⏸</button>
       </div>
@@ -219,12 +250,12 @@ window.level2 = (() => {
         
         <button id="l2-start-play"
                 style="font-family:var(--font-display);font-size:1.5rem;font-weight:900;
-                       color:white;background:#EF5A00;border:none;padding:1.2rem 2.8rem;
+                       color:white;background:#F6636F;border:none;padding:1.2rem 2.8rem;
                        border-radius:999px;cursor:pointer;text-transform:none;
-                       box-shadow:0 15px 30px rgba(239,90,0,0.3);
+                       box-shadow:0 15px 30px rgba(246,99,111,0.3);
                        transition:all 0.2s cubic-bezier(0.34,1.56,0.64,1);"
-                onmouseover="this.style.transform='scale(1.05)';this.style.background='#d44f00'"
-                onmouseout="this.style.transform='scale(1)';this.style.background='#EF5A00'">
+                onmouseover="this.style.transform='scale(1.05)';this.style.background='#d44f58'"
+                onmouseout="this.style.transform='scale(1)';this.style.background='#F6636F'">
           Play ▶
         </button>
       </div>
@@ -243,6 +274,11 @@ window.level2 = (() => {
     
     document.getElementById('l2-pause').addEventListener('click', togglePause);
     document.getElementById('l2-resume').addEventListener('click', togglePause);
+    
+    document.getElementById('l2-mute-vo').addEventListener('click', () => {
+      isVoiceOverMuted = !isVoiceOverMuted;
+      document.getElementById('l2-mute-vo').textContent = isVoiceOverMuted ? 'Unmute Voice Over' : 'Mute Voice Over';
+    });
     document.getElementById('l2-skip-back').addEventListener('click', () => {
       window.stopAllSounds?.();
       gameState.transitionTo('level1');
@@ -265,13 +301,31 @@ window.level2 = (() => {
 
     if (isPaused) {
       menu.style.display = 'flex';
-      // Pause all audio
+      
+      // Pause timers
+      if (celebTimer && celebTimer.pause) celebTimer.pause();
+      if (resultsTimer && resultsTimer.pause) resultsTimer.pause();
+
+      // Pause audio
+      activeAudioOnPause = [];
       if (window.sounds) {
-        Object.values(window.sounds).forEach(s => s && s.pause());
+        Object.values(window.sounds).forEach(s => {
+          if (s && !s.paused) {
+            activeAudioOnPause.push(s);
+            s.pause();
+          }
+        });
       }
     } else {
       menu.style.display = 'none';
-      // We don't necessarily resume sounds here to avoid overwhelming overlay
+
+      // Resume timers
+      if (celebTimer && celebTimer.resume) celebTimer.resume();
+      if (resultsTimer && resultsTimer.resume) resultsTimer.resume();
+
+      // Resume audio
+      activeAudioOnPause.forEach(s => s.play().catch(()=>{}));
+      activeAudioOnPause = [];
     }
   }
 
@@ -284,6 +338,8 @@ window.level2 = (() => {
     stableCount = 0;
 
     window.stopAllSounds?.();
+    if (celebTimer) celebTimer.clear();
+    if (resultsTimer) resultsTimer.clear();
 
     target      = queue[roundIndex]; // pick the number for this round
 
@@ -294,6 +350,24 @@ window.level2 = (() => {
 
     // Pick a new random object for this round
     currentObj = QUIZ_OBJECTS[Math.floor(Math.random() * QUIZ_OBJECTS.length)];
+    
+    // Dictate the question (e.g. "How many cats?")
+    if (!isVoiceOverMuted) {
+      const qAudio = window.sounds?.['hm' + currentObj];
+      if (qAudio) {
+        isQuestionAudioPlaying = true;
+        qAudio.currentTime = 0;
+        qAudio.play().catch(e => {
+          console.warn("Audio play blocked:", e);
+          isQuestionAudioPlaying = false;
+        });
+        qAudio.onended = () => {
+          isQuestionAudioPlaying = false;
+        };
+      }
+    } else {
+      isQuestionAudioPlaying = false;
+    }
 
     // Update the round progress dots
     document.querySelectorAll('.l2-dot').forEach((dot, i) => {
@@ -309,13 +383,8 @@ window.level2 = (() => {
       'butterfly': 'butterflies',
       'leaf': 'leaves'
     };
-    const objectName = plurals[currentObj] || (currentObj + 's');
+    const objectName = target === 1 ? currentObj : (plurals[currentObj] || (currentObj + 's'));
     document.querySelector('.l2-prompt').textContent = `How many ${objectName}?`;
-
-    // Update the emoji in the ring
-    const emojis = { 1: '☝️', 2: '✌️', 3: '🤟', 4: '🖖', 5: '✋' };
-    const emojiEl = document.querySelector('.l2-ring-emoji');
-    if (emojiEl) emojiEl.textContent = emojis[target] || '✋';
 
     // Show the objects in a horizontal row
     renderDotGrid(target);
@@ -371,14 +440,14 @@ window.level2 = (() => {
     celebrating = true;
     score++;           // increment score
 
-    window.stopAllSounds?.();
+    // NOTE: We no longer stop all sounds here so the number voice-over can finish playing
 
     // Move the confirmation text to the large central numeral
     const plurals = {
       'butterfly': 'butterflies',
       'leaf': 'leaves'
     };
-    const objectName = plurals[currentObj] || (currentObj + 's');
+    const objectName = target === 1 ? currentObj : (plurals[currentObj] || (currentObj + 's'));
     const displayObj = objectName.charAt(0).toUpperCase() + objectName.slice(1);
     
     const numberEl = document.getElementById('l2-number');
@@ -397,7 +466,7 @@ window.level2 = (() => {
     gameState.showConfetti();
 
     // After the celebration window, advance to the next round
-    celebTimer = setTimeout(() => {
+    celebTimer = new PausableTimeout(() => {
       roundIndex++;
       if (roundIndex >= 5) {
         showResults(); // all 5 rounds done
@@ -425,7 +494,7 @@ window.level2 = (() => {
 
     // Slight delay before fading in the results card so it
     // doesn't snap in abruptly right after the celebration ends
-    setTimeout(() => {
+    resultsTimer = new PausableTimeout(() => {
       document.getElementById('l2-results').classList.add('l2-results--active');
     }, RESULTS_SHOW_DELAY);
   }
@@ -441,9 +510,12 @@ window.level2 = (() => {
   function update(fingerCount, handsCount) {
     if (!quizStarted || isPaused || celebrating || roundIndex >= 5) return;
 
-    // Real-time counting audio ("Count with me" feel)
-    if (fingerCount > 0 && fingerCount !== lastCountAudio && fingerCount <= 5) {
-      playSound(fingerCount);
+    // Real-time counting audio - let number of fingers = audio triggered
+    // Sequential audio: Don't play finger counts until the question narration is done
+    if (fingerCount > 0 && fingerCount !== lastCountAudio && fingerCount <= 5 && !isQuestionAudioPlaying) {
+      if (!isVoiceOverMuted) {
+        playSound(fingerCount);
+      }
       lastCountAudio = fingerCount;
     }
     if (fingerCount === 0) {

@@ -21,10 +21,21 @@ export default function AboutPage() {
       <TopNavbar />
 
       {/* HERO */}
-      <section className="px-6 md:px-16 pt-12 pb-20 flex flex-col items-center text-center gap-6">
+      <section className="px-6 md:px-16 pt-36 md:pt-40 lg:pt-44 pb-20 flex flex-col items-center text-center gap-6">
+        {/* Logo */}
+        <motion.img
+          src="/images/logo.svg"
+          alt="Numi"
+          className="h-16 md:h-20 w-auto object-contain mb-2"
+          custom={0}
+          initial="hidden"
+          animate="show"
+          variants={fadeUp}
+        />
+
         <motion.p
           className="text-sm font-bold uppercase tracking-[0.18em] text-[#EF5A00]"
-          custom={0}
+          custom={1}
           initial="hidden"
           animate="show"
           variants={fadeUp}
@@ -34,7 +45,7 @@ export default function AboutPage() {
 
         <motion.h1
           className="font-display font-black text-[clamp(2.8rem,7vw,5.5rem)] leading-[1.05] uppercase max-w-3xl"
-          custom={1}
+          custom={2}
           initial="hidden"
           animate="show"
           variants={fadeUp}
@@ -45,7 +56,7 @@ export default function AboutPage() {
 
         <motion.p
           className="text-lg md:text-xl text-[#1A0A08]/70 max-w-xl leading-relaxed"
-          custom={2}
+          custom={3}
           initial="hidden"
           animate="show"
           variants={fadeUp}
@@ -54,7 +65,7 @@ export default function AboutPage() {
           counting 1–5 feel like a superpower.
         </motion.p>
 
-        <motion.div custom={3} initial="hidden" animate="show" variants={fadeUp}>
+        <motion.div custom={4} initial="hidden" animate="show" variants={fadeUp}>
           <img
             src="/images/ch3.png"
             alt="Numi character"

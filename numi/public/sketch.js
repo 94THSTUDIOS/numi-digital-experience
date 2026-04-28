@@ -115,6 +115,7 @@ function setup() {
   sounds['l1_make_rock'] = new Audio('audio/learn/learn-1-1.mp3');
   sounds['l1_lift_finger'] = new Audio('audio/learn/learn-1-2.mp3');
   sounds['l1_this_is_one'] = new Audio('audio/learn/learn-1-3.mp3');
+  sounds['l1_can_you_say_one'] = new Audio('audio/learn/learn-1-4.mp3');
 
   // Number 2
   sounds['l1_lift_another_2'] = new Audio('audio/learn/learn-2-1.mp3');
@@ -135,10 +136,22 @@ function setup() {
   sounds['l1_lift_another_5'] = new Audio('audio/learn/learn-5-0.mp3');
   sounds['l1_this_is_five'] = new Audio('audio/learn/learn-5-1.mp3');
   sounds['l1_counting_5'] = new Audio('audio/learn/learn-5-2.mp3');
+  sounds['ding'] = new Audio('audio/learn/ding.mp3');
 
   // Common
   sounds['l1_your_turn'] = new Audio('audio/learn/learn-yourturn.mp3');
   sounds['ready'] = new Audio('audio/Ready.mp3');
+
+  // Quiz Assets
+  sounds['hmapple'] = new Audio('audio/quiz/hmapples.mp3');
+  sounds['hmball'] = new Audio('audio/quiz/hmballs.mp3');
+  sounds['hmbear'] = new Audio('audio/quiz/hmbears.mp3');
+  sounds['hmbutterfly'] = new Audio('audio/quiz/hmbutterflies.mp3');
+  sounds['hmcar'] = new Audio('audio/quiz/hmcars.mp3');
+  sounds['hmcat'] = new Audio('audio/quiz/hmcats.mp3');
+  sounds['hmdog'] = new Audio('audio/quiz/hmdogs.mp3');
+  sounds['hmleaf'] = new Audio('audio/quiz/hmleaves.mp3');
+  sounds['hmpencil'] = new Audio('audio/quiz/hmpencils.mp3');
 
   window.stopAllSounds = function () {
     if (!window.sounds) return;

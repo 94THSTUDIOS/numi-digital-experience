@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import MagicRings from "@/components/MagicRings";
+import { useAudio } from "@/components/AudioContext";
 
 /**
  * Dynamically loads a script. Setting `async = false` ensures that multiple
@@ -22,11 +23,18 @@ const loadScript = (src: string) => {
 };
 
 export function Player() {
+  const { setGameActive } = useAudio();
   const [loaded, setLoaded] = useState(false);
   const [isStarted, setIsStarted] = useState(false); // <--- We need explicit user intent to unlock Audio context!
   const [isReady, setIsReady] = useState(false);     // <--- Gate shown after camera loads, before game begins
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMagicCelebrating, setIsMagicCelebrating] = useState(false);
+
+  // Sync BGM volume with game state
+  useEffect(() => {
+    setGameActive(isReady);
+    return () => setGameActive(false);
+  }, [isReady, setGameActive]);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -174,7 +182,7 @@ export function Player() {
           <div className="absolute inset-0 flex flex-col items-center justify-center z-[100] bg-[#1a1a2e]">
             <button
               onClick={() => setIsStarted(true)}
-              className="px-8 py-4 bg-[#5227FF] hover:bg-[#B497CF] hover:scale-105 text-white font-calendas rounded-full transition-all text-xl shadow-lg shadow-[#5227FF]/20"
+              className="px-8 py-4 bg-[#EF5A00] hover:bg-[#d44f00] hover:scale-105 text-white font-calendas rounded-full transition-all text-xl shadow-lg shadow-[#EF5A00]/30"
             >
               Start Camera & Audio
             </button>

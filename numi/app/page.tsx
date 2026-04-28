@@ -1,12 +1,25 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { LayoutGroup, motion, AnimatePresence } from "framer-motion"
 import { TextRotate } from "@/components/ui/text-rotate"
 import Floating, { FloatingElement } from "@/components/ui/parallax-floating"
 import { Player } from "@/components/ui/player"
 import { TopNavbar } from "@/components/ui/top-navbar"
+import { StarButton } from "@/components/ui/star-button"
+import AnimatedDownloadButton from "@/components/ui/howitworks"
+import { MinimalFooter } from "@/components/ui/minimal-footer"
+import Lenis from '@studio-freight/lenis'
+import { gsap } from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { SparklesText } from "@/components/ui/sparkles-text"
+import { useGSAP } from "@gsap/react"
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger)
+}
+
 // ============================================================
 // LOADING SCREEN
 // Full-screen splash shown on first visit. Numbers count up 1–5,
@@ -115,7 +128,7 @@ const exampleImages = [
     title: "Numi 3",
   },
   {
-    url: "/images/numi._4png.png",
+    url: "/images/numi_4.png",
     author: "Numi 4",
     title: "Numi 4",
   },
@@ -155,18 +168,116 @@ const exampleImages = [
 const ROTATE_COLORS = ["#F6636F", "#F45F00", "#3F6F29"] as const
 
 function LandingHero() {
+  // Lenis smooth scroll setup
+  useEffect(() => {
+    const lenis = new Lenis()
+
+    // Sync Lenis scroll with GSAP ScrollTrigger
+    lenis.on('scroll', ScrollTrigger.update)
+
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000)
+    })
+
+    gsap.ticker.lagSmoothing(0)
+
+    return () => {
+      gsap.ticker.remove((time) => lenis.raf(time * 1000))
+      lenis.destroy()
+    }
+  }, [])
   const [loading, setLoading] = useState(true)
   const [rotateColorIdx, setRotateColorIdx] = useState(0)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const heroRef = useRef<HTMLElement>(null)
+
+  // ── GSAP ScrollTrigger: animate a fixed-position logo between
+  //    the hero placeholder and the navbar placeholder ──
+  useGSAP(() => {
+    if (loading) return                       // wait for loading screen to dismiss
+
+    const logo = document.getElementById("flying-logo")
+    const heroSlot = document.getElementById("hero-logo-slot")
+    const navSlot = document.getElementById("nav-logo-slot")
+    const heroCta = document.getElementById("hero-cta")
+    if (!logo || !heroSlot || !navSlot || !heroCta) return
+
+    // Helper: read a placeholder's rect relative to the viewport
+    const getRect = (el: HTMLElement) => {
+      const r = el.getBoundingClientRect()
+      return { x: r.left, y: r.top, w: r.width, h: r.height }
+    }
+
+    // Position the logo over the hero slot initially
+    const setInitial = () => {
+      const hero = getRect(heroSlot)
+      gsap.set(logo, {
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: hero.w,
+        height: hero.h,
+        x: hero.x,
+        y: hero.y,
+        zIndex: 200,
+        pointerEvents: "none",
+      })
+    }
+    setInitial()
+
+    // Hide the static fallback logo on the homepage — the flying logo takes over
+    const staticLogo = document.getElementById("nav-logo-static")
+    if (staticLogo) staticLogo.style.opacity = "0"
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: heroRef.current,
+        start: "top top",
+        end: "+=60%",              // pin for 60% of viewport height of scroll distance
+        scrub: 0.4,
+        pin: true,                 // pin the hero while the logo flies
+        pinSpacing: true,          // push content below down so nothing overlaps
+        invalidateOnRefresh: true,
+        onRefresh: setInitial,     // recalculate on resize
+      },
+    })
+
+    // Logo: fly from hero slot → nav slot
+    tl.to(logo, {
+      x: () => getRect(navSlot).x,
+      y: () => getRect(navSlot).y,
+      width: () => getRect(navSlot).w,
+      height: () => getRect(navSlot).h,
+      ease: "power2.inOut",
+      duration: 1,
+    }, 0)
+
+    // CTA: slide up dramatically as logo flies into nav
+    tl.to(heroCta, {
+      y: -160,
+      ease: "power2.inOut",
+      duration: 1,
+    }, 0.3)
+
+  }, { scope: containerRef, dependencies: [loading] })
 
   return (
-    <>
+    <div ref={containerRef}>
       <AnimatePresence>
         {loading && <LoadingScreen onDone={() => setLoading(false)} />}
       </AnimatePresence>
 
+      {/* ── FLYING LOGO ── desktop only: animated by GSAP between hero ↔ nav */}
+      <img
+        id="flying-logo"
+        src="/images/Numi Logo Big.svg"
+        alt="Numi Logo"
+        className="hidden md:block object-contain"
+        style={{ position: "fixed", top: 0, left: 0, zIndex: 200, pointerEvents: "none" }}
+      />
+
       <TopNavbar />
       {/* SECTION WRAPPER — full viewport height, centers everything */}
-      <section className="w-full h-screen overflow-hidden md:overflow-visible flex flex-col items-center justify-center relative bg-[#FDF0E8]">
+      <section ref={heroRef} id="hero-section" className="w-full h-screen overflow-hidden md:overflow-visible flex flex-col items-center justify-center pt-20 md:pt-32 lg:pt-40 relative z-20 bg-[#FDF0E8]">
         {/* ======================================================
           PARALLAX FLOATING LAYER (background)
           - sensitivity: how much images move relative to mouse (-0.5 = inverted, subtle)
@@ -193,7 +304,7 @@ function LandingHero() {
           {/* Image 1 — upper-left, medium, rotated -12deg */}
           <FloatingElement
             depth={1}
-            className="top-[0%] left-[8%] md:top-[6%] md:left-[11%]"
+            className="top-[12%] left-[8%] md:top-[16%] md:left-[11%]"
           >
             <motion.img
               src={exampleImages[1].url}
@@ -223,7 +334,7 @@ function LandingHero() {
           {/* Image 3 — top-right */}
           <FloatingElement
             depth={2}
-            className="top-[0%] left-[87%] md:top-[2%] md:left-[83%]"
+            className="top-[12%] left-[87%] md:top-[14%] md:left-[83%]"
           >
             <motion.img
               src={exampleImages[3].url}
@@ -268,7 +379,7 @@ function LandingHero() {
           {/* New Image 6 — top-center, far back depth */}
           <FloatingElement
             depth={0.3}
-            className="top-[2%] left-[45%] md:top-[4%] md:left-[42%]"
+            className="top-[15%] left-[45%] md:top-[16%] md:left-[42%]"
           >
             <motion.img
               src={exampleImages[6].url}
@@ -311,148 +422,150 @@ function LandingHero() {
           </FloatingElement>
         </Floating>{/* END parallax layer */}
 
+        {/* HERO LOGO SLOT — desktop only: space reserved for GSAP flying logo */}
+        <div className="hidden md:flex justify-center w-full z-50 pointer-events-none px-4">
+          <div
+            id="hero-logo-slot"
+            className="w-full max-w-xl md:max-w-2xl lg:max-w-4xl aspect-[510/304]"
+          />
+        </div>
+
         {/* ======================================================
-          TWO-COLUMN LAYOUT (foreground, z-50 = above parallax)
-          - Stacks vertically on mobile (flex-col)
-          - Side-by-side on md+ (md:flex-row)
-          - gap-8 = spacing between columns
+          THREE-COLUMN LAYOUT (foreground, z-50 = above parallax)
+          - Left: ch3 character | Center: text + CTA | Right: ch2 character
+          - Mobile: single column, characters hidden
           ====================================================== */}
-        <div className="flex flex-col md:flex-row justify-center items-center md:items-stretch w-full max-w-7xl z-50 pointer-events-auto gap-8 px-4">
+        <div className="flex flex-col items-center justify-center w-full max-w-[90rem] z-50 pointer-events-auto px-4 relative">
 
-
-          {/* ---------- LEFT COLUMN (Image) ---------- */}
-          <div className="flex flex-col justify-center items-center flex-1 w-full relative z-50">
+          {/* ---------- LEFT CHARACTER (ch3 orange) ---------- */}
+          {/* Anchored to the center and pushed left so it never moves when text changes width */}
+          <div className="absolute top-1/2 -translate-y-1/2 right-[50%] mr-[10rem] sm:mr-[14rem] md:mr-[18rem] lg:mr-[28rem] xl:mr-[34rem] z-0 opacity-40 md:opacity-100 pointer-events-none">
             <motion.img
               src="/images/ch3.png"
-              alt="Numi Character"
-              className="w-full max-w-2xl md:max-w-3xl lg:max-w-[40rem] scale-110 transform rotate-[10deg] object-contain drop-shadow-10xl"
-              initial={{ opacity: 0, y: 20 }}
+              alt="Numi Character Left"
+              className="w-[16rem] sm:w-[20rem] md:w-[24rem] lg:w-[32rem] xl:w-[44rem] max-w-none max-h-[70vh] object-contain drop-shadow-2xl"
+              initial={{ opacity: 0, x: -40 }}
               animate={{
                 opacity: 1,
+                x: 0,
                 y: [0, -14, 0],
-                rotate: [10, 12, 8, 10],
+                rotate: [-5, -3, -7, -5],
               }}
               transition={{
-                opacity: { duration: 0.8, ease: "easeOut", delay: 0.2 },
-                y: {
-                  duration: 3,
-                  ease: "easeInOut",
-                  repeat: Infinity,
-                  delay: 1,
-                },
-                rotate: {
-                  duration: 3,
-                  ease: "easeInOut",
-                  repeat: Infinity,
-                  delay: 1,
-                },
+                opacity: { duration: 0.8, ease: "easeOut", delay: 0.4 },
+                x: { duration: 0.8, ease: "easeOut", delay: 0.4 },
+                y: { duration: 3, ease: "easeInOut", repeat: Infinity, delay: 1 },
+                rotate: { duration: 3, ease: "easeInOut", repeat: Infinity, delay: 1 },
               }}
             />
           </div>
 
-          {/* ---------- RIGHT COLUMN (heading, subtitle, buttons) ---------- */}
-          <div className="flex flex-col justify-center items-start flex-1">
-            {/* ANIMATED HEADING — fades up on load (delay: 0.3s) */}
-            <motion.h1
-              className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-left w-full justify-start items-start flex-col flex whitespace-pre leading-none font-fredoka tracking-tight"
-              animate={{ opacity: 1, y: 0 }}
-              initial={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.2, ease: "easeOut", delay: 0.3 }}
-            >
-              {/* Line 1 — Fredoka */}
-              <span className="font-fredoka">Make Learning</span>
-
-              {/* Line 2: "Math " + rotating word
-                The invisible sizer span (aria-hidden) locks the container to
-                the width of the longest word so the layout never shifts. */}
-              <LayoutGroup>
-                <motion.span layout className="flex whitespace-pre items-center">
-                  <span className="flex whitespace-pre font-fredoka">Math{" "}</span>
-                  {/* Sizer: invisible longest word keeps container width constant */}
-                  <span className="relative inline-flex items-center">
-                    <span
-                      className="invisible font-moonbloom font-black pr-3"
-                      aria-hidden="true"
+          {/* ---------- CENTER COLUMN (heading, subtitle, buttons) ---------- */}
+          <div className="flex flex-col justify-center items-center text-center">
+            {/* CTA BLOCK — wrapped for ScrollTrigger y-slide */}
+            <div id="hero-cta" className="flex flex-col items-center">
+              {/* ANIMATED HEADING — fades up on load */}
+              <motion.h1
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-center w-full justify-center items-center flex-row flex flex-wrap lg:flex-nowrap lg:whitespace-nowrap leading-tight font-fredoka tracking-tight"
+                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.2, ease: "easeOut", delay: 0.3 }}
+              >
+                <LayoutGroup>
+                  <motion.span layout className="flex flex-row flex-wrap lg:flex-nowrap items-center justify-center gap-x-2 md:gap-x-3 w-full">
+                    <motion.span
+                      layout
+                      className="font-fredoka font-bold text-[#F45F00]"
+                      transition={{ type: "spring", damping: 30, stiffness: 400 }}
                     >
-                      tangible
-                    </span>
-                    {/* Rotating word absolutely fills the sizer */}
-                    <span className="absolute inset-0 flex items-center">
-                      <span style={{ color: ROTATE_COLORS[rotateColorIdx] }}>
+                      Making Math Learning
+                    </motion.span>
+
+                    <motion.span
+                      layout
+                      className="uppercase"
+                      style={{ color: ROTATE_COLORS[rotateColorIdx] }}
+                      transition={{ type: "spring", damping: 30, stiffness: 400 }}
+                    >
                       <TextRotate
-                        texts={[
-                          "fun",
-                          "easy",
-                          "tangible"
-                        ]}
-                        mainClassName="overflow-hidden pr-3 rounded-xl font-moonbloom font-[800]"
+                        texts={["fun", "easy", "tangible"]}
+                        mainClassName="overflow-hidden pr-3 rounded-xl font-moonbloom font-black [-webkit-text-stroke:1px_currentColor] md:[-webkit-text-stroke:2px_currentColor]"
                         staggerDuration={0.03}
                         staggerFrom="last"
                         rotationInterval={3000}
                         transition={{ type: "spring", damping: 30, stiffness: 400 }}
                         onNext={(idx) => setRotateColorIdx(idx)}
                       />
-                      </span>
-                    </span>
-                  </span>
-                </motion.span>
-              </LayoutGroup>
-            </motion.h1>
-            {/* SUBTITLE — fades up on load (delay: 0.5s) */}
-            <motion.p
-              className="text-sm sm:text-lg md:text-xl lg:text-2xl text-left font-body pt-2 sm:pt-8 md:pt-10 lg:pt-12"
-              animate={{ opacity: 1, y: 0 }}
-              initial={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.2, ease: "easeOut", delay: 0.5 }}
-            >
-              Numi turns your fingers into learning tools!
-              <br />
-              Using smart camera hand tracking, kids can count, explore numbers, and solve simple math problems just by holding up their hands.
-            </motion.p>
+                    </motion.span>
+                  </motion.span>
+                </LayoutGroup>
+              </motion.h1>
 
-            {/* CTA BUTTONS — fade up together (delay: 0.7s), scale on hover */}
-            <div className="flex flex-row justify-start space-x-4 items-center mt-10 sm:mt-16 md:mt-20 lg:mt-20 text-xs">
-              {/* Primary button (dark bg) */}
-              <motion.button
-                className="sm:text-base md:text-lg lg:text-xl font-semibold tracking-tight text-background bg-[#3F6F29] px-4 py-2 sm:px-5 sm:py-2.5 md:px-6 md:py-3 lg:px-8 lg:py-3 rounded-full z-20 shadow-2xl font-body"
+              {/* SUBTITLE */}
+              <motion.p
+                className="text-base sm:text-lg md:text-xl lg:text-2xl text-center font-body pt-4 sm:pt-6 md:pt-8 max-w-xl md:max-w-2xl lg:max-w-4xl"
                 animate={{ opacity: 1, y: 0 }}
                 initial={{ opacity: 0, y: 20 }}
-                transition={{
-                  duration: 0.2,
-                  ease: "easeOut",
-                  delay: 0.7,
-                  scale: { duration: 0.2 },
-                }}
-                whileHover={{
-                  scale: 1.05,
-                  transition: { type: "spring", damping: 30, stiffness: 400 },
-                }}
+                transition={{ duration: 0.2, ease: "easeOut", delay: 0.5 }}
               >
-                <Link href="/play">
-                  Start Learning with Numi <span className="font-serif ml-1">→</span>
-                </Link>
-              </motion.button>
+                Numi turns your fingers into learning tools! Using smart camera hand tracking, kids can count, explore numbers, and solve simple math problems just by holding up their hands.
+              </motion.p>
 
-              {/* Secondary button — scrolls to How it Works */}
-              <motion.a
-                href="#how-it-works"
-                className="sm:text-base md:text-lg lg:text-xl font-semibold tracking-tight text-foreground border-2 border-foreground px-4 py-2 sm:px-5 sm:py-2.5 md:px-6 md:py-3 lg:px-8 lg:py-3 rounded-full z-20 shadow-md font-body"
-                animate={{ opacity: 1, y: 0 }}
-                initial={{ opacity: 0, y: 20 }}
-                transition={{ duration: 0.2, ease: "easeOut", delay: 0.8 }}
-                whileHover={{
-                  scale: 1.05,
-                  transition: { type: "spring", damping: 30, stiffness: 400 },
-                }}
-              >
-                How it works ✋
-              </motion.a>
-            </div>
-          </div>{/* END right column */}
-        </div>{/* END two-column layout */}
-      </section >
+              {/* CTA BUTTONS */}
+              <div className="flex flex-row justify-center space-x-4 items-center mt-8 sm:mt-10 md:mt-12 text-xs w-full">
+                <motion.div
+                  animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  transition={{ duration: 0.2, ease: "easeOut", delay: 0.7 }}
+                  className="z-20"
+                >
+                  <StarButton
+                    href="/play"
+                    className="!bg-[#3F6F29] !border-[#3F6F29] !shadow-[0_0_0_#3F6F298c] hover:!bg-white hover:!border-[#3F6F29] hover:!text-[#3F6F29] hover:!shadow-[0_0_25px_#3F6F298c] text-lg sm:text-xl md:text-2xl lg:text-3xl font-black tracking-tight font-body shadow-2xl px-6 py-3 sm:px-8 sm:py-4 md:px-10 md:py-5 lg:px-12 lg:py-6"
+                  >
+                    Start Learning with Numi <span className="font-serif ml-1">→</span>
+                  </StarButton>
+                </motion.div>
 
-      < section id="how-it-works" className="w-full py-20 px-6 md:px-12 bg-[#FDF0E8] relative overflow-hidden md:overflow-visible" >
+                <motion.div
+                  animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  transition={{ duration: 0.2, ease: "easeOut", delay: 0.8 }}
+                  className="z-20"
+                >
+                  <AnimatedDownloadButton />
+                </motion.div>
+              </div>
+            </div>{/* END hero-cta */}
+          </div>{/* END center column */}
+
+          {/* ---------- RIGHT CHARACTER (ch2 pink) ---------- */}
+          {/* Anchored to the center and pushed right so it never moves when text changes width */}
+          <div className="absolute top-1/2 -translate-y-1/2 left-[50%] ml-[10rem] sm:ml-[14rem] md:ml-[18rem] lg:ml-[28rem] xl:ml-[34rem] z-0 opacity-40 md:opacity-100 pointer-events-none">
+            <motion.img
+              src="/images/ch2.png"
+              alt="Numi Character Right"
+              className="w-[20rem] sm:w-[24rem] md:w-[28rem] lg:w-[36rem] xl:w-[48rem] max-w-none max-h-[70vh] object-contain drop-shadow-2xl"
+              initial={{ opacity: 0, x: 40 }}
+              animate={{
+                opacity: 1,
+                x: 0,
+                y: [0, 12, 0],
+                rotate: [5, 3, 7, 5],
+              }}
+              transition={{
+                opacity: { duration: 0.8, ease: "easeOut", delay: 0.6 },
+                x: { duration: 0.8, ease: "easeOut", delay: 0.6 },
+                y: { duration: 3.5, ease: "easeInOut", repeat: Infinity, delay: 1.2 },
+                rotate: { duration: 3.5, ease: "easeInOut", repeat: Infinity, delay: 1.2 },
+              }}
+            />
+          </div>
+
+        </div>{/* END main hero layer */}
+      </section>
+
+      <section id="how-it-works" className="w-full pb-20 pt-40 md:pt-64 lg:pt-80 px-6 md:px-12 bg-[#FDF0E8] relative overflow-hidden md:overflow-visible">
         {/* ---------- FLOATING CHARACTER (ch1) - RIGHT SIDE ---------- */}
         <div className="absolute top-0 right-0 bottom-0 z-[10] pointer-events-none md:flex items-center hidden">
           <div className="relative right-[-5%] lg:right-[-8%] xl:right-[-5%]">
@@ -500,15 +613,18 @@ function LandingHero() {
         <div className="max-w-5xl mx-auto flex flex-col items-center gap-12 relative z-20">
 
           {/* Heading */}
-          <motion.h2
-            className="text-4xl sm:text-5xl md:text-6xl font-fredoka text-center text-[#1A0A08] leading-tight"
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, ease: "easeOut" }}
           >
-            How it works
-          </motion.h2>
+            <SparklesText 
+              text="How it works" 
+              className="text-4xl sm:text-5xl md:text-6xl font-fredoka text-center text-[#1A0A08] leading-tight"
+              colors={{ first: "#F6636F", second: "#EF5A00" }}
+            />
+          </motion.div>
 
           {/* 3 Steps */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 w-full">
@@ -561,7 +677,8 @@ function LandingHero() {
 
         </div>
       </section >
-    </>
+      <MinimalFooter />
+    </div>
   )
 }
 
