@@ -23,7 +23,7 @@ const loadScript = (src: string) => {
 };
 
 export function Player() {
-  const { setGameActive } = useAudio();
+  const { setGameActive, forcePlayBGM } = useAudio();
   const [loaded, setLoaded] = useState(false);
   const [isStarted, setIsStarted] = useState(false); // <--- We need explicit user intent to unlock Audio context!
   const [isReady, setIsReady] = useState(false);     // <--- Gate shown after camera loads, before game begins
