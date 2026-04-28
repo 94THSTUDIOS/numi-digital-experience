@@ -638,9 +638,9 @@ function LandingHero() {
           {/* 3 Steps */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 w-full">
             {[
-              { step: "1", label: "Numi uses your Camera", desc: "AI powered hand-tracking turns fingers into numbers", hand: "/images/1 how.png" },
-              { step: "2", label: "Simple On-Screen Guides", desc: "Count with natural hand movements", hand: "/images/2 how.png" },
-              { step: "3", label: "Instant Learning and Feeback!", desc: "Numbers appear instantly with feedback that builds understanding.", hand: "/images/3 how.png" },
+              { step: "1", label: "Numi uses your Camera", desc: "AI powered hand-tracking turns fingers into numbers", hand: "/images/1 how.png", flip: false },
+              { step: "2", label: "Simple On-Screen Guides", desc: "Count with natural hand movements", hand: "/images/2 how.png", flip: false },
+              { step: "3", label: "Instant Learning and Feeback!", desc: "Numbers appear instantly with feedback that builds understanding.", hand: "/images/3 how.png", flip: false },
             ].map((item, i) => (
               <motion.div
                 key={item.step}
