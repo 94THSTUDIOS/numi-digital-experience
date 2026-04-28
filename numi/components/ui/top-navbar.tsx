@@ -64,7 +64,7 @@ export function TopNavbar() {
     const effectiveVolume = muted ? 0 : volume;
 
     return (
-        <nav className="w-full fixed top-0 bg-[#FDF0E8]/90 backdrop-blur-md z-[100] py-3 md:py-4 lg:py-5">
+        <nav className="w-full fixed top-0 bg-[#FDF0E8]/90 backdrop-blur-md z-[1000] py-3 md:py-4 lg:py-5">
             <div className="max-w-7xl mx-auto w-full flex items-center justify-between px-4 sm:px-6 md:px-10 lg:px-16">
                 {/* NAV LOGO SLOT — the flying logo animates here on scroll */}
                 <div className="flex-shrink-0">

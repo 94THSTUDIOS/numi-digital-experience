@@ -719,8 +719,8 @@
 /* Titles and Prompts */
 #player-frame:fullscreen .ob-title,
 #player-frame:-webkit-full-screen .ob-title {
-  font-size: clamp(3rem, 8vw, 5rem) !important;
-  margin-bottom: 1.2rem !important;
+  font-size: clamp(2.5rem, 7vw, 4.5rem) !important;
+  margin-bottom: 1rem !important;
 }
 
 #player-frame:fullscreen .ob-subtitle,
@@ -732,8 +732,8 @@
 #player-frame:fullscreen .l2-prompt,
 #player-frame:-webkit-full-screen .l1-prompt,
 #player-frame:-webkit-full-screen .l2-prompt {
-  font-size: clamp(2.5rem, 6vw, 4.5rem) !important;
-  margin-bottom: 3rem !important;
+  font-size: clamp(2rem, 5vw, 3.5rem) !important;
+  margin-bottom: 2.5rem !important;
 }
 
 /* Images (Hands, Basketballs, etc.) */
@@ -743,14 +743,14 @@
 #player-frame:-webkit-full-screen .ob-content img,
 #player-frame:-webkit-full-screen #l1-emoji img,
 #player-frame:-webkit-full-screen #l2-dots img {
-  width: clamp(180px, 25vw, 320px) !important;
-  margin-bottom: 1.2rem !important;
+  width: clamp(150px, 22vmin, 280px) !important;
+  margin-bottom: 1rem !important;
 }
 
 /* Celebration Content */
 #player-frame:fullscreen .l1-number,
 #player-frame:-webkit-full-screen .l1-number {
-  font-size: 65rem !important;
+  font-size: min(35rem, 60vh) !important;
 }
 
 #player-frame:fullscreen .l1-celeb-word,
@@ -759,7 +759,7 @@
 #player-frame:-webkit-full-screen .l1-celeb-word,
 #player-frame:-webkit-full-screen .l2-celeb-word,
 #player-frame:-webkit-full-screen .ob-celeb-word {
-  font-size: clamp(8rem, 20vw, 15rem) !important;
+  font-size: clamp(6rem, 18vmin, 12rem) !important;
 }
 
 /* Count With Me UI */
@@ -771,33 +771,33 @@
 
 #player-frame:fullscreen #l1-cwm-img,
 #player-frame:-webkit-full-screen #l1-cwm-img {
-  width: 400px !important;
+  width: min(400px, 35vh) !important;
 }
 
 #player-frame:fullscreen #l1-cwm-numtext,
 #player-frame:-webkit-full-screen #l1-cwm-numtext {
-  font-size: 5rem !important;
-  margin-top: 2rem !important;
+  font-size: clamp(3rem, 8vmin, 5rem) !important;
+  margin-top: 1.5rem !important;
 }
 
 /* Level 2 Menus (Pause/Start) */
 #player-frame:fullscreen #l2-pause-menu h1,
 #player-frame:-webkit-full-screen #l2-pause-menu h1 {
-  font-size: 8rem !important;
-  margin-bottom: 3rem !important;
+  font-size: clamp(4rem, 10vmin, 7rem) !important;
+  margin-bottom: 2rem !important;
 }
 
 #player-frame:fullscreen #l2-pause-menu div[style*="width:260px"],
 #player-frame:-webkit-full-screen #l2-pause-menu div[style*="width:260px"] {
-  width: 500px !important;
-  gap: 3rem !important;
+  width: min(500px, 80vw) !important;
+  gap: 2rem !important;
 }
 
 #player-frame:fullscreen #l2-resume,
 #player-frame:-webkit-full-screen #l2-resume {
-  font-size: 3rem !important;
-  padding: 2rem !important;
-  border-radius: 24px !important;
+  font-size: clamp(1.5rem, 4vmin, 2.5rem) !important;
+  padding: 1.5rem 3rem !important;
+  border-radius: 20px !important;
 }
 
 #player-frame:fullscreen #l2-mute-vo,
@@ -809,19 +809,19 @@
 
 #player-frame:fullscreen #l2-start-menu h1,
 #player-frame:-webkit-full-screen #l2-start-menu h1 {
-  font-size: 6rem !important;
-  margin-bottom: 3rem !important;
+  font-size: clamp(3.5rem, 8vmin, 5.5rem) !important;
+  margin-bottom: 2rem !important;
 }
 
 #player-frame:fullscreen #l2-start-menu p,
 #player-frame:-webkit-full-screen #l2-start-menu p {
-  font-size: 2rem !important;
+  font-size: clamp(1.2rem, 3vmin, 1.8rem) !important;
 }
 
 #player-frame:fullscreen #l2-start-play,
 #player-frame:-webkit-full-screen #l2-start-play {
-  font-size: 3rem !important;
-  padding: 2rem 5rem !important;
+  font-size: clamp(1.8rem, 4vmin, 2.8rem) !important;
+  padding: 1.5rem 4rem !important;
 }
 
 /* Progress Dots */
@@ -885,7 +885,7 @@
 #player-frame:-webkit-full-screen #l1-hold-ring,
 #player-frame:-webkit-full-screen .l1-hold-ring,
 #player-frame:-webkit-full-screen .l2-hold-ring {
-  width: 100px !important;
-  height: 100px !important;
-  bottom: 180px !important;
+  width: clamp(60px, 12vmin, 100px) !important;
+  height: clamp(60px, 12vmin, 100px) !important;
+  bottom: 22vh !important;
 }

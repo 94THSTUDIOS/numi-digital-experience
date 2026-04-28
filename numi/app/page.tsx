@@ -52,20 +52,10 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-[999] flex flex-col items-center justify-center bg-[#FDF0E8] gap-6"
+      className="fixed inset-0 z-[2000] flex flex-col items-center justify-center bg-[#FDF0E8] gap-6"
       exit={{ y: "-100%", transition: { duration: 0.6, ease: [0.76, 0, 0.24, 1] } }}
     >
       <div className="flex flex-col items-center justify-center gap-6">
-        {/* Logo */}
-        <motion.img
-          src="/images/logo.svg"
-          alt="Numi"
-          className="h-20 w-auto object-contain"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        />
-
         {/* Character */}
         <motion.img
           src="/images/ch3.png"
@@ -241,7 +231,7 @@ function LandingHero() {
         height: hero.h,
         x: hero.x,
         y: hero.y,
-        zIndex: 200,
+        zIndex: 1100,
         pointerEvents: "none",
       })
     }
@@ -295,16 +285,17 @@ function LandingHero() {
         )}
       </AnimatePresence>
 
-      {/* ── FLYING LOGO ── desktop only: animated by GSAP between hero ↔ nav */}
-      <img
-        id="flying-logo"
-        src="/images/Numi Logo Big.svg"
-        alt="Numi Logo"
-        className="hidden md:block object-contain object-left"
-        style={{ position: "fixed", top: 0, left: 0, zIndex: 200, pointerEvents: "none" }}
-      />
+      {!loading && (
+        <img
+          id="flying-logo"
+          src="/images/Numi Logo Big.svg"
+          alt="Numi Logo"
+          className="hidden md:block object-contain object-left"
+          style={{ position: "fixed", top: 0, left: 0, zIndex: 1100, pointerEvents: "none" }}
+        />
+      )}
 
-      <TopNavbar />
+      {!loading && <TopNavbar />}
       {/* SECTION WRAPPER — dynamic viewport height (dvh) for mobile bars, centers everything */}
       <section ref={heroRef} id="hero-section" className="w-full h-screen h-[100dvh] overflow-hidden md:overflow-visible flex flex-col items-center justify-center pt-20 md:pt-32 lg:pt-40 relative z-20 bg-[#FDF0E8]">
         {/* ======================================================
