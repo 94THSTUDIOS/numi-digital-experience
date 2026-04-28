@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { LayoutGroup, motion, AnimatePresence } from "framer-motion"
+import useSound from "use-sound"
 import { TextRotate } from "@/components/ui/text-rotate"
 import Floating, { FloatingElement } from "@/components/ui/parallax-floating"
 import { Player } from "@/components/ui/player"
@@ -15,6 +16,7 @@ import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { SparklesText } from "@/components/ui/sparkles-text"
 import { useGSAP } from "@gsap/react"
+import { useAudio } from "@/components/AudioContext"
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger)
@@ -29,6 +31,13 @@ const NUMBERS = ["1", "2", "3", "4", "5"]
 
 function LoadingScreen({ onDone }: { onDone: () => void }) {
   const [current, setCurrent] = useState(0)
+  const { forcePlayBGM } = useAudio()
+  const [playIntro, { stop: stopIntro }] = useSound("/audio/intro.mp3", { volume: 0.5 })
+
+  useEffect(() => {
+    playIntro()
+    return () => stopIntro()
+  }, [playIntro, stopIntro])
 
   useEffect(() => {
     if (current < NUMBERS.length - 1) {
@@ -46,7 +55,8 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
       className="fixed inset-0 z-[999] flex flex-col items-center justify-center bg-[#FDF0E8] gap-6"
       exit={{ y: "-100%", transition: { duration: 0.6, ease: [0.76, 0, 0.24, 1] } }}
     >
-      {/* Logo */}
+      <div className="flex flex-col items-center justify-center gap-6">
+        {/* Logo */}
       <motion.img
         src="/images/logo.svg"
         alt="Numi"
@@ -99,6 +109,7 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
       >
         Let's count!
       </motion.p>
+      </div>
     </motion.div>
   )
 }
@@ -107,7 +118,7 @@ function LoadingScreen({ onDone }: { onDone: () => void }) {
 
 // ============================================================
 // IMAGE DATA
-// Array of Unsplash images used by the floating parallax elements.
+// Array of images used by the floating parallax elements.
 // Each object has: url (image source), author, title, and optional link.
 // These are referenced by index in the <FloatingElement> blocks below.
 // ============================================================
@@ -188,8 +199,19 @@ function LandingHero() {
   }, [])
   const [loading, setLoading] = useState(true)
   const [rotateColorIdx, setRotateColorIdx] = useState(0)
+  const { forcePlayBGM } = useAudio()
   const containerRef = useRef<HTMLDivElement>(null)
   const heroRef = useRef<HTMLElement>(null)
+
+  // Autoplay music on first user interaction (browser requirement)
+  useEffect(() => {
+    const handleFirstInteraction = () => {
+      forcePlayBGM();
+      window.removeEventListener('click', handleFirstInteraction);
+    };
+    window.addEventListener('click', handleFirstInteraction);
+    return () => window.removeEventListener('click', handleFirstInteraction);
+  }, [forcePlayBGM]);
 
   // ── GSAP ScrollTrigger: animate a fixed-position logo between
   //    the hero placeholder and the navbar placeholder ──
@@ -263,7 +285,14 @@ function LandingHero() {
   return (
     <div ref={containerRef}>
       <AnimatePresence>
-        {loading && <LoadingScreen onDone={() => setLoading(false)} />}
+        {loading && (
+          <LoadingScreen 
+            onDone={() => {
+              setLoading(false);
+              forcePlayBGM();
+            }} 
+          />
+        )}
       </AnimatePresence>
 
       {/* ── FLYING LOGO ── desktop only: animated by GSAP between hero ↔ nav */}
@@ -271,7 +300,7 @@ function LandingHero() {
         id="flying-logo"
         src="/images/Numi Logo Big.svg"
         alt="Numi Logo"
-        className="hidden md:block object-contain"
+        className="hidden md:block object-contain object-left"
         style={{ position: "fixed", top: 0, left: 0, zIndex: 200, pointerEvents: "none" }}
       />
 
@@ -435,7 +464,7 @@ function LandingHero() {
           - Left: ch3 character | Center: text + CTA | Right: ch2 character
           - Mobile: single column, characters hidden
           ====================================================== */}
-        <div className="flex flex-col items-center justify-center w-full max-w-[90rem] z-50 pointer-events-auto px-4 relative">
+        <div className="flex flex-col items-center justify-center w-full max-w-7xl mx-auto z-50 pointer-events-auto px-4 sm:px-6 md:px-10 lg:px-16 relative">
 
           {/* ---------- LEFT CHARACTER (ch3 orange) ---------- */}
           {/* Anchored to the center and pushed left so it never moves when text changes width */}
@@ -619,8 +648,8 @@ function LandingHero() {
             viewport={{ once: true }}
             transition={{ duration: 0.4, ease: "easeOut" }}
           >
-            <SparklesText 
-              text="How it works" 
+            <SparklesText
+              text="How it works"
               className="text-4xl sm:text-5xl md:text-6xl font-fredoka text-center text-[#1A0A08] leading-tight"
               colors={{ first: "#F6636F", second: "#EF5A00" }}
             />

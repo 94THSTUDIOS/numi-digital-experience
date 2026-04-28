@@ -6,6 +6,7 @@ import useSound from "use-sound";
 interface AudioContextType {
   isPlayingBGM: boolean;
   toggleBGM: () => void;
+  forcePlayBGM: () => void; // New method
   stopBGM: () => void;
   volume: number;
   setVolume: (v: number) => void;
@@ -52,7 +53,15 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     onplay: () => setIsPlayingBGM(true),
     onpause: () => setIsPlayingBGM(false),
     onstop: () => setIsPlayingBGM(false),
+    html5: true, // Use HTML5 Audio for better autoplay support
   });
+
+  // Autoplay attempt on mount (may be blocked by browser)
+  useEffect(() => {
+    if (!muted) {
+      playBGM();
+    }
+  }, [playBGM, muted]);
 
   // Sync volume reactively
   useEffect(() => {
@@ -60,6 +69,12 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
       sound.volume(effectiveBGMVolume);
     }
   }, [effectiveBGMVolume, sound]);
+
+  const forcePlayBGM = () => {
+    if (!isPlayingBGM && !muted) {
+      playBGM();
+    }
+  };
 
   const toggleBGM = () => {
     if (isPlayingBGM) {
@@ -78,10 +93,12 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
 
   // If muted via slider/icon, pause BGM visually too if desired, 
   // but usually BGM just goes silent. 
-  // The user requested "Muting the site also pauses the music".
   useEffect(() => {
     if (muted && isPlayingBGM) {
       pauseBGM();
+    } else if (!muted && !isPlayingBGM) {
+      // Try to resume if unmuted
+      playBGM();
     }
   }, [muted]);
 
@@ -89,6 +106,7 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     <AudioContext.Provider value={{ 
       isPlayingBGM, 
       toggleBGM, 
+      forcePlayBGM, // Expose forcePlayBGM
       stopBGM, 
       volume, 
       setVolume, 

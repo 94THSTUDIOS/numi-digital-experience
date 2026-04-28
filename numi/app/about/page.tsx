@@ -19,9 +19,9 @@ export default function AboutPage() {
   return (
     <main className="min-h-screen bg-[#FDF0E8] font-body text-[#1A0A08]">
       <TopNavbar />
-
-      {/* HERO */}
-      <section className="px-6 md:px-16 pt-36 md:pt-40 lg:pt-44 pb-20 flex flex-col items-center text-center gap-6">
+      <div className="max-w-7xl mx-auto w-full">
+        {/* HERO */}
+        <section className="px-4 sm:px-6 md:px-10 lg:px-16 pt-20 md:pt-32 lg:pt-40 pb-20 flex flex-col items-center text-center gap-6">
         {/* Logo */}
         <motion.img
           src="/images/logo.svg"
@@ -73,6 +73,7 @@ export default function AboutPage() {
           />
         </motion.div>
       </section>
+      </div>
 
       {/* MISSION */}
       <section className="bg-[#F47C6E] text-white px-6 md:px-16 py-20">

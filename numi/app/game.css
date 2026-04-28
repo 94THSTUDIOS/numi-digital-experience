@@ -132,24 +132,43 @@
 .ob-hand--flipped {
   transform: scaleX(-1);
 }
+
 .ob-hand--flipped.ob-hand--detected {
   transform: scaleX(-1) scale(1.06);
 }
 
 /* Flip demonstration animation (Step 2) */
 @keyframes ob-hand-flip-demo {
-  0%, 45% { transform: scaleX(1); }
-  55%, 100% { transform: scaleX(-1); }
+
+  0%,
+  45% {
+    transform: scaleX(1);
+  }
+
+  55%,
+  100% {
+    transform: scaleX(-1);
+  }
 }
+
 .ob-hand--flip-demo {
   animation: ob-hand-flip-demo 2s infinite ease-in-out alternate;
 }
 
 /* Mirrored flip demonstration for the right hand */
 @keyframes ob-hand-flip-demo-mirrored {
-  0%, 45% { transform: scaleX(-1); }
-  55%, 100% { transform: scaleX(1); }
+
+  0%,
+  45% {
+    transform: scaleX(-1);
+  }
+
+  55%,
+  100% {
+    transform: scaleX(1);
+  }
 }
+
 .ob-hand--flip-demo-mirrored {
   animation: ob-hand-flip-demo-mirrored 2s infinite ease-in-out alternate;
 }
@@ -248,7 +267,13 @@
 }
 
 .ob-ctrl:active {
-  transform: scale(0.96);
+  transform: scale(0.95);
+}
+
+#ob-skip-forward {
+  width: 64px;
+  height: 64px;
+  font-size: 1.8rem;
 }
 
 .ob-ctrl--close {
@@ -346,7 +371,7 @@
   color: #fff;
   letter-spacing: 0.02em;
   text-align: center;
-  text-shadow: 0 4px 12px rgba(0,0,0,0.8);
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
   margin-bottom: 2rem;
 }
 
@@ -422,12 +447,16 @@
 /* ── Stabilisation ring ──────────────────────────────────────── */
 .l1-hold-ring,
 .l2-hold-ring {
-  position: relative;
+  position: absolute;
+  bottom: 85px;
+  left: 50%;
+  transform: translateX(-50%);
   width: 60px;
   height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 25;
 }
 
 .l1-ring-svg,
@@ -636,7 +665,9 @@
 .l2-ctrl--back {
   bottom: 12px;
   left: 12px;
-}.player-container {
+}
+
+.player-container {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -680,3 +711,181 @@
   color: var(--color-text-muted);
 }
 
+#player-frame:fullscreen,
+#player-frame:-webkit-full-screen {
+  /* cursor restored */
+}
+
+/* Titles and Prompts */
+#player-frame:fullscreen .ob-title,
+#player-frame:-webkit-full-screen .ob-title {
+  font-size: clamp(3rem, 8vw, 5rem) !important;
+  margin-bottom: 1.2rem !important;
+}
+
+#player-frame:fullscreen .ob-subtitle,
+#player-frame:-webkit-full-screen .ob-subtitle {
+  font-size: 1.3rem !important;
+}
+
+#player-frame:fullscreen .l1-prompt,
+#player-frame:fullscreen .l2-prompt,
+#player-frame:-webkit-full-screen .l1-prompt,
+#player-frame:-webkit-full-screen .l2-prompt {
+  font-size: clamp(2.5rem, 6vw, 4.5rem) !important;
+  margin-bottom: 3rem !important;
+}
+
+/* Images (Hands, Basketballs, etc.) */
+#player-frame:fullscreen .ob-content img,
+#player-frame:fullscreen #l1-emoji img,
+#player-frame:fullscreen #l2-dots img,
+#player-frame:-webkit-full-screen .ob-content img,
+#player-frame:-webkit-full-screen #l1-emoji img,
+#player-frame:-webkit-full-screen #l2-dots img {
+  width: clamp(180px, 25vw, 320px) !important;
+  margin-bottom: 1.2rem !important;
+}
+
+/* Celebration Content */
+#player-frame:fullscreen .l1-number,
+#player-frame:-webkit-full-screen .l1-number {
+  font-size: 65rem !important;
+}
+
+#player-frame:fullscreen .l1-celeb-word,
+#player-frame:fullscreen .l2-celeb-word,
+#player-frame:fullscreen .ob-celeb-word,
+#player-frame:-webkit-full-screen .l1-celeb-word,
+#player-frame:-webkit-full-screen .l2-celeb-word,
+#player-frame:-webkit-full-screen .ob-celeb-word {
+  font-size: clamp(8rem, 20vw, 15rem) !important;
+}
+
+/* Count With Me UI */
+#player-frame:fullscreen #l1-cwm-screen h2,
+#player-frame:-webkit-full-screen #l1-cwm-screen h2 {
+  font-size: 6rem !important;
+  margin-bottom: 2rem !important;
+}
+
+#player-frame:fullscreen #l1-cwm-img,
+#player-frame:-webkit-full-screen #l1-cwm-img {
+  width: 400px !important;
+}
+
+#player-frame:fullscreen #l1-cwm-numtext,
+#player-frame:-webkit-full-screen #l1-cwm-numtext {
+  font-size: 5rem !important;
+  margin-top: 2rem !important;
+}
+
+/* Level 2 Menus (Pause/Start) */
+#player-frame:fullscreen #l2-pause-menu h1,
+#player-frame:-webkit-full-screen #l2-pause-menu h1 {
+  font-size: 8rem !important;
+  margin-bottom: 3rem !important;
+}
+
+#player-frame:fullscreen #l2-pause-menu div[style*="width:260px"],
+#player-frame:-webkit-full-screen #l2-pause-menu div[style*="width:260px"] {
+  width: 500px !important;
+  gap: 3rem !important;
+}
+
+#player-frame:fullscreen #l2-resume,
+#player-frame:-webkit-full-screen #l2-resume {
+  font-size: 3rem !important;
+  padding: 2rem !important;
+  border-radius: 24px !important;
+}
+
+#player-frame:fullscreen #l2-mute-vo,
+#player-frame:-webkit-full-screen #l2-mute-vo {
+  font-size: 2rem !important;
+  padding: 1.5rem !important;
+  border-radius: 20px !important;
+}
+
+#player-frame:fullscreen #l2-start-menu h1,
+#player-frame:-webkit-full-screen #l2-start-menu h1 {
+  font-size: 6rem !important;
+  margin-bottom: 3rem !important;
+}
+
+#player-frame:fullscreen #l2-start-menu p,
+#player-frame:-webkit-full-screen #l2-start-menu p {
+  font-size: 2rem !important;
+}
+
+#player-frame:fullscreen #l2-start-play,
+#player-frame:-webkit-full-screen #l2-start-play {
+  font-size: 3rem !important;
+  padding: 2rem 5rem !important;
+}
+
+/* Progress Dots */
+#player-frame:fullscreen .ob-progress,
+#player-frame:fullscreen .l1-progress,
+#player-frame:fullscreen .l2-progress,
+#player-frame:-webkit-full-screen .ob-progress,
+#player-frame:-webkit-full-screen .l1-progress,
+#player-frame:-webkit-full-screen .l2-progress {
+  top: 40px !important;
+  gap: 20px !important;
+}
+
+#player-frame:fullscreen .ob-dot,
+#player-frame:fullscreen .l1-dot,
+#player-frame:fullscreen .l2-dot,
+#player-frame:-webkit-full-screen .ob-dot,
+#player-frame:-webkit-full-screen .l1-dot,
+#player-frame:-webkit-full-screen .l2-dot {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* Control Buttons */
+#player-frame:fullscreen #ob-controls,
+#player-frame:fullscreen #l1-controls,
+#player-frame:fullscreen #l2-controls,
+#player-frame:-webkit-full-screen #ob-controls,
+#player-frame:-webkit-full-screen #l1-controls,
+#player-frame:-webkit-full-screen #l2-controls {
+  bottom: 50px !important;
+  gap: 30px !important;
+}
+
+#player-frame:fullscreen .ob-ctrl,
+#player-frame:fullscreen #l1-controls button,
+#player-frame:fullscreen #l2-controls button,
+#player-frame:-webkit-full-screen .ob-ctrl,
+#player-frame:-webkit-full-screen #l1-controls button,
+#player-frame:-webkit-full-screen #l2-controls button {
+  width: 72px !important;
+  height: 72px !important;
+  font-size: 1.8rem !important;
+}
+
+#player-frame:fullscreen #l1-pause,
+#player-frame:fullscreen #l2-pause,
+#player-frame:fullscreen #ob-skip-forward,
+#player-frame:-webkit-full-screen #l1-pause,
+#player-frame:-webkit-full-screen #l2-pause,
+#player-frame:-webkit-full-screen #ob-skip-forward {
+  width: 100px !important;
+  height: 100px !important;
+  font-size: 3rem !important;
+}
+
+/* Hold Ring */
+#player-frame:fullscreen #l1-hold-ring,
+#player-frame:fullscreen .l1-hold-ring,
+#player-frame:fullscreen .l2-hold-ring,
+#player-frame:-webkit-full-screen #l1-hold-ring,
+#player-frame:-webkit-full-screen .l1-hold-ring,
+#player-frame:-webkit-full-screen .l2-hold-ring {
+  width: 100px !important;
+  height: 100px !important;
+  bottom: 180px !important;
+}

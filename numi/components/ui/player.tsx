@@ -181,7 +181,10 @@ export function Player() {
         {!isStarted && (
           <div className="absolute inset-0 flex flex-col items-center justify-center z-[100] bg-[#1a1a2e]">
             <button
-              onClick={() => setIsStarted(true)}
+              onClick={() => {
+                setIsStarted(true);
+                forcePlayBGM();
+              }}
               className="px-8 py-4 bg-[#EF5A00] hover:bg-[#d44f00] hover:scale-105 text-white font-calendas rounded-full transition-all text-xl shadow-lg shadow-[#EF5A00]/30"
             >
               Start Camera & Audio
@@ -191,7 +194,7 @@ export function Player() {
         )}
 
         {isStarted && !loaded && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center z-50 text-white/70" style={{ background: "rgba(14, 12, 28, 0.5)" }}>
+          <div className="absolute inset-0 flex flex-col items-center pt-64 z-50 text-white/70" style={{ background: "rgba(14, 12, 28, 0.5)" }}>
             <div className="w-8 h-8 border-4 border-t-white border-white/20 rounded-full animate-spin mb-4"></div>
             <p className="font-sans text-sm">Loading AI & Camera...</p>
           </div>

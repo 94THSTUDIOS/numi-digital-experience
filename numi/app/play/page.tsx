@@ -5,16 +5,12 @@ import { FloatingBubblesBackground } from "@/components/ui/floating-bubbles-back
 export default function PlayPage() {
     return (
         <FloatingBubblesBackground>
-            <main className="w-full h-screen overflow-hidden relative flex flex-col pt-0">
-                <TopNavbar />
-
-                <div className="flex-1 w-full h-full p-4 md:p-8 flex items-center justify-center max-w-7xl mx-auto">
-                    {/* 
-                      Instead of hardcoding the HTML and scripts here, 
-                      we use the <Player /> component we built earlier which 
-                      handles script injection and canvas mounting cleanly! 
-                    */}
-                    <Player />
+            <TopNavbar />
+            <main className="w-full h-screen overflow-hidden relative flex flex-col">
+                <div className="flex-1 flex items-center justify-center pt-20 md:pt-32 lg:pt-40">
+                    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-10 lg:px-16 flex items-center justify-center h-full">
+                        <Player />
+                    </div>
                 </div>
             </main >
         </FloatingBubblesBackground>
