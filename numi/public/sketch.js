@@ -144,7 +144,7 @@ function setup() {
 
   // Quiz Assets
   sounds['hmapple'] = new Audio('audio/quiz/hmapples.mp3');
-  sounds['hmball'] = new Audio('audio/quiz/hmballs.mp3');
+  sounds['hmball'] = new Audio('audio/quiz/hmbasketballs.mp3');
   sounds['hmbear'] = new Audio('audio/quiz/hmbears.mp3');
   sounds['hmbutterfly'] = new Audio('audio/quiz/hmbutterflies.mp3');
   sounds['hmcar'] = new Audio('audio/quiz/hmcars.mp3');

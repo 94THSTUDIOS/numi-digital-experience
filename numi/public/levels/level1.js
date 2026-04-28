@@ -88,7 +88,8 @@ window.level1 = (() => {
   const NUM_WORDS = ['', 'one', 'two', 'three', 'four', 'five'];
 
   const FRAMES_TO_CONFIRM = 30;      // ~0.5 s at 60 fps hold (Decreased for snappier response)
-  const CELEBRATION_DURATION = 2000;    // Increased from 1200
+  const CELEBRATION_DURATION = 2500;
+  const CELEB_WORDS = ['GREAT!', 'PERFECT!', 'AMAZING!', 'NICE!', 'SUPERB!', 'GOOD JOB!', 'AWESOME!', 'WOW!'];    // Increased from 1200
   const NUMBER_SHOW_DURATION = 3000;    // Increased from 1800
   const COUNT_WITH_ME_DURATION = 4200;    // auto-advance from Count-With-Me (fallback)
   const AUDIO_CONFIDENCE_MIN = 0.45;    // Lowered for better accessibility/testing
@@ -732,11 +733,12 @@ window.level1 = (() => {
     }
     el('l1-celebration').style.opacity = '1';
 
-    // Starting from number 2, show the number itself. Otherwise "SUPERB!"
-    if (step.number && step.number >= 2) {
+    // Show the number itself for counting steps, otherwise a random praise word
+    if (step.number && step.number >= 1) {
       el('l1-celeb-word').textContent = step.number;
     } else {
-      el('l1-celeb-word').textContent = 'SUPERB!';
+      const word = CELEB_WORDS[Math.floor(Math.random() * CELEB_WORDS.length)];
+      el('l1-celeb-word').textContent = word;
     }
 
     // For gesture steps, play the number audio as part of the celebration

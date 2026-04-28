@@ -37,7 +37,7 @@ window.level2 = (() => {
   // ── TIMING ────────────────────────────────────────────────
   // Increased to 50 frames for a longer, more deliberate hold.
   const FRAMES_TO_CONFIRM    = 50;
-  const QUIZ_OBJECTS = ['apple', 'ball', 'bear', 'butterfly', 'car', 'cat', 'dog', 'leaf', 'pencil'];
+  const QUIZ_OBJECTS = ['apple', 'basketball', 'bear', 'butterfly', 'car', 'cat', 'dog', 'leaf', 'pencil'];
 
   // How long (ms) to show the celebration before the next round.
   // CHANGE: Was 1800ms originally. Adjusted to 2500ms for confetti.
@@ -381,10 +381,12 @@ window.level2 = (() => {
     // Update the prompt to use the object name with pluralization
     const plurals = {
       'butterfly': 'butterflies',
-      'leaf': 'leaves'
+      'leaf': 'leaves',
+      'basketball': 'basketballs'
     };
-    const objectName = target === 1 ? currentObj : (plurals[currentObj] || (currentObj + 's'));
-    document.querySelector('.l2-prompt').textContent = `How many ${objectName}?`;
+    // The question is always plural (e.g. "How many leaves?") even if the answer is 1
+    const objectNamePlural = (plurals[currentObj] || (currentObj + 's'));
+    document.querySelector('.l2-prompt').textContent = `How many ${objectNamePlural}?`;
 
     // Show the objects in a horizontal row
     renderDotGrid(target);
@@ -445,12 +447,15 @@ window.level2 = (() => {
     // Move the confirmation text to the large central numeral
     const plurals = {
       'butterfly': 'butterflies',
-      'leaf': 'leaves'
+      'leaf': 'leaves',
+      'basketball': 'basketballs'
     };
-    const objectName = target === 1 ? currentObj : (plurals[currentObj] || (currentObj + 's'));
+    const isSingular = (target === 1);
+    const objectName = isSingular ? currentObj : (plurals[currentObj] || (currentObj + 's'));
     const displayObj = objectName.charAt(0).toUpperCase() + objectName.slice(1);
     
     const numberEl = document.getElementById('l2-number');
+    // If it's one, use the phrase "1 Leaf" instead of "1 Leaves"
     numberEl.textContent = `${target} ${displayObj}`;
     numberEl.style.fontSize = 'clamp(3rem, 10vw, 6rem)'; // slightly smaller for phrases
 
