@@ -100,7 +100,10 @@ export function TopNavbar() {
                     {/* VOLUME CONTROL */}
                     <div className="flex items-center gap-3">
                         <button
-                            onClick={toggleMute}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                toggleMute();
+                            }}
                             className="hover:scale-110 transition-transform leading-none text-[#F45F00] flex items-center justify-center"
                             aria-label={muted ? "Unmute" : "Mute"}
                         >
@@ -114,6 +117,7 @@ export function TopNavbar() {
                                 step="0.05"
                                 value={effectiveVolume}
                                 onChange={handleVolumeChange}
+                                onClick={(e) => e.stopPropagation()}
                                 className="w-20 lg:w-24 accent-[#3F6F29] bg-white h-2 rounded-full cursor-pointer"
                                 aria-label="Volume"
                             />
@@ -139,13 +143,21 @@ export function TopNavbar() {
 
                     <StarButton
                         href={isPlayPage ? "/" : "/play"}
+                        onClick={(e) => {
+                            // Don't stop propagation here as we want the Link to work, 
+                            // but we want to ensure the global interaction handler sees it
+                            // Actually, StarButton has its own internal Link/navigation
+                        }}
                         className="px-4 py-2 sm:px-5 sm:py-2.5 text-sm sm:text-base font-black uppercase tracking-tight shadow-md whitespace-nowrap"
                     >
                         {isPlayPage ? "BACK" : "PLAY!"}
                     </StarButton>
                     {/* Mobile volume toggle */}
                     <button
-                        onClick={toggleMute}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            toggleMute();
+                        }}
                         className="hover:scale-110 transition-transform leading-none text-[#F45F00]"
                         aria-label={muted ? "Unmute" : "Mute"}
                     >

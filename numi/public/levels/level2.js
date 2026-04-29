@@ -201,21 +201,21 @@ window.level2 = (() => {
                   align-items:center;justify-content:center;gap:2rem;
                   background:rgba(14, 12, 28, 0.9);backdrop-filter:blur(10px);
                   -webkit-backdrop-filter:blur(10px);z-index:100;">
-        <h1 style="font-family:var(--font-display);font-size:4rem;color:#fff;
+        <h1 style="font-family:var(--font-display);font-size:clamp(2rem, 10cqmin, 4rem);color:#fff;
                    text-transform:uppercase;letter-spacing:0.1em;margin:0;">Paused</h1>
         
         <div style="display:flex;flex-direction:column;gap:1.5rem;width:260px;">
           <button id="l2-resume"
-                  style="font-family:var(--font-display);font-size:1.8rem;font-weight:900;
-                         color:white;background:#F6636F;border:none;padding:1.2rem;
+                  style="font-family:var(--font-display);font-size:clamp(1.2rem, 5cqmin, 1.8rem);font-weight:900;
+                         color:white;background:#F6636F;border:none;padding:1cqh 2cqw;
                          border-radius:16px;cursor:pointer;text-transform:uppercase;
                          box-shadow:0 10px 20px rgba(246,99,111,0.3);">
             Resume
           </button>
           <button id="l2-mute-vo"
-                  style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;
+                  style="font-family:var(--font-display);font-size:clamp(0.8rem, 3cqmin, 1.2rem);font-weight:700;
                          color:#fff;background:rgba(255,255,255,0.1);border:2px solid rgba(255,255,255,0.2);
-                         padding:1rem;border-radius:12px;cursor:pointer;text-transform:uppercase;">
+                         padding:0.8cqh;border-radius:12px;cursor:pointer;text-transform:uppercase;">
             Mute Voice Over
           </button>
         </div>
@@ -242,15 +242,15 @@ window.level2 = (() => {
                   font-size:0.875rem;color:rgba(255,255,255,0.6);margin-bottom:0.5rem;">
           Ready to count?
         </p>
-        <h1 style="font-family:var(--font-display);font-size:clamp(2rem,5vw,3.5rem);
+        <h1 style="font-family:var(--font-display);font-size:clamp(1.5rem, 8cqmin, 3.5rem);
                    color:#fff;text-align:center;text-transform:none;
-                   letter-spacing:0.05em;margin:0;line-height:1.2;margin-bottom:1.5rem;">
+                   letter-spacing:0.05em;margin:0;line-height:1.1;margin-bottom:1.5cqh;">
           Let's test your<br/>counting
         </h1>
         
         <button id="l2-start-play"
-                style="font-family:var(--font-display);font-size:1.5rem;font-weight:900;
-                       color:white;background:#F6636F;border:none;padding:1.2rem 2.8rem;
+                style="font-family:var(--font-display);font-size:clamp(1.2rem, 5cqmin, 2rem);font-weight:900;
+                       color:white;background:#F6636F;border:none;padding:1.5cqh 4cqw;
                        border-radius:999px;cursor:pointer;text-transform:none;
                        box-shadow:0 15px 30px rgba(246,99,111,0.3);
                        transition:all 0.2s cubic-bezier(0.34,1.56,0.64,1);"
@@ -415,8 +415,9 @@ window.level2 = (() => {
     for (let i = 0; i < n; i++) {
       const img       = document.createElement('img');
       img.src         = `images/quiz/${currentObj}.png`;
-      img.style.width = `clamp(100px, 16vw, 150px)`; 
-      img.style.height = 'auto';
+      img.style.width = `clamp(60px, 18cqmin, 140px)`; 
+      img.style.maxHeight = '25cqh';
+      img.style.objectFit = 'contain';
       img.style.filter = 'drop-shadow(0 10px 20px rgba(0,0,0,0.45))';
       container.appendChild(img);
     }
@@ -457,7 +458,7 @@ window.level2 = (() => {
     const numberEl = document.getElementById('l2-number');
     // If it's one, use the phrase "1 Leaf" instead of "1 Leaves"
     numberEl.textContent = `${target} ${displayObj}`;
-    numberEl.style.fontSize = 'clamp(3rem, 10vw, 6rem)'; // slightly smaller for phrases
+    numberEl.style.fontSize = 'clamp(2rem, 15cqmin, 6rem)'; // slightly smaller for phrases
 
     // Clear the top question during celebration
     document.querySelector('.l2-prompt').textContent = '';

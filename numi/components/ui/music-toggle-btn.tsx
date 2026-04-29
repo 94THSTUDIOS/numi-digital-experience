@@ -34,7 +34,10 @@ export const MusicToggleButton = ({ isPlaying, onClick }: MusicToggleButtonProps
   return (
     <>
       <motion.div
-        onClick={onClick}
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick();
+        }}
         key="audio"
         initial={{ padding: "14px 14px " }}
         whileHover={{ padding: "18px 22px " }}

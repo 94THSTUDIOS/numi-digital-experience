@@ -265,6 +265,8 @@ window.level1 = (() => {
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
+      padding: '6cqh 5cqw 12cqh',
+      gap: '3cqh',
     });
 
     overlay.innerHTML = `
@@ -280,9 +282,9 @@ window.level1 = (() => {
       </style>
 
       <!-- ── Gesture Instruction (steps 0-1 + numbered gesture steps) ── -->
-      <div id="l1-content" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:2rem;">
+      <div id="l1-content" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:3cqh;">
         <h2 id="l1-title"
-            style="font-family:var(--font-display);font-size:clamp(2rem,4vw,3rem);font-weight:900;
+            style="font-family:var(--font-display);font-size:clamp(1.2rem, 8cqmin, 2.5rem);font-weight:900;
                    color:#fff;letter-spacing:0.05em;text-transform:uppercase;"></h2>
         <div style="font-size:10rem;line-height:1;filter:drop-shadow(0px 8px 16px rgba(0,0,0,0.4));">
           <span id="l1-emoji"></span>
@@ -290,7 +292,7 @@ window.level1 = (() => {
       </div>
 
       <!-- ── Gesture hold-arc ── -->
-      <div id="l1-hold-ring" style="position:absolute;bottom:85px;left:50%;transform:translateX(-50%);width:60px;height:60px;">
+      <div id="l1-hold-ring" style="position:absolute;bottom:12%;left:50%;transform:translateX(-50%);width:12cqmin;height:12cqmin;min-width:40px;min-height:40px;">
         <svg viewBox="0 0 60 60" style="position:absolute;inset:0;transform:rotate(-90deg);">
           <circle cx="30" cy="30" r="24" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="5"/>
           <circle id="l1-ring-arc" cx="30" cy="30" r="24" fill="none" stroke="#FF6B6F"
@@ -305,7 +307,7 @@ window.level1 = (() => {
            style="display:none;position:absolute;inset:0;flex-direction:column;
                   align-items:center;justify-content:center;z-index:6;">
         <h1 id="l1-num-text"
-            style="font-family:var(--font-display);font-size:clamp(3rem,7vw,6rem);
+            style="font-family:var(--font-display);font-size:clamp(2rem,15cqmin,5rem);
                    color:white;text-shadow:0 0 30px rgba(0,0,0,0.6);
                    animation:num-pop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;"></h1>
       </div>
@@ -313,15 +315,15 @@ window.level1 = (() => {
       <!-- ── "COUNT WITH ME" Screen ── -->
       <div id="l1-cwm-screen"
            style="display:none;position:absolute;inset:0;flex-direction:column;
-                  align-items:center;justify-content:center;gap:2.4rem;z-index:6;">
-        <h2 style="font-family:var(--font-display);font-size:clamp(2rem,4.5vw,3.2rem);
+                  align-items:center;justify-content:space-between;gap:2cqh;z-index:6;padding:10cqh 5cqw 18cqh;">
+        <h2 style="font-family:var(--font-display);font-size:clamp(1.5rem, 6cqmin, 2.8rem);
                    font-weight:900;color:#fff;text-transform:uppercase;
                    text-shadow:0 2px 14px rgba(0,0,0,0.5);letter-spacing:0.06em;">
           COUNT WITH ME
         </h2>
         <div id="l1-cwm-hand" style="display:flex;align-items:center;justify-content:center;"></div>
         <div id="l1-cwm-numtext"
-             style="font-family:var(--font-display);font-size:clamp(2rem,4vw,2.8rem);
+             style="font-family:var(--font-display);font-size:clamp(1.5rem, 6cqmin, 2.5rem);
                     font-weight:900;color:#FFD93D;
                     text-shadow:0 2px 18px rgba(0,0,0,0.55);letter-spacing:0.04em;"></div>
       </div>
@@ -332,11 +334,11 @@ window.level1 = (() => {
       <div id="l1-yt-screen"
            style="display:none;position:absolute;inset:0;flex-direction:column;
                   align-items:center;justify-content:space-between;
-                  padding:1.2rem 1rem;z-index:6;">
+                  padding:4cqh 5cqw 8cqh;z-index:6;">
 
         <!-- Top banner -->
-        <div style="display:flex;justify-content:center;width:100%;padding-top:0.3rem;">
-          <h2 style="font-family:var(--font-display);font-size:clamp(1.8rem,4vw,2.8rem);
+        <div style="display:flex;justify-content:center;width:100%;padding-top:2cqh;">
+          <h2 style="font-family:var(--font-display);font-size:clamp(1.2rem, 6cqmin, 2.2rem);
                      font-weight:900;color:#fff;text-transform:uppercase;
                      text-shadow:0 2px 10px rgba(0,0,0,0.9);
                      background:rgba(0,0,0,0.40);padding:0.45rem 2rem;
@@ -347,7 +349,7 @@ window.level1 = (() => {
 
         <!-- Centre prompt -->
         <p id="l1-yt-prompt"
-           style="font-family:var(--font-display);font-size:clamp(1.1rem,2.2vw,1.6rem);
+           style="font-family:var(--font-display);font-size:clamp(0.9rem, 3cqmin, 1.4rem);
                   font-weight:700;color:#fff;text-align:center;
                   text-shadow:0 2px 8px rgba(0,0,0,0.95);
                   background:rgba(0,0,0,0.48);padding:0.6rem 1.4rem;
@@ -360,7 +362,7 @@ window.level1 = (() => {
           
           <!-- Iterative Progress -->
           <div id="l1-yt-progress"
-               style="font-family:var(--font-display);font-size:4.5rem;color:#FFD93D;
+               style="font-family:var(--font-display);font-size:clamp(3rem, 15cqmin, 6rem);color:#FFD93D;
                       line-height:1;font-weight:900;text-shadow:0 4px 20px rgba(0,0,0,0.8);"></div>
 
           <!-- Hold-arc ring -->
@@ -402,7 +404,7 @@ window.level1 = (() => {
                   display:flex;justify-content:center;align-items:center;
                   z-index:8;transition:opacity 0.3s ease;">
         <span id="l1-celeb-word"
-              style="font-family:var(--font-display);font-size:clamp(3.5rem,8vw,6rem);
+              style="font-family:var(--font-display);font-size:clamp(2.5rem, 15cqmin, 5.5rem);
                      font-weight:900;color:#fff;
                      text-shadow:0 4px 30px rgba(0,0,0,0.6),0 0 60px rgba(255,107,111,0.5);
                      animation:celeb-pop 0.35s cubic-bezier(0.34,1.56,0.64,1) both;"></span>
@@ -529,7 +531,8 @@ window.level1 = (() => {
     if (step.image) {
       // Show a single centered hand for maximum clarity
       el('l1-emoji').innerHTML = `
-        <img id="l1-gesture-img" src="${step.image}" style="width:clamp(120px, 20vw, 200px);filter:brightness(0) invert(1);" />
+        <img id="l1-gesture-img" src="${step.image}" 
+             style="width:clamp(80px, 25cqmin, 160px);max-height:45cqh;object-fit:contain;filter:brightness(0) invert(1);" />
       `;
 
       // If a transition animation is provided (e.g. lift finger), loop it
@@ -568,7 +571,7 @@ window.level1 = (() => {
     if (images.length > 0) {
       el('l1-cwm-hand').innerHTML = `
         <img id="l1-cwm-img" src="${images[0]}" 
-             style="width:clamp(100px, 15vw, 140px);filter:brightness(0) invert(1);" />
+             style="width:clamp(70px, 22cqmin, 120px);max-height:40cqh;object-fit:contain;filter:brightness(0) invert(1);" />
       `;
 
       let idx = 1;
@@ -630,10 +633,12 @@ window.level1 = (() => {
       const existing = el('l1-cwm-img');
       if (existing) {
         existing.src = SVG_PATHS[n];
+        existing.style.maxHeight = '40cqh';
+        existing.style.objectFit = 'contain';
       } else {
         el('l1-cwm-hand').innerHTML = `
           <img id="l1-cwm-img" src="${SVG_PATHS[n]}"
-               style="width:clamp(100px,15vw,140px);filter:brightness(0) invert(1);" />
+               style="width:clamp(70px, 22cqmin, 120px);max-height:40cqh;object-fit:contain;filter:brightness(0) invert(1);" />
         `;
       }
       el('l1-cwm-numtext').textContent = NUM_WORDS[n].toUpperCase() + ' = ' + n;

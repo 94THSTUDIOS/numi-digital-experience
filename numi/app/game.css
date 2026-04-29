@@ -51,10 +51,14 @@
 /* ── Shell ───────────────────────────────────────────────────── */
 #ob-overlay {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   z-index: 10;
   border-radius: inherit;
   overflow: hidden;
+  display: block;
   /* Frosted-glass tint over the live camera feed */
   background: rgba(14, 12, 28, 0.52);
   backdrop-filter: blur(3px);
@@ -75,10 +79,11 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.6rem;
-  padding: 2rem 2rem 3.5rem;
+  gap: 3cqh;
+  padding: 5cqh 5cqw 12cqh;
   text-align: center;
   transition: opacity 0.35s ease;
+  overflow: hidden;
 }
 
 /* ── Step progress dots ──────────────────────────────────────── */
@@ -108,13 +113,13 @@
 /* ── Hand illustrations ──────────────────────────────────────── */
 .ob-hands {
   display: flex;
-  gap: 1.5rem;
+  gap: 4cqw;
   align-items: flex-end;
-  margin-bottom: 0.5rem;
+  margin-bottom: 2cqh;
 }
 
 .ob-hand {
-  width: 88px;
+  width: 18cqmin;
   height: auto;
   /* Render SVG as white silhouette over the dark overlay */
   filter: brightness(0) invert(1);
@@ -176,12 +181,12 @@
 /* ── Instruction text ────────────────────────────────────────── */
 .ob-title {
   font-family: var(--font-display);
-  font-size: clamp(1.7rem, 3.5vw, 2.3rem);
+  font-size: clamp(1.2rem, 8cqmin, 2.5rem);
   font-weight: 900;
   color: #ffffff;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  line-height: 1.08;
+  line-height: 1.05;
   text-shadow:
     2px 2px 0 rgba(0, 0, 0, 0.45),
     0 0 18px rgba(0, 0, 0, 0.3);
@@ -189,7 +194,7 @@
 
 .ob-subtitle {
   font-family: var(--font-primary);
-  font-size: 0.9rem;
+  font-size: clamp(0.7rem, 3cqmin, 1rem);
   font-weight: 400;
   color: rgba(255, 255, 255, 0.82);
   letter-spacing: 0.01em;
@@ -220,7 +225,7 @@
   position: relative;
   z-index: 2;
   font-family: var(--font-display);
-  font-size: clamp(2.8rem, 6vw, 4rem);
+  font-size: clamp(2rem, 15cqmin, 5rem);
   font-weight: 900;
   color: #ffffff;
   text-transform: uppercase;
@@ -315,7 +320,10 @@
 #l1-overlay,
 #l2-overlay {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   z-index: 10;
   border-radius: inherit;
   overflow: hidden;
@@ -323,8 +331,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem 1.5rem 3.5rem;
-  gap: 0.5rem;
+  padding: 6cqh 5cqw 12cqh;
+  gap: 3cqh;
   /* Semi-transparent dark overlay — camera shows through */
   background: rgba(14, 12, 28, 0.45);
   backdrop-filter: blur(2px);
@@ -366,20 +374,20 @@
 .l1-prompt,
 .l2-prompt {
   font-family: var(--font-primary);
-  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-size: clamp(1.2rem, 6cqmin, 2.5rem);
   font-weight: 800;
   color: #fff;
   letter-spacing: 0.02em;
   text-align: center;
   text-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
-  margin-bottom: 2rem;
+  margin-bottom: 2cqh;
 }
 
 /* ── Big target numeral ──────────────────────────────────────── */
 .l1-number,
 .l2-number {
   font-family: var(--font-display);
-  font-size: clamp(5rem, 14vw, 8rem);
+  font-size: clamp(4rem, 25cqmin, 10rem);
   font-weight: 900;
   color: #ffffff;
   line-height: 1;
@@ -448,11 +456,13 @@
 .l1-hold-ring,
 .l2-hold-ring {
   position: absolute;
-  bottom: 85px;
+  bottom: 12%;
   left: 50%;
   transform: translateX(-50%);
-  width: 60px;
-  height: 60px;
+  width: 12cqmin;
+  height: 12cqmin;
+  min-width: 40px;
+  min-height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -683,6 +693,7 @@
   border: 1px solid var(--color-stroke);
   background: var(--color-surface);
   transition: box-shadow var(--transition-slow);
+  container-type: size;
 }
 
 .player-frame:hover {
@@ -693,7 +704,7 @@
 .player-frame canvas {
   display: block;
   border-radius: var(--radius-xl);
-  transform: scaleX(-1);
+  transform: scaleX(-1) !important;
   width: 100% !important;
   height: 100% !important;
   object-fit: cover;
@@ -716,24 +727,36 @@
   /* cursor restored */
 }
 
+/* Base Fullscreen Overlay Scaling */
+#player-frame:fullscreen .ob-content,
+#player-frame:-webkit-full-screen .ob-content,
+#player-frame:fullscreen #l1-overlay,
+#player-frame:-webkit-full-screen #l1-overlay,
+#player-frame:fullscreen #l2-overlay,
+#player-frame:-webkit-full-screen #l2-overlay {
+  justify-content: center !important;
+  padding: 8cqh 8cqw 18cqh !important;
+  gap: 4cqh !important;
+}
+
 /* Titles and Prompts */
 #player-frame:fullscreen .ob-title,
 #player-frame:-webkit-full-screen .ob-title {
-  font-size: clamp(2.5rem, 7vw, 4.5rem) !important;
-  margin-bottom: 1rem !important;
+  font-size: clamp(1.5rem, 10cqmin, 4rem) !important;
+  margin-bottom: 2cqh !important;
 }
 
 #player-frame:fullscreen .ob-subtitle,
 #player-frame:-webkit-full-screen .ob-subtitle {
-  font-size: 1.3rem !important;
+  font-size: clamp(0.8rem, 4cqmin, 1.5rem) !important;
 }
 
 #player-frame:fullscreen .l1-prompt,
 #player-frame:fullscreen .l2-prompt,
 #player-frame:-webkit-full-screen .l1-prompt,
 #player-frame:-webkit-full-screen .l2-prompt {
-  font-size: clamp(2rem, 5vw, 3.5rem) !important;
-  margin-bottom: 2.5rem !important;
+  font-size: clamp(1.5rem, 8cqmin, 3rem) !important;
+  margin-bottom: 4cqh !important;
 }
 
 /* Images (Hands, Basketballs, etc.) */
@@ -743,14 +766,14 @@
 #player-frame:-webkit-full-screen .ob-content img,
 #player-frame:-webkit-full-screen #l1-emoji img,
 #player-frame:-webkit-full-screen #l2-dots img {
-  width: clamp(150px, 22vmin, 280px) !important;
-  margin-bottom: 1rem !important;
+  width: clamp(120px, 30cqmin, 400px) !important;
+  margin-bottom: 2cqh !important;
 }
 
 /* Celebration Content */
 #player-frame:fullscreen .l1-number,
 #player-frame:-webkit-full-screen .l1-number {
-  font-size: min(35rem, 60vh) !important;
+  font-size: clamp(5rem, 35cqmin, 15rem) !important;
 }
 
 #player-frame:fullscreen .l1-celeb-word,
@@ -759,25 +782,25 @@
 #player-frame:-webkit-full-screen .l1-celeb-word,
 #player-frame:-webkit-full-screen .l2-celeb-word,
 #player-frame:-webkit-full-screen .ob-celeb-word {
-  font-size: clamp(6rem, 18vmin, 12rem) !important;
+  font-size: clamp(4rem, 20cqmin, 10rem) !important;
 }
 
 /* Count With Me UI */
 #player-frame:fullscreen #l1-cwm-screen h2,
 #player-frame:-webkit-full-screen #l1-cwm-screen h2 {
-  font-size: 6rem !important;
-  margin-bottom: 2rem !important;
+  font-size: clamp(2rem, 10cqmin, 4rem) !important;
+  margin-bottom: 3cqh !important;
 }
 
 #player-frame:fullscreen #l1-cwm-img,
 #player-frame:-webkit-full-screen #l1-cwm-img {
-  width: min(400px, 35vh) !important;
+  width: clamp(100px, 35cqmin, 450px) !important;
 }
 
 #player-frame:fullscreen #l1-cwm-numtext,
 #player-frame:-webkit-full-screen #l1-cwm-numtext {
-  font-size: clamp(3rem, 8vmin, 5rem) !important;
-  margin-top: 1.5rem !important;
+  font-size: clamp(1.8rem, 8cqmin, 4rem) !important;
+  margin-top: 2cqh !important;
 }
 
 /* Level 2 Menus (Pause/Start) */
@@ -820,8 +843,8 @@
 
 #player-frame:fullscreen #l2-start-play,
 #player-frame:-webkit-full-screen #l2-start-play {
-  font-size: clamp(1.8rem, 4vmin, 2.8rem) !important;
-  padding: 1.5rem 4rem !important;
+  font-size: clamp(1.8rem, 4cqmin, 2.8rem) !important;
+  padding: 1.5cqh 4cqw !important;
 }
 
 /* Progress Dots */
@@ -885,7 +908,7 @@
 #player-frame:-webkit-full-screen #l1-hold-ring,
 #player-frame:-webkit-full-screen .l1-hold-ring,
 #player-frame:-webkit-full-screen .l2-hold-ring {
-  width: clamp(60px, 12vmin, 100px) !important;
-  height: clamp(60px, 12vmin, 100px) !important;
-  bottom: 22vh !important;
+  width: 15cqmin !important;
+  height: 15cqmin !important;
+  bottom: 15% !important;
 }

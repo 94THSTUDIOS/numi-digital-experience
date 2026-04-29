@@ -78,6 +78,10 @@ function gotHands(results) {
     const dHand = dist(kps[0].x, kps[0].y, kps[9].x, kps[9].y);
     return dHand > 35; // 35px is the floor for a 'real' hand detection
   });
+
+  if (hands.length > 0) {
+    window.dispatchEvent(new CustomEvent("numi:activity"));
+  }
 }
 
 

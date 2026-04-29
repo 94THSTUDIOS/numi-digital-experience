@@ -297,7 +297,7 @@ function LandingHero() {
 
       {!loading && <TopNavbar />}
       {/* SECTION WRAPPER — dynamic viewport height (dvh) for mobile bars, centers everything */}
-      <section ref={heroRef} id="hero-section" className="w-full h-screen h-[100dvh] overflow-hidden md:overflow-visible flex flex-col items-center justify-center pt-20 md:pt-32 lg:pt-40 relative z-20 bg-[#FDF0E8]">
+      <section ref={heroRef} id="hero-section" className="w-full h-screen h-[100dvh] overflow-hidden md:overflow-visible flex flex-col items-center justify-center pt-20 md:pt-32 lg:pt-32 relative z-20 bg-[#FDF0E8]">
         {/* ======================================================
           PARALLAX FLOATING LAYER (background)
           - sensitivity: how much images move relative to mouse (-0.5 = inverted, subtle)
@@ -446,7 +446,7 @@ function LandingHero() {
         <div className="hidden md:flex justify-center w-full z-50 pointer-events-none px-4 mb-4 sm:mb-6 md:mb-8">
           <div
             id="hero-logo-slot"
-            className="w-full max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-2xl aspect-[510/304]"
+            className="w-full max-w-lg md:max-w-lg lg:max-w-xl xl:max-w-xl aspect-[510/304]"
           />
         </div>
 
@@ -486,7 +486,7 @@ function LandingHero() {
             <div id="hero-cta" className="flex flex-col items-center">
               {/* ANIMATED HEADING — fades up on load */}
               <motion.h1
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl text-center w-full justify-center items-center flex-row flex flex-wrap lg:flex-nowrap lg:whitespace-nowrap leading-tight font-fredoka tracking-tight"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-5xl text-center w-full justify-center items-center flex-row flex flex-wrap lg:flex-nowrap lg:whitespace-nowrap leading-tight font-fredoka tracking-tight"
                 animate={{ opacity: 1, y: 0 }}
                 initial={{ opacity: 0, y: 20 }}
                 transition={{ duration: 0.2, ease: "easeOut", delay: 0.3 }}
