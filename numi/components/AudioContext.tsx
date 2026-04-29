@@ -106,16 +106,27 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     if (isPlayingBGM) pauseBGM();
   };
 
+  const isPlayingRef = useRef(isPlayingBGM);
+  const isMutedRef = useRef(muted);
+  
+  useEffect(() => {
+    isPlayingRef.current = isPlayingBGM;
+  }, [isPlayingBGM]);
+
+  useEffect(() => {
+    isMutedRef.current = muted;
+  }, [muted]);
+
   // --- Idle Timer Logic ---
   // Automatically pause BGM after 1 minute of no interaction, and resume on return
   const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
   const wasIdlePausedRef = useRef(false);
   const IDLE_LIMIT = 1 * 60 * 1000; // 1 minute
 
-  const handleUserActivity = () => {
+  const handleUserActivity = React.useCallback(() => {
     // 1. Resume if it was paused by the idle timer
     if (wasIdlePausedRef.current) {
-      if (!muted) {
+      if (!isMutedRef.current) {
         playBGM();
         localStorage.setItem("numiPlayingBGM", "true");
       }
@@ -125,30 +136,30 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
     // 2. Reset the idle timer
     if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     idleTimerRef.current = setTimeout(() => {
-      if (isPlayingBGM) {
+      if (isPlayingRef.current) {
         pauseBGM();
         wasIdlePausedRef.current = true;
         localStorage.setItem("numiPlayingBGM", "false");
       }
     }, IDLE_LIMIT);
-  };
+  }, [playBGM, pauseBGM]);
 
   useEffect(() => {
     const events = ["mousemove", "mousedown", "keydown", "touchstart", "wheel"];
-    events.forEach(event => window.addEventListener(event, handleUserActivity));
-    
-    // Custom event for game-specific activity (like camera hand detection)
-    window.addEventListener("numi:activity", handleUserActivity);
+    const handler = () => handleUserActivity();
+
+    events.forEach(event => window.addEventListener(event, handler));
+    window.addEventListener("numi:activity", handler);
 
     // Start the initial timer
-    handleUserActivity();
+    handler();
 
     return () => {
-      events.forEach(event => window.removeEventListener(event, handleUserActivity));
-      window.removeEventListener("numi:activity", handleUserActivity);
+      events.forEach(event => window.removeEventListener(event, handler));
+      window.removeEventListener("numi:activity", handler);
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     };
-  }, [isPlayingBGM, muted]); // Need these in deps to ensure handleUserActivity has latest closure state
+  }, [handleUserActivity]);
 
   // 3. Respond to explicit mute/unmute state changes
   useEffect(() => {
